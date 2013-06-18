@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2008 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+
+<!-- This is a primitive example showing the different types of preferences available. -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/pref_user_profile" >
+        <PreferenceScreen android:title="@string/pref_user_profile" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:targetClass="com.idthk.wristband.ui.UserPreferencesActivity"
+                android:targetPackage="com.idthk.wristband.ui" />
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pairing">
+    <com.idthk.wristband.ui.preference.MyDialogPreference
+         android:title="@string/unpair_wrist_band"
+         android:summary="Serial#:0000000000"
+        android:dialogMessage="@string/are_you_sure" 
+        android:dialogTitle="@string/unpair_wrist_band" 
+        android:negativeButtonText="@string/no" 
+        android:positiveButtonText="@string/yes" 
+        android:key="@string/pref_unpair"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/activity" >
+        <ListPreference
+            android:defaultValue="30"
+            android:dialogTitle="@string/Select_Daily_Activity_Target"
+            android:entries="@array/pref_user_activity_entries"
+            android:entryValues="@array/pref_user_activity_entryvalues"
+            android:key="@string/pref_targetActivity"
+            android:title="@string/Daily_Activity_Target_mins" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_toggle_target"
+            android:title="@string/target" >
+        </CheckBoxPreference>
+
+        <com.idthk.wristband.ui.preference.NumberPickerPreference
+            android:defaultValue="10000"
+            android:max="99999"
+            android:key="@string/pref_targetSteps"
+            android:title="@string/steps" />
+        <com.idthk.wristband.ui.preference.NumberPickerPreference
+            android:defaultValue="7"
+            android:max="99"
+            android:key="@string/pref_targetDistances"
+            android:title="@string/distances" />
+        <com.idthk.wristband.ui.preference.NumberPickerPreference
+            android:defaultValue="1000"
+            android:max="99999"
+            android:key="@string/pref_targetCalories"
+            android:title="@string/calories" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/sleep" >
+
+        <!--
+             <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_regular_messages"
+            android:summary="Enable or disable regular messages"
+            android:title="Send regular messages" />
+        -->
+
+
+        <!--
+             <PreferenceScreen
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            
+            android:key="@string/pref_week_up_time"
+            android:title="@string/weak_up_time" >
+        -->
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_week_up_weekday"
+            android:title="@string/weekday" />
+
+        <com.idthk.wristband.ui.preference.TimePreference
+            android:dependency="@string/pref_week_up_weekday"
+            android:key="@string/pref_weekday"
+            android:title="@string/weekday" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pref_week_up_weekend"
+            android:title="@string/weekend" />
+
+        <!-- </PreferenceScreen> -->
+
+        <com.idthk.wristband.ui.preference.TimePreference
+            android:dependency="@string/pref_week_up_weekend"
+            android:key="@string/pref_weekend"
+            android:title="@string/weekend" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/support" >
+        <PreferenceScreen android:title="@string/help" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:targetClass="com.idthk.wristband.ui.InstructionActivity"
+                android:targetPackage="com.idthk.wristband.ui" />
+        </PreferenceScreen>
+        <PreferenceScreen android:title="@string/user_manual"
+            android:key ="@string/pref_user_manual" >
+             	<intent
+                android:action="android.intent.action.VIEW"
+                android:mimeType="application/pdf"
+                android:data="file://com.idthk.wristband.ui/assets/manual.pdf"
+                /> 
+            <!-- <intent
+                android:action="android.intent.action.VIEW"
+                android:targetClass="com.idthk.wristband.ui.MyPdfViewActivity"
+                android:targetPackage="com.idthk.wristband.ui" /> -->    
+        </PreferenceScreen>
+    </PreferenceCategory>
+ <PreferenceScreen android:title="@string/App_Version" 
+     android:key="@string/App_Version" 
+     android:summary="@string/unknown" />
+ <PreferenceScreen android:title="@string/Wristband_Version" 
+     android:key="@string/Wristband_Version" 
+     android:summary="@string/unknown" />
+     
+</PreferenceScreen>

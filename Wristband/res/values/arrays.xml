@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2007 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+  
+          http://www.apache.org/licenses/LICENSE-2.0
+  
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<resources>
+    <!-- Used in app/menu examples -->
+    <string-array name="entries_list_preference">
+        <item>Alpha Option 01</item>
+        <item>Beta Option 02</item>
+        <item>Charlie Option 03</item>  
+    </string-array>
+    <!--  user gender --> 
+    <string-array name="pref_user_gender_entries">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+    <string-array name="pref_user_gender_entryvalues">
+        <item>Male</item>
+        <item>Female</item>  
+    </string-array>
+    
+    <string-array name="pref_unit_entries">
+        <item>Metric</item>
+        <item>Imperial</item>
+    </string-array>
+    <string-array name="pref_unit_entryvalues">
+        <item>Metric</item>
+        <item>Imperial</item>  
+    </string-array>
+    
+    <!-- Used in app/menu examples -->
+    <string-array name="entryvalues_list_preference">
+        <item>alpha</item>
+        <item>beta</item>
+        <item>charlie</item>  
+    </string-array>
+    
+     <!-- Used in app/Screen Orientation -->
+    <string-array name="screen_orientations">
+        <item>UNSPECIFIED</item>
+        <item>LANDSCAPE</item>
+        <item>PORTRAIT</item>
+        <item>USER</item>
+        <item>BEHIND</item>
+        <item>SENSOR</item>
+        <item>NOSENSOR</item>
+        <item>SENSOR_LANDSCAPE</item>
+        <item>SENSOR_PORTRAIT</item>
+        <item>REVERSE_LANDSCAPE</item>
+        <item>REVERSE_PORTRAIT</item>
+        <item>FULL_SENSOR</item>
+    </string-array>
+    <string-array name="pref_user_activity_entries">
+        <item>30 minutes</item>
+        <item>60 minutes</item>
+        <item>90 minutes</item>
+        <item>120 minutes</item>
+    </string-array>
+    <string-array name="pref_user_activity_entryvalues">
+        <item>30</item>
+        <item>60</item>
+        <item>90</item>
+        <item>120</item>
+    </string-array>
+    
+    <string-array name="pref_user_sleep_profile_entries">
+        <item>Weekday</item>
+        <item>Weekend</item>
+    </string-array>
+    
+    <string-array name="pref_user_sleep_profile_entryvalues">
+        <item>Weekday</item>
+        <item>Weekend</item>
+    </string-array>
+    
+    <!-- <string-array name="send_interval">
+        <item>Weekday</item>
+        <item>Weekend</item>
+    </string-array>
+    <string-array name="send_interval_values">
+        <item>Weekday</item>
+        <item>Weekend</item>
+    </string-array> -->
+    
+    <string-array name="distance_unit_value">
+        <item>km</item>
+        <item>mile</item>
+    </string-array>
+    
+    <string-array name="height_unit_value">
+        <item>cm</item>
+        <item>inch</item>
+    </string-array>
+    
+    <string-array name="weight_unit_value">
+        <item>kg</item>
+        <item>lb</item>
+    </string-array>
+    
+    
+</resources>

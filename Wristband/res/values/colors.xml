@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="word_bar">#FF0000</color>
+    <color name="number_bar">#00FF00</color>
+    <color name="default_bg_color">#000000</color>
+    <color name="default_light_text_color">#FFFFFF</color>
+    <color name="default_dark_text_color">#000000</color>
+    <color name="default_graey_text_color">#666666</color>
+</resources>

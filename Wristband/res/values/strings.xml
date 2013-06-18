@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Wristband</string>
+    <string name="setting_name">Settings</string>
+    <string name="tab_words">Words</string>
+    <string name="tab_numbers">Numbers</string>
+    <string name="tab_settings">Setting</string>
+    <string name="tab_pagerfragement">Pager</string>
+    <string name="tab_tabfragementtab">Tab</string>
+    <string name="tab_day">Day</string>
+    <string name="tab_week">Week</string>
+    <string name="tab_month">Month</string>
+    <string name="tab_year">Year</string>
+    <string name="tab_scroll">Scroll</string>
+    <string name="user_name">User</string>
+    <string name="title_template_step">Step <xliff:g id="step_number">%1$d</xliff:g>: LoremIpsum</string>
+    <string name="lorem_ipsum"><![CDATA[Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et magna ut erat elementum cursus in quis ipsum. Nam faucibus ultrices eros, vel tempor leo semper sit amet. Duis magna quam, congue vitae interdum nec, condimentum ut lectus. Sed commodo venenatis eros a dignissim. Nunc adipiscing turpis nec magna venenatis at ultricies ipsum bibendum. Sed volutpat urna quis nisi vulputate egestas. Etiam eu dui a enim lacinia dapibus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.\n\nPhasellus orci mi, eleifend nec congue id, volutpat at neque. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Integer semper velit vel leo rutrum sed fermentum elit porta.]]></string>
+    
+        <string name="launch_preference_activity">Launch PreferenceActivity</string>
+    <string name="counter_value_is">The counter value is</string>
+
+    <string name="inline_preferences">In-line preferences</string>
+    <string name="dialog_based_preferences">Dialog-based preferences</string>
+    <string name="launch_preferences">Launch preferences</string>
+    <string name="preference_attributes">Preference attributes</string>
+
+    <string name="title_checkbox_preference">Checkbox preference</string>
+    <string name="summary_checkbox_preference">This is a checkbox</string>
+
+    <string name="title_switch_preference">Switch preference</string>
+    <string name="summary_switch_preference">This is a switch</string>
+    <string name="summary_switch_preference_yes_no">This is a switch with custom text</string>
+
+    <string name="title_yesno_preference">Yes or no preference</string>
+    <string name="summary_yesno_preference">An example that uses a yes/no dialog</string>
+    <string name="dialog_title_yesno_preference">Do you like bananas?</string>
+
+    <string name="title_edittext_preference">Edit text preference</string>
+    <string name="summary_edittext_preference">An example that uses an edit text dialog</string>
+    <string name="dialog_title_edittext_preference">Enter your favorite animal</string>
+
+    <string name="title_list_preference">List preference</string>
+    <string name="summary_list_preference">An example that uses a list dialog</string>
+    <string name="dialog_title_list_preference">Choose one</string>
+
+    <string name="title_screen_preference">Screen preference</string>
+    <string name="summary_screen_preference">Shows another screen of preferences</string>
+
+    <string name="title_fragment_preference">Fragment preference</string>
+    <string name="summary_fragment_preference">Shows another fragment of preferences</string>
+
+    <string name="title_next_screen_toggle_preference">Toggle preference</string>
+    <string name="summary_next_screen_toggle_preference">Preference that is on the next screen but same hierarchy</string>
+
+    <string name="title_intent_preference">Intent preference</string>
+    <string name="summary_intent_preference">Launches an Activity from an Intent</string>
+
+    <string name="title_my_preference">My preference</string>
+    <string name="summary_my_preference">This is a custom counter preference</string>
+
+    <string name="title_advanced_toggle_preference">Haunted preference</string>
+    <string name="summary_on_advanced_toggle_preference">I\'m on! :)</string>
+    <string name="summary_off_advanced_toggle_preference">I\'m off! :(</string>
+
+    <string name="title_parent_preference">Parent checkbox preference</string>
+    <string name="summary_parent_preference">This is visually a parent</string>
+    <string name="title_child_preference">Child checkbox preference</string>
+    <string name="summary_child_preference">This is visually a child</string>
+    <string name="facebook_activity_name">Facebook</string>
+    <string name="app_id">249937528477713</string>
+    <string name="twitter_activity_name">Twitter</string>
+    <string name="pref_name">preferences</string>
+    <string name="pref_toggle_target">prefToggleTarget</string>
+    <string name="pref_targetSteps">prefTargetSteps</string>
+    <string name="pref_targetCalories">prefTargetCalories</string>
+    <string name="pref_targetDistances">prefTargetDistances</string>
+    <string name="pref_targetActivity">prefTargetActivity</string>
+    <string name="pref_week_up_time">prefWeakUptime</string>
+    <string name="pref_week_up_weekday">prefWeakUpWeekday</string>
+    <string name="pref_week_up_weekend">prefWeakupWeekend</string>
+    <string name="pref_actually_fall_as_sleep">prefFallAsSleep</string>
+    <string name="pref_sleep_duration">prefSleepDuration</string>
+    
+    <string name="connecttomobile_content">Press and hold the button (for 5 seconds) until the LED indicator blink in blue.</string>
+    <string name="connecttomobile">Connect to mobile:</string>
+    <string name="instruction_page3_skip">Skip</string>
+    <string name="startyoursleep">Start your sleep:</string>
+    <string name="startyoursleep_content">Press and hold the button until the purple LED indicator turn on for 3 seconds.</string>
+    <string name="afteryoursleep">After your sleep:</string>
+    <string name="afteryoursleep_content">Press and hold the button again until the LED indicator blink in purple for 3 seconds.</string>
+    <string name="achievement_and_indicator_colors">Achievement &amp; Indicator colors:</string>
+    <string name="achievement_and_indicator_colors_content">Press the button, you will see the indicator, different color representing different achievement levels as follows</string>
+    <string name="user">User</string>
+    <string name="gender">Gender</string>
+    <string name="dayofbirth">Day of birth</string>
+    <string name="unit">Unit</string>
+    <string name="height">Height(cm)</string>
+    <string name="weight">Weight(kg)</string>
+    <string name="message">message</string>
+    <string name="ok">OK</string>
+    <string name="take_picture">Take picture</string>
+    <string name="choose_from_library">Choose from library</string>
+    
+    <string name="default_user_name">User</string>
+    <string name="default_user_gender">Male</string>
+    <string name="pref_user_profile">User Profile</string>
+    <string name="pref_user_name">User Name</string>
+    
+    <string name="pref_user_name_summary">Please Enter user Name</string>
+    
+    <string name="pref_user_gender_title">Gender</string>
+    <string name="pref_user_gender_summary">Select your gender</string>
+    <string name="pref_user_gender_dialogtitle">Select a gender</string>
+    <string name="pref_date_of_birth_title">Date of birth</string>
+    <string name="pref_user_height_title">Height(cm)</string>
+    <string name="pref_user_weight_title">Width(kg)</string>
+    <string name="pref_unit_title">Unit</string>
+    <string name="pref_unit_dialogtitle">Metric/Imperial</string>
+    <string name="pref_unit_title">Unit</string>
+    <string name="pref_user_name">User</string>
+    <string name="pref_profile_pic">key_profile_pic</string>
+    <string name="profile_pic">Profile Picture</string>
+    <string name="pref_last_sync_time">key_last_sync_time</string>
+    <string name="pref_weekday">prefWeekday</string>
+    <string name="pref_weekday_wake">prefWeekdayWake</string>
+    <string name="pref_weekend">prefWeekend</string>
+    <string name="pref_weekend_wake">prefWeekendWake</string>
+    
+    <string name="default_last_sync_time">never</string>
+    
+    <string name="end">End</string>
+    <string name="start">Start</string>
+    <string name="high">High</string>
+    <string name="middle">Middle</string>
+    <string name="low">Low</string>
+    <string name="user">User</string>
+    <string name="your_profile">Your Profile</string>
+    <string name="activity">Activity</string>
+    <string name="Daily_Activity_Target_mins">Daily Activity Target(mins)</string>
+    <string name="Select_Daily_Activity_Target">Select_Daily_Activity_Target</string>
+    <string name="Target">Target</string>
+    <string name="serial">Serial</string>
+    <string name="unknown">Unknown</string>
+    <string name="steps">Steps</string>
+    <string name="calories">Calories</string>
+    <string name="distances">Distances</string>
+    <string name="default_distance_unit">km</string>
+    <string name="zero">0</string>
+    <string name="sleep">Sleep</string>
+    <string name="weak_up_time">Wake up time</string>
+    <string name="weekday">Weekday</string>
+    <string name="weekend">Weekend</string>
+    <string name="support">Support</string>
+    <string name="right_arrow">></string>
+    <string name="help">Help</string>
+    <string name="user_manual">User manual</string>
+    <string name="pref_user_manual">prefusermanual</string>
+    
+    <string name="Wristband_Version">Wristband Version</string>
+    <string name="App_Version">App Version</string>
+    <string name="pref_user_activity_title">Activity Duration</string>
+	<string name="pref_user_activity_summary">set you target activity duration</string>
+    <string name="pref_user_activity_dialogtitle">select an option</string>
+	<string name="activity_target">Activity Target</string>
+	<string name="sleep_profile">Slep Profile</string>
+	<string name="sleep_weekday_profile">Sleep Weekday Profile</string>
+	<string name="sleep_weekend_profile">Sleep Weekend Profile</string>
+	<string name="target_calories">Target Calories</string>
+	<string name="target_distance">Target Distances</string>
+	<string name="target_step">Target Steps</string>
+	<string name="target">Target</string>
+	<string name="preferences">Preferences</string>
+	<string name="select_target_step">Select Target Step</string>
+	
+	<string name="are_you_sure">Are you sure?</string> 
+    <string name="unpair_wrist_band">Unpair Wristband</string> 
+    <string name="no" >No</string>
+    <string name="yes" >Yes</string>
+    <string name="pref_unpair">prefUnpair</string>
+    <string name="pairing">Pairing</string>
+    <string name="pref_in_bed_time">prefInBedTime</string>
+    
+</resources>

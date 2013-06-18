@@ -1,0 +1,205 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".BLEBaseActivity" >
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignLeft="@+id/linearLayout3"
+        android:layout_below="@+id/linearLayout3"
+        android:orientation="vertical" >
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="1" >
+
+            <Button
+                android:id="@+id/btn_connect"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:minHeight="24dp"
+                android:text="Connect"
+                android:textColor="@android:color/primary_text_dark"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_ondemand"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/btn_connect"
+                android:minHeight="24dp"
+                android:text="On-Demand"
+                android:textColor="@android:color/primary_text_dark"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_writetime"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/btn_stopstream"
+                android:minHeight="24dp"
+                android:text="W.Time"
+                android:textColor="@android:color/primary_text_dark"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_writeportfile"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/btn_writesleep"
+                android:layout_alignBottom="@+id/btn_writesleep"
+                android:layout_toRightOf="@+id/btn_writesleep"
+                android:minHeight="24dp"
+                android:text="W.Portfile"
+                android:textColor="@android:color/primary_text_dark"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_disconnect"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_row="0"
+                android:minHeight="24dp"
+                android:textColor="@android:color/primary_text_dark"
+                android:text="Disconnect"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_clearlog"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_gravity="right|top"
+                android:layout_row="0"
+                android:minHeight="24dp"
+                android:text="ClearLog"
+                android:textColor="@android:color/primary_text_dark"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_startstream"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_row="1"
+                android:minHeight="24dp"
+                android:text="Start Stream"
+                android:textColor="@android:color/primary_text_dark"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_stopstream"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_gravity="right|top"
+                android:layout_row="1"
+                android:minHeight="24dp"
+                android:text="Stop Stream"
+                android:textColor="@android:color/primary_text_dark"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_version"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_gravity="right|top"
+                android:layout_row="3"
+                android:minHeight="24dp"
+                android:text="Version"
+                android:textColor="@android:color/primary_text_dark"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/writetarget"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_row="2"
+                android:minHeight="24dp"
+                android:textColor="@android:color/primary_text_dark"
+                android:text="W.Target"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_writesleep"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_gravity="right|top"
+                android:layout_row="2"
+                android:minHeight="24dp"
+                android:text="W.Sleep"
+                android:textColor="@android:color/primary_text_dark"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_enable_notify"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_row="3"
+                android:minHeight="24dp"
+                android:textColor="@android:color/primary_text_dark"
+                android:text="EnableNoti"
+                android:textSize="12sp" />
+
+        </GridLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignLeft="@+id/linearLayout3"
+            android:layout_below="@+id/linearLayout3"
+            android:orientation="vertical" >
+
+            <ScrollView
+                android:id="@+id/scroll_view"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:text="asdgabefbwgnwegn"
+                    android:textColor="#FFFFFF" />
+
+            </ScrollView>
+        </LinearLayout>
+    </LinearLayout>
+
+    
+
+</RelativeLayout>

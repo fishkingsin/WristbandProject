@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2008 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+
+<!-- This is a primitive example showing the different types of preferences available. -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/pref_user_profile" >
+        <Preference android:title="@string/profile_pic" 
+     	android:key="@string/pref_profile_pic" 
+     	 android:layout="@layout/image_preference_layout"/>
+     	         <EditTextPreference
+            android:defaultValue="User"
+            android:key="@string/pref_user_name"
+            android:summary="@string/pref_user_name_summary"
+            android:title="@string/pref_user_name" />
+
+        <ListPreference
+            android:defaultValue="Male"
+            android:dialogTitle="@string/pref_user_gender_dialogtitle"
+            android:entries="@array/pref_user_gender_entries"
+            android:entryValues="@array/pref_user_gender_entryvalues"
+            android:key="prefUserGender"
+            android:summary="@string/pref_user_gender_summary"
+            android:title="@string/pref_user_gender_title" />
+
+        <org.bostonandroid.datepreference.DatePreference
+            android:defaultValue="1991.01.01"
+            android:key="prefDateOfBirth"
+            android:title="@string/pref_date_of_birth_title" />
+
+        <ListPreference
+            android:defaultValue="Metric"
+            android:dialogTitle="@string/pref_unit_dialogtitle"
+            android:entries="@array/pref_unit_entries"
+            android:entryValues="@array/pref_unit_entryvalues"
+            android:key="prefUnit"
+            android:title="@string/pref_unit_title" />
+
+        <com.idthk.wristband.ui.preference.NumberPickerPreference
+            android:defaultValue="178"
+            android:key="prefHeight"
+            android:title="@string/pref_user_height_title" />
+        <com.idthk.wristband.ui.preference.NumberPickerPreference
+            android:defaultValue="50"
+            android:key="prefWeight"
+            android:title="@string/pref_user_weight_title" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
