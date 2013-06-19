@@ -2,3 +2,5 @@
 *bin
 *.meta*
 GraphView
+
+Wristband/gen/com/idthk/wristband/ui/R.java

@@ -48,7 +48,7 @@
             android:title="@string/Daily_Activity_Target_mins" />
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="@string/pref_toggle_target"
             android:title="@string/target" >
         </CheckBoxPreference>
@@ -93,9 +93,10 @@
             android:title="@string/weekday" />
 
         <com.idthk.wristband.ui.preference.TimePreference
+            
             android:dependency="@string/pref_week_up_weekday"
             android:key="@string/pref_weekday"
-            android:title="@string/weekday" />
+            android:title="@string/weekday_wakeup_time" />
 
         <CheckBoxPreference
             android:defaultValue="false"
@@ -105,9 +106,10 @@
         <!-- </PreferenceScreen> -->
 
         <com.idthk.wristband.ui.preference.TimePreference
+            
             android:dependency="@string/pref_week_up_weekend"
             android:key="@string/pref_weekend"
-            android:title="@string/weekend" />
+            android:title="@string/weekend_wakeup_time" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/support" >
         <PreferenceScreen android:title="@string/help" >

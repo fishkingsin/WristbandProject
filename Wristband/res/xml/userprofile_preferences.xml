@@ -31,7 +31,7 @@
             android:title="@string/pref_user_name" />
 
         <ListPreference
-            android:defaultValue="Male"
+            android:defaultValue="@string/default_user_gender"
             android:dialogTitle="@string/pref_user_gender_dialogtitle"
             android:entries="@array/pref_user_gender_entries"
             android:entryValues="@array/pref_user_gender_entryvalues"
@@ -40,7 +40,7 @@
             android:title="@string/pref_user_gender_title" />
 
         <org.bostonandroid.datepreference.DatePreference
-            android:defaultValue="1991.01.01"
+            android:defaultValue="@string/default_user_birthday"
             android:key="prefDateOfBirth"
             android:title="@string/pref_date_of_birth_title" />
 

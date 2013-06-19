@@ -102,7 +102,10 @@
     <string name="choose_from_library">Choose from library</string>
     
     <string name="default_user_name">User</string>
-    <string name="default_user_gender">Male</string>
+    <string name="default_user_gender">Female</string>
+    <string name="default_user_height">170</string>
+    <string name="default_user_weight">50</string>
+    <string name="default_user_birthday">1990-01-01</string>
     <string name="pref_user_profile">User Profile</string>
     <string name="pref_user_name">User Name</string>
     
@@ -115,6 +118,7 @@
     <string name="pref_user_height_title">Height(cm)</string>
     <string name="pref_user_weight_title">Width(kg)</string>
     <string name="pref_unit_title">Unit</string>
+    <string name="default_unit">Metric</string>
     <string name="pref_unit_dialogtitle">Metric/Imperial</string>
     <string name="pref_unit_title">Unit</string>
     <string name="pref_user_name">User</string>
@@ -125,6 +129,8 @@
     <string name="pref_weekday_wake">prefWeekdayWake</string>
     <string name="pref_weekend">prefWeekend</string>
     <string name="pref_weekend_wake">prefWeekendWake</string>
+    <string name="default_weekday_wake">7:00 am</string>
+    <string name="default_weekend_wake">8:00 am</string>
     
     <string name="default_last_sync_time">never</string>
     
@@ -168,6 +174,12 @@
 	<string name="target_calories">Target Calories</string>
 	<string name="target_distance">Target Distances</string>
 	<string name="target_step">Target Steps</string>
+	
+	<string name="defalut_target_steps">10000</string>
+	<string name="defalut_target_calories">1000</string>
+	<string name="defalut_target_distances">7</string>
+	
+					
 	<string name="target">Target</string>
 	<string name="preferences">Preferences</string>
 	<string name="select_target_step">Select Target Step</string>
@@ -179,5 +191,8 @@
     <string name="pref_unpair">prefUnpair</string>
     <string name="pairing">Pairing</string>
     <string name="pref_in_bed_time">prefInBedTime</string>
-    
+    <string name="weekday_wakeup_time">Weekday wake up time</string>
+    <string name="weekend_wakeup_time">Weekend wake up time</string>
+    <string name="wristband_disconnected">Wristband Desconnected</string>
+    <string name="do_you_want_to_reconnect">Do you want to reconnect?</string>
 </resources>
