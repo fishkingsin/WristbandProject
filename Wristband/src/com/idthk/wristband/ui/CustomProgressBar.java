@@ -163,7 +163,7 @@ private int m_target=0;
   public void setTextColor(int color) {
     m_textPaint.setColor(color);
     
-    this.textColor = textColor;
+    this.textColor = color;
     postInvalidate();
   }
   
@@ -174,7 +174,7 @@ private int m_target=0;
    */
   public void setTextSize(float size) {
     m_textPaint.setTextSize(size);
-    this.textSize = textSize;
+    this.textSize = size;
     postInvalidate();
   }
   
