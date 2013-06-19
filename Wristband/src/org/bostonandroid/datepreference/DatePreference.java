@@ -93,7 +93,7 @@ public class DatePreference extends DialogPreference implements
    * @return the SimpleDateFormat used for summary dates
    */
   public static SimpleDateFormat summaryFormatter() {
-    return new SimpleDateFormat("MMMM dd, yyyy");
+    return new SimpleDateFormat("MMMM , yyyy");
   }
 
   @Override
@@ -181,7 +181,7 @@ public class DatePreference extends DialogPreference implements
    * @return the Calendar set to the default date
    */
   public static Calendar defaultCalendar() {
-    return new GregorianCalendar(1970, 0, 1);
+    return new GregorianCalendar(1914, 0, 1);
   }
 
   /**

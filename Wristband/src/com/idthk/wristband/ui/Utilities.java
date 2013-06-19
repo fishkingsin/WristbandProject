@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +21,7 @@ import android.media.ExifInterface;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
-
+import 	java.util.Locale;
 public class Utilities {
 	public static AlertDialog alertDialog;
 	public static final String DEFAULT_FONT = "handel.ttf";
@@ -183,6 +184,12 @@ public class Utilities {
 		}
 
 		return editedText;
+	}
+	public static String getCurrentDate()
+	{
+		Calendar rightNow = Calendar.getInstance();
+		return rightNow.getDisplayName(Calendar.DATE, Calendar.ALL_STYLES, Locale.CHINA) ;
+		 
 	}
 	
 }

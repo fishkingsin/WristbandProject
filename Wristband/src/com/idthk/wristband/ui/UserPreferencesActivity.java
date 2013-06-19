@@ -91,12 +91,14 @@ public class UserPreferencesActivity extends Activity {
 			pref.setSummary(sharedPreferences.getString(
 					getString(R.string.pref_user_name),
 					getString(R.string.default_user_name)));
+			
 			pref = findPreference("prefUserGender");
-			pref.setSummary(sharedPreferences.getString("prefUserGender",
-					getString(R.string.default_user_gender)));
+			String gender = sharedPreferences.getString("prefUserGender",
+					getString(R.string.default_user_gender));
+			pref.setSummary(gender);
 
 			pref = findPreference("prefUnit");
-			pref.setSummary(sharedPreferences.getString("prefUnit", "Metric"));
+			pref.setSummary(sharedPreferences.getString("prefUnit", getString(R.string.default_unit)));
 			pref = findPreference(getString(R.string.pref_profile_pic));
 			pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 				@Override
@@ -177,21 +179,28 @@ public class UserPreferencesActivity extends Activity {
 					+ " " + sharedPreferences.getAll().toString());
 			Preference pref = findPreference(key);
 			if (key.equals("prefUserGender")) {
-
-				pref.setSummary(sharedPreferences.getString(key,
-						getString(R.string.default_user_gender)));
+				
+				
+				String gender = sharedPreferences.getString("prefUserGender",
+						getString(R.string.default_user_gender));
+				pref.setSummary(gender);
+				
 			} else if (key.equals("prefUnit")) {
 				pref.setSummary(sharedPreferences.getString(key, "Metric"));
 			} else if (key.equals(getString(R.string.pref_user_name))) {
 				pref.setSummary(sharedPreferences.getString(key,
 						getString(R.string.default_user_name)));
-			} else if (key.equals("prefDateOfBirth")) {
-				pref.setSummary(sharedPreferences.getString(key, "1991.01.01"));
-			} else if (key.equals("prefHeight")) {
-				pref.setSummary(sharedPreferences.getInt(key, 178));
-			} else if (key.equals("prefWeight")) {
-				pref.setSummary(sharedPreferences.getInt(key, 50));
-			}else if(key.equals(getString(R.string.pref_profile_pic))){
+			}
+//			else if (key.equals("prefDateOfBirth")) {
+//				pref.setSummary(sharedPreferences.getString(key, getString(R.string.default_user_birthday)));
+//			} 
+//			else if (key.equals("prefHeight")) {
+//				pref.setSummary(sharedPreferences.getInt(key, Integer.valueOf(getString(R.string.default_user_height))));
+//			}
+//			else if (key.equals("prefWeight")) {
+//				pref.setSummary(sharedPreferences.getInt(key, Integer.valueOf(getString(R.string.default_user_weight))));
+//			}
+			else if(key.equals(getString(R.string.pref_profile_pic))){
 				String path = sharedPreferences.getString(
 						getString(R.string.pref_profile_pic), "");
 				Log.v(TAG, "profile path : " + path);

@@ -326,7 +326,7 @@ public class Main extends BLEBaseActivity {
 		}
 		String _msg = "";
 		for (int i = 0; i < value.length; i++) {
-			_msg += value[i] + " , ";
+			_msg +=  Integer.toHexString( value[i]) + " , ";
 		}
 		showMessage("Unknown Message");
 		showMessage(s);
@@ -336,7 +336,7 @@ public class Main extends BLEBaseActivity {
 
 	@Override
 	public void onReadVersion(int xx, int yy) {
-		String s = "ReadVersion " + xx + "-" + yy;
+		String s = "ReadVersion " + Integer.valueOf(xx-30) + "-" + Integer.valueOf(yy-30);
 		showMessage(s);
 	}
 }

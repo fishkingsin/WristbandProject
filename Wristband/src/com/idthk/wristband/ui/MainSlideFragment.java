@@ -25,9 +25,9 @@ import java.util.Calendar;
 //import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
-//import java.util.prefs.PreferenceChangeEvent;
-//import java.util.prefs.PreferenceChangeListener;
-//import java.util.prefs.Preferences;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
+import java.util.prefs.Preferences;
 
 //import org.xmlpull.v1.XmlPullParser;
 
@@ -143,10 +143,11 @@ public class MainSlideFragment extends Fragment implements
 	static private int targetDistances = 1;
 
 	private Integer currentActivityTime = 0;
-	private Integer currentDistanceProgress = 0;
+	private float currentDistanceProgress = 0;
 	private Integer currentCalories = 0;
 	private Integer currentSteps = 0;
 	private Integer currentBatteryLevel = 0;
+	private ImageView battery_indicated_imageview;
 	/**
 	 * Factory method for this fragment class. Constructs a new fragment for the
 	 * given page number.
@@ -235,7 +236,8 @@ public class MainSlideFragment extends Fragment implements
 			steps_indicated_textview = ((TextView) mRootView.findViewById(R.id.steps_indicated_textview));
 			calories_indicated_textview = ((TextView) mRootView.findViewById(R.id.calories_indicated_textview));
 			distances_indicated_textview = ((TextView) mRootView.findViewById(R.id.distances_indicated_textview));
-
+			
+			
 			publishSettings(sharedPreferences);
 
 			String path = sharedPreferences.getString(
@@ -262,7 +264,7 @@ public class MainSlideFragment extends Fragment implements
 							mCallback.onShareButtonClicked(TWITTER);
 						}
 					});
-
+			battery_indicated_imageview = ((ImageView) mRootView.findViewById(R.id.battery_image));
 			final ScrollView scrollView = (ScrollView) mRootView
 					.findViewById(R.id.main_activity_scroll_view);
 
@@ -302,7 +304,7 @@ public class MainSlideFragment extends Fragment implements
 							mCallback.onShareButtonClicked(TWITTER);
 						}
 					});
-
+			battery_indicated_imageview = ((ImageView) mRootView.findViewById(R.id.battery_image));
 			String path = sharedPreferences.getString(
 					getString(R.string.pref_profile_pic), "");
 //			Log.v(TAG, "profile path : " + path);
@@ -312,9 +314,10 @@ public class MainSlideFragment extends Fragment implements
 				((ImageView) mRootView.findViewById(R.id.profile_pic))
 						.setImageBitmap(myBitmap);
 			}
+			
 			publishSettings(sharedPreferences);
 			populateGraph(mRootView);
-
+			new UpdateBarTask().execute();
 		}
 
 		return mRootView;
@@ -337,11 +340,11 @@ public class MainSlideFragment extends Fragment implements
 					getString(R.string.pref_targetActivity), "30"));
 
 			targetSteps = prefs.getInt(
-					getString(R.string.pref_targetSteps), 0);
+					getString(R.string.pref_targetSteps), Integer.valueOf(getString(R.string.defalut_target_steps)));
 			targetCalories = prefs.getInt(
-					getString(R.string.pref_targetCalories), 0);
+					getString(R.string.pref_targetCalories), Integer.valueOf(getString(R.string.defalut_target_calories)));
 			targetDistances = prefs.getInt(
-					getString(R.string.pref_targetDistances), 0);
+					getString(R.string.pref_targetDistances), Integer.valueOf(getString(R.string.defalut_target_distances)));
 
 			m_activityTimeProgressBar.setTarget(targetActivity);
 			m_stepsProgressBar.setMax(targetSteps);
@@ -512,6 +515,12 @@ public class MainSlideFragment extends Fragment implements
 			}
 
 		}
+		if(key.equals(getString(R.string.pref_last_sync_time)))
+		{
+			lastSyncTimeTv.setText(sharedPreferences.getString(
+				getString(R.string.pref_last_sync_time),
+				getString(R.string.default_last_sync_time)));
+		}
 	}
 
 	private class UpdateBarTask extends AsyncTask<Void, Integer, Void> {
@@ -522,7 +531,7 @@ public class MainSlideFragment extends Fragment implements
 		protected Void doInBackground(Void... params) {
 			
 				Log.v("UpdateBarTask", "doInBackground");
-			publishProgress(currentSteps,currentCalories,currentDistanceProgress,currentActivityTime, currentBatteryLevel);
+			publishProgress();
 			
 
 			return null;
@@ -530,20 +539,33 @@ public class MainSlideFragment extends Fragment implements
 
 		@Override
 		protected void onProgressUpdate(Integer... values) {
-
-			
-			m_stepsProgressBar.setProgress(values[0]);
-			m_caloriesProgressBar.setProgress(values[1]);
-			m_distancesProgressBar.setProgress(values[2]);
-			m_activityTimeProgressBar.setProgressInMins(values[3]);
-			
-			target_steps_indicated_textview.setText(String.valueOf(values[0]));
-			target_calories_indicated_textview.setText(String.valueOf(values[1]));
-			target_distances_indicated_textview.setText(String.valueOf(values[2]));
-			
-			steps_indicated_textview.setText(String.valueOf(values[1]));
-			calories_indicated_textview.setText(String.valueOf(values[2]));
-			distances_indicated_textview.setText(String.valueOf(values[3]));
+			if(mPageNumber==0)
+			{
+				m_stepsProgressBar.setProgress(currentSteps);
+				m_caloriesProgressBar.setProgress(currentCalories);
+				m_distancesProgressBar.setProgress((int) ((currentDistanceProgress/targetDistances)*100));
+				m_activityTimeProgressBar.setProgressInMins(currentActivityTime);
+				
+				target_steps_indicated_textview.setText(String.valueOf(currentSteps));
+				target_calories_indicated_textview.setText(String.valueOf(currentCalories));
+				target_distances_indicated_textview.setText(String.valueOf(currentDistanceProgress));
+				
+				steps_indicated_textview.setText(String.valueOf(currentSteps));
+				calories_indicated_textview.setText(String.valueOf(currentCalories));
+				distances_indicated_textview.setText(String.valueOf(currentDistanceProgress));
+			}
+			if(currentBatteryLevel <33 )
+			{
+				battery_indicated_imageview.setImageResource(R.drawable.battery_0);
+			}
+			else if(currentBatteryLevel >33 && currentBatteryLevel <66)
+			{
+				battery_indicated_imageview.setImageResource(R.drawable.battery_1);
+			}
+			else if(currentBatteryLevel >66)
+			{
+				battery_indicated_imageview.setImageResource(R.drawable.battery_2);
+			}
 		}
 	}
 	
@@ -559,22 +581,11 @@ public class MainSlideFragment extends Fragment implements
 		s += "activityTime : " + activityTime + "\n";
 		s += "batteryLevel : " + batteryLevel + "\n";
 		
-//		target_steps_indicated_textview.setText(String.valueOf(steps));
-//		target_calories_indicated_textview.setText(String.valueOf(calories));
-//		target_distances_indicated_textview.setText(String.valueOf(distance));
-		
-//		steps_indicated_textview.setText(String.valueOf(steps));
-//		calories_indicated_textview.setText(String.valueOf(calories));
-//		distances_indicated_textview.setText(String.valueOf(distance));
-//		m_stepsProgressBar.setProgress(steps);
-//		m_caloriesProgressBar.setProgress(calories);
 		currentSteps = steps;
 		currentCalories = calories;
 		currentActivityTime = activityTime;
-		currentDistanceProgress = (int) ((distance/targetDistances)*100);
+		currentDistanceProgress = distance;
 		currentBatteryLevel = batteryLevel;
-//		m_distancesProgressBar.setProgress(progress);
-//		m_activityTimeProgressBar.setProgressInMins(activityTime);
 		new UpdateBarTask().execute();
 	}
 	

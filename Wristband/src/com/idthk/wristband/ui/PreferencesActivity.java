@@ -13,6 +13,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
@@ -93,6 +95,23 @@ public class PreferencesActivity extends Activity {
 //			PreferenceScreen prefScreen = (PreferenceScreen) findPreference(getString(R.string.pref_week_up_time));
 //			String summary=((isWeekday==true)?"Weekday":" ")+((isWeekend == false)?"Weekend":" ");
 //			prefScreen.setSummary(summary);
+			
+
+			try {
+				PackageInfo pInfo;
+				pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
+				PreferenceScreen prefScreen = (PreferenceScreen) findPreference(getString(R.string.App_Version));
+				
+				prefScreen.setSummary(pInfo.versionName);
+				
+				prefScreen = (PreferenceScreen) findPreference(getString(R.string.Wristband_Version));
+				
+				prefScreen.setSummary(String.valueOf(sharedPreferences.getString(getString(R.string.Wristband_Version),"0.0")));
+			} catch (NameNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			
 		}
 
