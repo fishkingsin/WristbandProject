@@ -39,6 +39,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.OrientationEventListener;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -98,6 +99,12 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		/* Set Fullscreen, hide statusbar */
+		getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
+		WindowManager.LayoutParams. FLAG_FULLSCREEN);
+		/* Hide title bar. This has to be placed before setContentView. */
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
 		mContext = this;
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		setContentView(R.layout.main);
@@ -292,7 +299,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 				public void onFinish() {
 					Log.v(TAG, "5 mins pass finish app");
-					finish();
+					disconnect();
 				}
 
 				@Override
@@ -316,22 +323,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		protected Void doInBackground(Void... params) {
 
 			Log.v("UpdateBarTask", "doInBackground");
-			// if(mStartUpState == WristbandStartupConstant.START_STREAM)
-			// {
-			// for(int i = 1 ; i < connectivity_images.length; i++)
-			// {
-			//
-			// try {
-			// publishProgress(i);
-			// Thread.sleep(500);
-			// } catch (InterruptedException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			// }
-			// }
-			// else
-			// {
+
 			while (mState == STATE_READY) {
 				for (int i = 1; i < 3; i++) {
 
@@ -768,6 +760,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onUserLeaveHint() {
 		inBackground = true;
+		super.onUserLeaveHint();
 	}
 
 	// @Override
@@ -789,6 +782,21 @@ public class Main extends BLEBaseFragmentActivity implements
 	// return super.onOptionsItemSelected(item);
 	// }
 	// }
+	@Override
+	public void onPagerChangedCallback(int position) {
+		// TODO Auto-generated method stub
+		if (position == MainFragmentPager.ACTIVITY) {
+			((TextView) findViewById(R.id.titlebar_textview))
+					.setText("Activity");
+			((Button) findViewById(R.id.btn_settings_done))
+					.setVisibility(View.GONE);
+		} else if (position == MainFragmentPager.SLEEP) {
+			((TextView) findViewById(R.id.titlebar_textview)).setText("Sleep");
+			((Button) findViewById(R.id.btn_settings_done))
+					.setVisibility(View.GONE);
+		}
+
+	}
 
 	@Override
 	public void onPagerChangedCallback(int position, Fragment fragment) {
@@ -811,4 +819,5 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 	}
 
+	
 }
