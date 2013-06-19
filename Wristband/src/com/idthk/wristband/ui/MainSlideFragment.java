@@ -283,7 +283,7 @@ public class MainSlideFragment extends Fragment implements
 
 			 new UpdateBarTask().execute();//currentActivityTime, currentDistanceProgress, currentCalories, currentSteps,currentBatteryLevel);
 			
-				mCallback.dispatchSelf(this);
+				
 		} else {
 			mRootView = (ViewGroup) inflater.inflate(
 					R.layout.main_scrollview_sleep, container, false);
@@ -317,12 +317,22 @@ public class MainSlideFragment extends Fragment implements
 			
 			publishSettings(sharedPreferences);
 			populateGraph(mRootView);
+			mCallback.dispatchSelf(this);
 			new UpdateBarTask().execute();
 		}
 
 		return mRootView;
 	}
+	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+		super.setUserVisibleHint(isVisibleToUser);
 
+//		Log.v(TAG,"setUserVisibleHint " + isVisibleToUser + " " + mPageNumber );
+		if(isVisibleToUser)
+		{
+			mCallback.dispatchSelf(this);
+		}
+	}
 	private void publishSettings(SharedPreferences prefs) {
 		// TODO Auto-generated method stub
 		if (mPageNumber == 0) {

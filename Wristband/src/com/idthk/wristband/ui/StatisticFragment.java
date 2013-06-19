@@ -22,6 +22,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 //import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 //import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ import android.widget.TextView;
 public class StatisticFragment extends Fragment implements
 		LoaderCallbacks<Void> {
 	public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
+	private static final String TAG = "StatisticFragment";
 
 	public static final StatisticFragment newInstance(String message) {
 		StatisticFragment f = new StatisticFragment();
@@ -50,25 +52,44 @@ public class StatisticFragment extends Fragment implements
 				container, false);
 		TextView messageTextView = (TextView) mRootView
 				.findViewById(R.id.activity_indicator);
+		Random random = new Random();
+		int numBars = random.nextInt(50)+50;
+		Log.v(TAG,"message : "+message);
+		
 		if(message.equals(SleepStatisticTabFragment.TAB_WEEK))
 		{
-			
+			numBars = 7;
 		}
 		else if(message.equals(SleepStatisticTabFragment.TAB_MONTH))
 		{
-			
+			numBars =31;
 		}
 		else if(message.equals(SleepStatisticTabFragment.TAB_YEAR))
 		{
-			
+			numBars = 12;
+		}
+		else if(message.equals(ActivityStatisticTabFragment.TAB_DAY))
+		{
+			numBars = 24;
+		}
+		else if(message.equals(ActivityStatisticTabFragment.TAB_WEEK))
+		{
+			numBars = 7;
+		}
+		else if(message.equals(ActivityStatisticTabFragment.TAB_MONTH))
+		{
+			numBars =31;
+		}
+		else if(message.equals(ActivityStatisticTabFragment.TAB_YEAR))
+		{
+			numBars = 12;
 		}
 		
 		
 		messageTextView.setText(message);
 
 		//test value
-		Random random = new Random();
-		int numBars = random.nextInt(50)+50;
+		
 		GraphViewData data[] = new GraphViewData[numBars];
 
 		for (int i = 0; i < numBars; i++) {

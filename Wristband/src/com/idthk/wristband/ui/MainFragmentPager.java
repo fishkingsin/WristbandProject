@@ -30,6 +30,7 @@ public class MainFragmentPager extends Fragment {
 
 	// Container Activity must implement this interface
 	public interface PagerChangedCallback {
+		public void onPagerChangedCallback(int page);
 		public void onPagerChangedCallback(int page, Fragment fragment);
 	}
 
@@ -43,15 +44,14 @@ public class MainFragmentPager extends Fragment {
 		mMyFragmentPagerAdapter = new MyFragmentPagerAdapter(
 				getFragmentManager());
 		mViewPager.setAdapter(mMyFragmentPagerAdapter);
+
 		mViewPager
 				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
 						mCurrentPage = position;
-						mCallback.onPagerChangedCallback(position,
-								mMyFragmentPagerAdapter.registeredFragments
-										.get(position));
-
+						
+						
 						// When changing pages, reset the action bar actions
 						// since they are dependent
 						// on which page is currently active. An alternative
@@ -63,18 +63,12 @@ public class MainFragmentPager extends Fragment {
 
 					}
 				});
-		// mIndicator = (CirclePageIndicator)v.findViewById(R.id.indicator);
-		// mIndicator.setViewPager(mViewPager);
 		return v;
 	}
 
 	@Override
 	public void onResume() {
-		if (mCallback != null) {
-			mCallback.onPagerChangedCallback(mCurrentPage,
-					mMyFragmentPagerAdapter.registeredFragments
-							.get(mCurrentPage));
-		}
+
 		super.onResume();
 
 	}
@@ -95,7 +89,7 @@ public class MainFragmentPager extends Fragment {
 	}
 
 	private static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
-		SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
+//		SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
 
 		public MyFragmentPagerAdapter(FragmentManager fm) {
 			super(fm);
@@ -103,9 +97,8 @@ public class MainFragmentPager extends Fragment {
 
 		@Override
 		public Fragment getItem(int index) {
-			MainSlideFragment frag = MainSlideFragment.create(index);
-			registeredFragments.put(index, frag);
-			return frag;
+			
+			return MainSlideFragment.create(index);
 		}
 
 		@Override
