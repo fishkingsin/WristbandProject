@@ -36,13 +36,15 @@ public class WristbandBLEService extends Service {
 	static final boolean bDebug = false;
 
 	static final String TAG = "WristbandBLEService";
-	
+
 	BluetoothGattService pe128Service;
 	public static UUID PE128_SERVICE = UUID
 			.fromString("c231ff01-8d74-4fa9-a7dd-13abdfe5cbff");
+	
+	BluetoothGattService pe128NotiService;
 	public static UUID PE128_NOTI_SERVICE = UUID
 			.fromString("00001810-0000-1000-8000-00805f9b34fb");
-	
+
 	BluetoothGattCharacteristic pe128Streaming;
 	public static UUID PE128_CHAR_STREAMING = UUID
 			.fromString("00002a35-0000-1000-8000-00805f9b34fb");
@@ -81,46 +83,70 @@ public class WristbandBLEService extends Service {
 			.fromString("00002a38-0000-1000-8000-00805f9b34fb");
 
 	// protocol
-	final static byte[] SET_DEMAND_PREFIX = { (byte) 0xAA, (byte) 0x50, (byte) 0xF1, (byte) 0x00, (byte) 0x04, (byte) 0x02, (byte) 0x01, (byte) 0x06, (byte) 0x01,
-			(byte) 0x55};	
-	
-	final static byte[] STREAM_MODE_START = { (byte) 0xAA, (byte) 0x50, (byte) 0xF1, (byte) 0x00, (byte) 0x04, (byte) 0x02, (byte) 0x01, (byte) 0x05, (byte) 0x01,
-			(byte) 0x55 };
-	final static byte[] STREAM_MODE_STOP = { (byte) 0xAA, (byte) 0x50, (byte) 0xF1, (byte) 0x00, (byte) 0x04, (byte) 0x02, (byte) 0x00, (byte) 0x05, (byte) 0xFF,
-			(byte) 0x55 };
-	
-//	AA-50-F1-00-03-01-07-01-55
-	final static byte[] TEST_VERSION_PREFIX = { (byte) 0xAA, (byte) 0x50, (byte) 0xF1, (byte) 0x00, (byte) 0x03, (byte) 0x01, (byte) 0x07 , (byte) 0x01, (byte) 0x55 };
-//	AA-42-10-00-0E-01-07-50-45-31-32-31-2D-36-2D-38-3A-XX-YY-55
-	final static byte[] TEST_VERSION_RETURN_PREFIX = { (byte) 0xAA, (byte) 0x42, (byte) 0x10, (byte) 0x00, (byte) 0x0E, (byte) 0x01, (byte) 0x07 , (byte) 0x50, (byte) 0x45
-			, (byte) 0x31, (byte) 0x32, (byte) 0x31, (byte) 0x2D, (byte) 0x36, (byte) 0x2D, (byte) 0x38, (byte) 0x3A };
-	//, (byte) 0xXX, (byte) 0xYY, (byte) 0x55};
-	
-	
-	final static byte[] SET_TIME_PREFIX = { (byte) 0xAA, (byte) 0x50, (byte) 0xF0, (byte) 0x00, (byte) 0x0B, (byte) 0x02, (byte) 0x01,(byte) 0x01, (byte) 0x01, 
-			(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-			(byte) 0x55 };
-//	AA-42-10-00-0B-02-00-01-01-UU-VV-WW-XX-YY-ZZ-SS-55
-	final static byte[] SET_TIME_RETURN_PREFIX = { (byte) 0xAA, (byte) 0x42, (byte) 0x10, (byte) 0x00, (byte) 0x0B, (byte) 0x02, (byte) 0x00,(byte) 0x01, (byte) 0x01};
-	
-//AA-50-F0-00-09-02-01-02-02-QQ-RR-SS-TT-UU -55
-	final static byte[] SET_PROFILE_PREFIX = { (byte) 0xAA, (byte) 0x50, (byte) 0xF0, (byte) 0x00, (byte) 0x09, (byte) 0x02, (byte) 0x01,(byte) 0x02, (byte) 0x02, 
+	final static byte[] SET_DEMAND_PREFIX = { (byte) 0xAA, (byte) 0x50,
+			(byte) 0xF1, (byte) 0x00, (byte) 0x04, (byte) 0x02, (byte) 0x01,
+			(byte) 0x06, (byte) 0x01, (byte) 0x55 };
+
+	final static byte[] STREAM_MODE_START = { (byte) 0xAA, (byte) 0x50,
+			(byte) 0xF1, (byte) 0x00, (byte) 0x04, (byte) 0x02, (byte) 0x01,
+			(byte) 0x05, (byte) 0x01, (byte) 0x55 };
+	final static byte[] STREAM_MODE_STOP = { (byte) 0xAA, (byte) 0x50,
+			(byte) 0xF1, (byte) 0x00, (byte) 0x04, (byte) 0x02, (byte) 0x00,
+			(byte) 0x05, (byte) 0xFF, (byte) 0x55 };
+
+	// AA-50-F1-00-03-01-07-01-55
+	final static byte[] TEST_VERSION_PREFIX = { (byte) 0xAA, (byte) 0x50,
+			(byte) 0xF1, (byte) 0x00, (byte) 0x03, (byte) 0x01, (byte) 0x07,
+			(byte) 0x01, (byte) 0x55 };
+	// AA-42-10-00-0E-01-07-50-45-31-32-31-2D-36-2D-38-3A-XX-YY-55
+
+	final static byte[] TEST_VERSION_RETURN_PREFIX = { (byte) 0xAA,
+			(byte) 0x42, (byte) 0x10, (byte) 0x00, (byte) 0x0E, (byte) 0x01,
+			(byte) 0x07, (byte) 0x50, (byte) 0x45, (byte) 0x31, (byte) 0x32,
+			(byte) 0x31, (byte) 0x2D, (byte) 0x36, (byte) 0x2D, (byte) 0x38,
+			(byte) 0x3A, (byte) 0x00, (byte) 0x00, (byte) 0x55 };
+
+	final static byte[] SET_TIME_PREFIX = { (byte) 0xAA, (byte) 0x50,
+			(byte) 0xF0, (byte) 0x00, (byte) 0x0B, (byte) 0x02, (byte) 0x01,
+			(byte) 0x01, (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+			(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x55 };
+	// AA-42-10-00-0B-02-00-01-01-UU-VV-WW-XX-YY-ZZ-SS-55
+	final static byte[] SET_TIME_RETURN_PREFIX = { (byte) 0xAA, (byte) 0x42,
+			(byte) 0x10, (byte) 0x00, (byte) 0x0B, (byte) 0x02, (byte) 0x00,
+			(byte) 0x01, (byte) 0x01 };
+
+	// AA-50-F0-00-09-02-01-02-02-QQ-RR-SS-TT-UU -55
+	final static byte[] SET_PROFILE_PREFIX = { (byte) 0xAA, (byte) 0x50,
+			(byte) 0xF0, (byte) 0x00, (byte) 0x09, (byte) 0x02, (byte) 0x01,
+			(byte) 0x02, (byte) 0x02, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+			(byte) 0x00, (byte) 0x00, (byte) 0x55 };
+	// AA-42-10-00-09-02-00-02-02-QQ-RR-SS-TT-UU-55
+	final static byte[] SET_PROFILE_RETURN_PREFIX = { (byte) 0xAA, (byte) 0x42,
+			(byte) 0x10, (byte) 0x00, (byte) 0x09, (byte) 0x02, (byte) 0x00,
+			(byte) 0x02, (byte) 0x02 };
+
+	// AA-50-F0-00-09-02-01-03-01-XX-YY- RR-SS-ZZ-55
+	final static byte[] SET_SLEEP_PREFIX = { (byte) 0xAA, (byte) 0x50,
+			(byte) 0xF0, (byte) 0x00, (byte) 0x09, (byte) 0x02, (byte) 0x01,
+			(byte) 0x03, (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+			(byte) 0x00, (byte) 0x00, (byte) 0x55 };
+	final static byte[] SET_SLEEP_RETURN_PREFIX = { (byte) 0xAA, (byte) 0x42,
+			(byte) 0x10, (byte) 0x00, (byte) 0x09, (byte) 0x02, (byte) 0x00,
+			(byte) 0x03, (byte) 0x01 };
+
+	final static byte[] SET_TARGET_PREFIX = { (byte) 0xAA, (byte) 0x50,
+			(byte) 0xF0, (byte) 0x00, (byte) 0x0D, (byte) 0x02, (byte) 0x01,
+			(byte) 0x04, (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 			(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-			(byte) 0x55 };
-//	AA-42-10-00-09-02-00-02-02-QQ-RR-SS-TT-UU-55
-	final static byte[] SET_PROFILE_RETURN_PREFIX = { (byte) 0xAA, (byte) 0x42, (byte) 0x10, (byte) 0x00, (byte) 0x09, (byte) 0x02, (byte) 0x00,(byte) 0x02, (byte) 0x02};
-	
-//AA-50-F0-00-09-02-01-03-01-XX-YY- RR-SS-ZZ-55
-	final static byte[] SET_SLEEP_PREFIX = { (byte) 0xAA, (byte) 0x50, (byte) 0xF0, (byte) 0x00, (byte) 0x09, (byte) 0x02, (byte) 0x01,(byte) 0x03, (byte) 0x01, 
-			(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-			(byte) 0x55 };
-	final static byte[] SET_SLEEP_RETURN_PREFIX = { (byte) 0xAA, (byte) 0x42, (byte) 0x10, (byte) 0x00, (byte) 0x09, (byte) 0x02, (byte) 0x00,(byte) 0x03, (byte) 0x01};
-	 
-	final static byte[] SET_TARGET_PREFIX = { (byte) 0xAA, (byte) 0x50, (byte) 0xF0, (byte) 0x00, (byte) 0x0D, (byte) 0x02, (byte) 0x01,(byte) 0x04, (byte) 0x01, 
-			(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-			(byte) 0x55 };
-	final byte[] SET_TARGET_RETURN_PREFIX = { (byte) 0xAA, (byte) 0x42, (byte) 0x10, (byte) 0x00, (byte) 0x0D, (byte) 0x02, (byte) 0x00,(byte) 0x04, (byte) 0x01};
-	
+			(byte) 0x00, (byte) 0x55 };
+	final byte[] SET_TARGET_RETURN_PREFIX = { (byte) 0xAA, (byte) 0x42,
+			(byte) 0x10, (byte) 0x00, (byte) 0x0D, (byte) 0x02, (byte) 0x00,
+			(byte) 0x04, (byte) 0x01 };
+	// AA-50-F0-FE-FE-FE-FE-FE-55
+	final static byte[] SET_DISCONNECT_PREFIX = { (byte) 0xAA, (byte) 0x50,
+			(byte) 0xF0, (byte) 0xFE, (byte) 0xFE, (byte) 0xFE, (byte) 0xFE,
+			(byte) 0xFE, (byte) 0x55 };
+
 	public static final int BLE_STREAM_MSG = 20;
 	public static final int BLE_CONNECT_MSG = 21;
 	public static final int BLE_DISCONNECT_MSG = 22;
@@ -136,15 +162,14 @@ public class WristbandBLEService extends Service {
 	public static final int BLE_WRITE_REQUEST_MSG = 27;
 	public static final int BLE_CHARACTERISTIC_WROTE = 28;
 
-	
-	//James Kong 20130523
-	public static final int DEVICE_RETURN_TARGET= 30;
-	public static final int DEVICE_RETURN_TIME= 31;
-	public static final int DEVICE_RETURN_SLEEP= 32;
-	public static final int DEVICE_RETURN_PROFILE= 33;
-	public static final int DEVICE_RETURN_STARTSTREAM= 34;
-	public static final int DEVICE_RETURN_STOPSTREAM= 35;
-	public static final int DEVICE_RETURN_VERSION= 36;
+	// James Kong 20130523
+	public static final int DEVICE_RETURN_TARGET = 30;
+	public static final int DEVICE_RETURN_TIME = 31;
+	public static final int DEVICE_RETURN_SLEEP = 32;
+	public static final int DEVICE_RETURN_PROFILE = 33;
+	public static final int DEVICE_RETURN_STARTSTREAM = 34;
+	public static final int DEVICE_RETURN_STOPSTREAM = 35;
+	public static final int DEVICE_RETURN_VERSION = 36;
 	/**
 	 * Source of device entries in the device list
 	 */
@@ -193,8 +218,7 @@ public class WristbandBLEService extends Service {
 
 	@Override
 	public void onCreate() {
-		if (bDebug)
-		{
+		if (bDebug) {
 			Log.d(TAG, "onCreate()");
 			Log.d(TAG, "Only Handle BLE characteristic filtering");
 		}
@@ -205,8 +229,7 @@ public class WristbandBLEService extends Service {
 		}
 		BluetoothGattAdapter.getProfileProxy(this, mProfileServiceListener,
 				BluetoothGattAdapter.GATT);
-		
-		
+
 	}
 
 	public void setActivityHandler(Handler mHandler) {
@@ -220,7 +243,7 @@ public class WristbandBLEService extends Service {
 			Log.d(TAG, "Device List Handler set");
 		mDeviceListHandler = mHandler;
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		if (bDebug)
@@ -247,7 +270,7 @@ public class WristbandBLEService extends Service {
 									+ profile);
 				mBluetoothGatt = (BluetoothGatt) proxy;
 				mBluetoothGatt.registerApp(mGattCallbacks);
-				
+
 			}
 		}
 
@@ -302,7 +325,7 @@ public class WristbandBLEService extends Service {
 			// Device has been connected - start service discovery
 			if (newState == BluetoothProfile.STATE_CONNECTED
 					&& mBluetoothGatt != null) {
-				Log.v(TAG,"newState STATE_CONNECTED");
+				Log.v(TAG, "newState STATE_CONNECTED");
 				Bundle mBundle = new Bundle();
 				Message msg = Message.obtain(mActivityHandler, BLE_CONNECT_MSG);
 				mBundle.putString(BluetoothDevice.EXTRA_DEVICE,
@@ -313,8 +336,7 @@ public class WristbandBLEService extends Service {
 
 				mBluetoothGatt.discoverServices(device);
 
-			}
-			else if (newState == BluetoothProfile.STATE_DISCONNECTED
+			} else if (newState == BluetoothProfile.STATE_DISCONNECTED
 					&& mBluetoothGatt != null) {
 				Bundle mBundle = new Bundle();
 				Message msg = Message.obtain(mActivityHandler,
@@ -323,43 +345,36 @@ public class WristbandBLEService extends Service {
 						device.getAddress());
 				msg.setData(mBundle);
 				msg.sendToTarget();
-				Log.v(TAG,"newState STATE_DISCONNECTED");
-			}
-			else
-			{
-				Log.v(TAG,"newState "+newState);
+				Log.v(TAG, "newState STATE_DISCONNECTED");
+			} else {
+				Log.v(TAG, "newState " + newState);
 			}
 		}
 
 		@Override
 		public void onCharacteristicChanged(
 				BluetoothGattCharacteristic characteristic) {
-			if (bDebug)
-			{
+			if (bDebug) {
 				Log.d(TAG, "onCharacteristicChanged()");
-
-				String s = "";	
+			}
+				String s = "";
 				try {
-					
+
 					s = new String(characteristic.getValue(), "UTF-8");
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-				
+				if (bDebug) {
 				Log.v(TAG, "characteristic.getValue() = " + s);
 			}
-			if(characteristic.getUuid().equals(INDICATOR_UUID))
-			{
+			if (characteristic.getUuid().equals(INDICATOR_UUID)) {
 				Bundle mBundle = new Bundle();
 				Message msg = Message.obtain(mActivityHandler, BLE_STREAM_MSG);
 				mBundle.putByteArray(EXTRA_VALUE, characteristic.getValue());
 				msg.setData(mBundle);
-				msg.sendToTarget();				
-			}
-			else
-			{
+				msg.sendToTarget();
+			} else {
 				Bundle mBundle = new Bundle();
 				Message msg = Message.obtain(mActivityHandler, BLE_VALUE_MSG);
 				mBundle.putByteArray(EXTRA_VALUE, characteristic.getValue());
@@ -380,33 +395,31 @@ public class WristbandBLEService extends Service {
 			for (BluetoothGattService service : services) {
 				if (bDebug)
 					Log.v(TAG, "Services : " + service.getUuid());
-				if(service.getUuid().equals(PE128_SERVICE))
-				{
-					Log.v(TAG,"Set pe128Service");
+				if (service.getUuid().equals(PE128_SERVICE)) {
+					Log.v(TAG, "Set pe128Service");
 					pe128Service = service;
 				}
-				else if(service.getUuid().equals(INDICATOR_SERVICE_UUID))
-				{
-					Log.v(TAG,"Set indicateService");
-					indicateService = service;
+				if (service.getUuid().equals(PE128_NOTI_SERVICE)) {
+					Log.v(TAG, "Set pe128NotiService");
+					pe128NotiService = service;
 				}
 				
+				else if (service.getUuid().equals(INDICATOR_SERVICE_UUID)) {
+					Log.v(TAG, "Set indicateService");
+					indicateService = service;
+				}
+
 				List<BluetoothGattCharacteristic> characteristics = service
 						.getCharacteristics();
 				for (BluetoothGattCharacteristic characteristic : characteristics) {
 					if (bDebug)
 						Log.v(TAG,
 								"Characteristic : " + characteristic.getUuid());
-					if(characteristic.getUuid().equals(PE128_CHAR_STREAMING))
-					{
+					if (characteristic.getUuid().equals(PE128_CHAR_STREAMING)) {
 						pe128Streaming = characteristic;
-					}
-					else if(characteristic.getUuid().equals(PE128_CHAR_RCVD))
-					{
+					} else if (characteristic.getUuid().equals(PE128_CHAR_RCVD)) {
 						pe128Receiver = characteristic;
-					}
-					else if(characteristic.getUuid().equals(PE128_CHAR_XFER))
-					{
+					} else if (characteristic.getUuid().equals(PE128_CHAR_XFER)) {
 						pe128Transfer = characteristic;
 					}
 					checkPropertieStyle(characteristic.getProperties());
@@ -499,6 +512,7 @@ public class WristbandBLEService extends Service {
 
 			boolean isenabled = enableNotification(true, mCCC);
 			Log.i(TAG, "Notification status =" + isenabled);
+			//should fire enable success
 		}
 
 		public void onReadRemoteRssi(BluetoothDevice device, int rssi,
@@ -664,7 +678,7 @@ public class WristbandBLEService extends Service {
 			Bundle mBundle = new Bundle();
 			Message msg = Message.obtain(mActivityHandler, BLE_READY_MSG);
 			msg.setData(mBundle);
-			msg.sendToTarget();		
+			msg.sendToTarget();
 		} else {
 			mBluetoothGatt.stopScan();
 		}
@@ -732,27 +746,27 @@ public class WristbandBLEService extends Service {
 
 	public void WriteDevice(BluetoothDevice iDevice, UUID serviceUUID,
 			UUID charUUID, byte[] data) {
-		
+
 		BluetoothGattService service = findService(iDevice, serviceUUID);
-		
-		
+
 		if (service == null) {
-			
-//			for (BluetoothGattService service : services) {
-//            	Log.v(TAG,"service "+service.getUuid().toString());
-//                List<BluetoothGattCharacteristic> characteristics = service
-//                        .getCharacteristics();
-//                for (BluetoothGattCharacteristic characteristic : characteristics) {
-//                		Log.v(TAG,"characteristic "+characteristic.getUuid().toString());
-//                }
-//            }
-			
-			showMessage("Device service not found! "+serviceUUID.toString());
+
+			// for (BluetoothGattService service : services) {
+			// Log.v(TAG,"service "+service.getUuid().toString());
+			// List<BluetoothGattCharacteristic> characteristics = service
+			// .getCharacteristics();
+			// for (BluetoothGattCharacteristic characteristic :
+			// characteristics) {
+			// Log.v(TAG,"characteristic "+characteristic.getUuid().toString());
+			// }
+			// }
+
+			showMessage("Device service not found! " + serviceUUID.toString());
 			return;
 		}
-		BluetoothGattCharacteristic characteristic = findCharacteristic(iDevice, charUUID , service);
-		
-				
+		BluetoothGattCharacteristic characteristic = findCharacteristic(
+				iDevice, charUUID, service);
+
 		if (characteristic == null) {
 			showMessage("Device charateristic not found!");
 			return;
@@ -775,15 +789,16 @@ public class WristbandBLEService extends Service {
 	public void EnableDeviceNoti(BluetoothDevice iDevice, UUID serviceUUID,
 			UUID charUUID) {
 		boolean result = false;
-		
+
 		BluetoothGattService service = findService(iDevice, serviceUUID);
 		if (service == null) {
-			showMessage("service not found! "+serviceUUID.toString());
+			showMessage("service not found! " + serviceUUID.toString());
 			return;
 		}
 
-		BluetoothGattCharacteristic characteristic = findCharacteristic(iDevice, charUUID, service);
-				
+		BluetoothGattCharacteristic characteristic = findCharacteristic(
+				iDevice, charUUID, service);
+
 		if (characteristic == null) {
 			showMessage("charateristic not found!");
 			return;
@@ -899,174 +914,159 @@ public class WristbandBLEService extends Service {
 		}
 	}
 
-	
 	public void enableWristbandNotification(BluetoothDevice iDevice) {
 		Log.v(TAG, "Enable Notification PE128_CHAR_RCVD");
 		this.EnableDeviceNoti(iDevice, PE128_SERVICE, PE128_CHAR_RCVD);
-//		try {
-//			Thread.sleep(1000);
-			Log.v(TAG, "Enable Notification PE128_CHAR_STREAMING Service : "
-					+ PE128_NOTI_SERVICE.toString() + " Char : "
-					+ PE128_CHAR_STREAMING.toString());
-			this.EnableDeviceNoti(iDevice, PE128_NOTI_SERVICE, PE128_CHAR_STREAMING);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
+		// try {
+		// Thread.sleep(1000);
+		Log.v(TAG, "Enable Notification PE128_CHAR_STREAMING Service : "
+				+ PE128_NOTI_SERVICE.toString() + " Char : "
+				+ PE128_CHAR_STREAMING.toString());
+//		this.EnableDeviceNoti(iDevice, PE128_NOTI_SERVICE, PE128_CHAR_STREAMING);
+		// } catch (InterruptedException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 
 	}
-	//TO-DO
-	//miss RETURN PREFIX
-	public int checkPrefix(byte [] data)
-	{
-//		if(data.length<9)
-//			return -1;
+
+	// TO-DO
+	// miss RETURN PREFIX
+	public int checkPrefix(byte[] data) {
+		// if(data.length<9)
+		// return -1;
 		boolean ret = false;
-		for(int i = 0 ; i < 9 ; i++)
-		{
-			if(data[i]==SET_TARGET_RETURN_PREFIX[i])
-			{
+		for (int i = 0; i < 9; i++) {
+			if (data[i] == SET_TARGET_RETURN_PREFIX[i]) {
 				ret = true;
-			}
-			else
-			{
+			} else {
 				ret = false;
 				break;
 			}
 		}
-//		if(data[data.length-1]==0x55 && ret) ret = true;
-		if(ret)return DEVICE_RETURN_TARGET;
+		// if(data[data.length-1]==0x55 && ret) ret = true;
+		if (ret)
+			return DEVICE_RETURN_TARGET;
 		ret = false;
-		for(int i = 0 ; i < 9 ; i++)
-		{
-			
-			if(data[i]==SET_SLEEP_RETURN_PREFIX[i])
-			{
+		for (int i = 0; i < 9; i++) {
+
+			if (data[i] == SET_SLEEP_RETURN_PREFIX[i]) {
 				ret = true;
-			}
-			else
-			{
+			} else {
 				ret = false;
 				break;
 			}
 		}
-//		if(data[data.length-1]==0x55) ret = true;
-		if(ret)return DEVICE_RETURN_SLEEP;
+		// if(data[data.length-1]==0x55) ret = true;
+		if (ret)
+			return DEVICE_RETURN_SLEEP;
 		ret = false;
-		for(int i = 0 ; i < 9 ; i++)
-		{
-			if(data[i]==SET_PROFILE_RETURN_PREFIX[i])
-			{
+		for (int i = 0; i < 9; i++) {
+			if (data[i] == SET_PROFILE_RETURN_PREFIX[i]) {
 				ret = true;
-			}
-			else
-			{
+			} else {
 				ret = false;
 				break;
 			}
 		}
-//		if(data[data.length-1]==0x55) ret = true;
-		if(ret)	return DEVICE_RETURN_PROFILE;
+		// if(data[data.length-1]==0x55) ret = true;
+		if (ret)
+			return DEVICE_RETURN_PROFILE;
 
 		ret = false;
-		for(int i = 0 ; i < 9 ; i++)
-		{
-			if(data[i]==SET_TIME_RETURN_PREFIX[i])
-			{
+		for (int i = 0; i < 9; i++) {
+			if (data[i] == SET_TIME_RETURN_PREFIX[i]) {
 				ret = true;
-			}
-			else
-			{
+			} else {
 				ret = false;
 				break;
 			}
 		}
-//		if(data[data.length-1]==0x55) ret = true;
-		if(ret)	return DEVICE_RETURN_TIME;
-		
-		
+		// if(data[data.length-1]==0x55) ret = true;
+		if (ret)
+			return DEVICE_RETURN_TIME;
+
 		ret = false;
-		if(data.length>TEST_VERSION_RETURN_PREFIX.length)
-		{
-			for(int i = 0 ; i < TEST_VERSION_RETURN_PREFIX.length ; i++)
-			{
-				if(data[i]==TEST_VERSION_RETURN_PREFIX[i])
-				{
+//		if (data.length > TEST_VERSION_RETURN_PREFIX.length) {
+			for (int i = 0; i < 16; i++) {
+				if (data[i] == TEST_VERSION_RETURN_PREFIX[i]) {
 					ret = true;
-				}
-				else
-				{
+				} else {
 					ret = false;
 					break;
 				}
 			}
-//			if(data[data.length-1]==0x55) ret = true;
-			if(ret)	return DEVICE_RETURN_VERSION;
-		}
-		
-		
-		
+			// if(data[data.length-1]==0x55) ret = true;
+			if (ret)
+				return DEVICE_RETURN_VERSION;
+//		}
 
 		return 0;
 	}
-	public void printPrefix(int ret)
-	{
-		switch(ret)
-		{
+
+	public void printPrefix(int ret) {
+		switch (ret) {
 		case DEVICE_RETURN_TIME:
-			Log.d(TAG,"DEVICE_RETURN_TIME");
+			Log.d(TAG, "DEVICE_RETURN_TIME");
 			break;
 		case DEVICE_RETURN_TARGET:
-			Log.d(TAG,"DEVICE_RETURN_TARGET");
+			Log.d(TAG, "DEVICE_RETURN_TARGET");
 			break;
 		case DEVICE_RETURN_SLEEP:
-			Log.d(TAG,"DEVICE_RETURN_SLEEP");
+			Log.d(TAG, "DEVICE_RETURN_SLEEP");
 			break;
 		case DEVICE_RETURN_PROFILE:
-			Log.d(TAG,"DEVICE_RETURN_PROFILE");
+			Log.d(TAG, "DEVICE_RETURN_PROFILE");
 			break;
 		case DEVICE_RETURN_VERSION:
-			Log.d(TAG,"DEVICE_RETURN_VERSION");
+			Log.d(TAG, "DEVICE_RETURN_VERSION");
 			break;
 		default:
-			Log.d(TAG,"Unknown");
+			Log.d(TAG, "Unknown");
 			break;
 		}
 	}
-	private BluetoothGattService findService(BluetoothDevice iDevice, UUID serviceUUID )
-	{
-		if(pe128Service.getUuid().equals(serviceUUID))
+
+	private BluetoothGattService findService(BluetoothDevice iDevice,
+			UUID serviceUUID) {
+		if(pe128Service!=null)
 		{
-			return pe128Service;
+			if (pe128Service.getUuid().equals(serviceUUID)) {
+				return pe128Service;
+			}
+			
 		}
-		else if(indicateService.getUuid().equals(serviceUUID))
+		if(pe128NotiService!=null)
 		{
-			return indicateService;
+			if (pe128NotiService.getUuid().equals(serviceUUID)) {
+				return pe128NotiService;
+			}
+			
 		}
-		else
-		{
-			return mBluetoothGatt.getService(iDevice,
-					serviceUUID);
-		}
-	}
-	private BluetoothGattCharacteristic findCharacteristic(BluetoothDevice iDevice, UUID charUUID ,BluetoothGattService service)
-	{
-		if(charUUID.equals(PE128_CHAR_STREAMING))
-		{
-			return pe128Streaming;
-		}
-		else if(charUUID.equals(PE128_CHAR_RCVD))
-		{
-			return pe128Receiver;
-		}
-		else if(charUUID.equals(PE128_CHAR_XFER))
-		{
-			return pe128Transfer;
-		}
-		else{
-			return service.getCharacteristic(charUUID);
 		
+		else if(indicateService!=null)
+		{
+			if (indicateService.getUuid().equals(serviceUUID)) {
+				return indicateService;
+			}
+		}
+		else if(mBluetoothGatt!=null){
+			return mBluetoothGatt.getService(iDevice, serviceUUID);
+		}
+		return null;
+	}
+
+	private BluetoothGattCharacteristic findCharacteristic(
+			BluetoothDevice iDevice, UUID charUUID, BluetoothGattService service) {
+		if (charUUID.equals(PE128_CHAR_STREAMING)) {
+			return pe128Streaming;
+		} else if (charUUID.equals(PE128_CHAR_RCVD)) {
+			return pe128Receiver;
+		} else if (charUUID.equals(PE128_CHAR_XFER)) {
+			return pe128Transfer;
+		} else {
+			return service.getCharacteristic(charUUID);
+
 		}
 	}
 
