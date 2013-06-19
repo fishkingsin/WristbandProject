@@ -47,13 +47,12 @@ import android.widget.TextView;
 //import android.widget.Toast;
 import com.idthk.wristband.api.*;
 
-public class Main extends BLEBaseFragmentActivity implements 
+public class Main extends BLEBaseFragmentActivity implements
 		MainFragmentPager.PagerChangedCallback,
 		StatisticFragmentPager.StatisticPagerChangedCallback,
 		MainSlideFragment.OnShareButtonClickedListener,
 		TabsFragment.OnFragmentTabbedListener {
-	class WristbandStartupConstant
-	{
+	class WristbandStartupConstant {
 		static final int DISCONNECT = 0x210;
 		static final int CONNECT = 0x211;
 		static final int SYNC_USER_PROFILE = 0x212;
@@ -63,9 +62,9 @@ public class Main extends BLEBaseFragmentActivity implements
 		static final int GET_SOFTWARE_VERSION = 0x216;
 		static final int GET_HISTORY_DATA = 0x217;
 		static final int START_STREAM = 0x218;
-		
+
 	}
-	
+
 	static final int TO_INSTRUCTION_REQUEST = 0x10;
 	static final int TO_USER_PROFILE_REQUEST = 0x20;
 	static final int LANSCAPE_REQUEST = 0x30;
@@ -82,19 +81,20 @@ public class Main extends BLEBaseFragmentActivity implements
 	public static final String TITLE = "title";
 	public static final String TARGET_ORIENTTION = "target_orientation";
 
-	int mStartUpState = WristbandStartupConstant.DISCONNECT; 
-	
+	int mStartUpState = WristbandStartupConstant.DISCONNECT;
+
 	MainSlideFragment frag;
 	OrientationEventListener orientationListener;
 	OnShareButtonClickedListener myShareButtonClickedListener;
 	private boolean firstTime;
 	Context mContext;
-	Integer connectivity_images[] = {R.drawable.wireless_connection_icon_0
-			,R.drawable.wireless_connection_icon_1
-			,R.drawable.wireless_connection_icon_2
-			,R.drawable.wireless_connection_icon_3
-			,R.drawable.wireless_connection_icon_4 };
+	Integer connectivity_images[] = { R.drawable.wireless_connection_icon_0,
+			R.drawable.wireless_connection_icon_1,
+			R.drawable.wireless_connection_icon_2,
+			R.drawable.wireless_connection_icon_3,
+			R.drawable.wireless_connection_icon_4 };
 	private CountDownTimer mCountDownTimer;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -106,7 +106,8 @@ public class Main extends BLEBaseFragmentActivity implements
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		firstTime = prefs.getBoolean(FIRST_TIME, true);
-		((ImageView)findViewById(R.id.connectivity)).setImageResource(R.drawable.wireless_connection_icon_0);
+		((ImageView) findViewById(R.id.connectivity))
+				.setImageResource(R.drawable.wireless_connection_icon_0);
 		if (firstTime) {
 
 			Intent intent = new Intent(this, InstructionActivity.class);
@@ -160,7 +161,6 @@ public class Main extends BLEBaseFragmentActivity implements
 				connect();
 			}
 		}
-		
 
 	}
 
@@ -209,12 +209,9 @@ public class Main extends BLEBaseFragmentActivity implements
 		return isLandscapeLeft(orientation) || isLandscapeRight(orientation);
 	}
 
-
 	public void initUI() {
 		Log.v(TAG, "initUI");
 	}
-
-	
 
 	@Override
 	public void onShareButtonClicked(String s) {
@@ -254,7 +251,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	private void showSetting() {
 		// TODO Auto-generated method stub
-		
+
 		Intent intent = new Intent(this, PreferencesActivity.class);
 		intent.putExtra(MainSlideFragment.FACEBOOK,
 				"I'm going for my daily goal");
@@ -268,16 +265,16 @@ public class Main extends BLEBaseFragmentActivity implements
 		if (orientationListener != null)
 			orientationListener.enable();
 		if (inBackground) {
-            // You just came from the background
-            inBackground = false;
-            
-            if(mCountDownTimer!=null)mCountDownTimer.cancel();
-            Log.v(TAG,"I think i am coming back from background");
-        }
-        else {
-            // You just returned from another activity within your own app
-        	Log.v(TAG,"returned from another activity within your own app");
-        }
+			// You just came from the background
+			inBackground = false;
+
+			if (mCountDownTimer != null)
+				mCountDownTimer.cancel();
+			Log.v(TAG, "I think i am coming back from background");
+		} else {
+			// You just returned from another activity within your own app
+			Log.v(TAG, "returned from another activity within your own app");
+		}
 	}
 
 	@Override
@@ -290,88 +287,84 @@ public class Main extends BLEBaseFragmentActivity implements
 			disconnect();
 		}
 		if (inBackground) {
-			
-			mCountDownTimer = new CountDownTimer(1000*60*5, 1000) {
 
-			     public void onFinish() {
-			            Log.v(TAG,"5 mins pass finish app");
-			    	 finish();
-			     }
+			mCountDownTimer = new CountDownTimer(1000 * 60 * 5, 1000) {
+
+				public void onFinish() {
+					Log.v(TAG, "5 mins pass finish app");
+					finish();
+				}
 
 				@Override
 				public void onTick(long millisUntilFinished) {
 					// TODO Auto-generated method stub
-					
+
 				}
-			  }.start();
-            Log.v(TAG,"I think i am going into background");
-        }
+			}.start();
+			Log.v(TAG, "I think i am going into background");
+		}
 	}
-	
+
 	private class UpdateConnectivityTask extends AsyncTask<Void, Integer, Void> {
 
-		
 		@Override
-		protected void onPreExecute()
-		{
+		protected void onPreExecute() {
 			index = 0;
 		}
+
 		@Override
 		protected Void doInBackground(Void... params) {
-			
-				Log.v("UpdateBarTask", "doInBackground");
-//				if(mStartUpState == WristbandStartupConstant.START_STREAM)
-//				{
-//					for(int i = 1 ; i < connectivity_images.length; i++)
-//					{
-//						
-//						try {
-//							publishProgress(i);
-//							Thread.sleep(500);
-//						} catch (InterruptedException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-//					}
-//				}
-//				else
-//				{
-				while(mState==STATE_READY)
-				{
-					for(int i = 1 ; i < 3; i++)
-					{
-						
-						try {
-							publishProgress(i);
-							Thread.sleep(500);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+
+			Log.v("UpdateBarTask", "doInBackground");
+			// if(mStartUpState == WristbandStartupConstant.START_STREAM)
+			// {
+			// for(int i = 1 ; i < connectivity_images.length; i++)
+			// {
+			//
+			// try {
+			// publishProgress(i);
+			// Thread.sleep(500);
+			// } catch (InterruptedException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			// }
+			// }
+			// else
+			// {
+			while (mState == STATE_READY) {
+				for (int i = 1; i < 3; i++) {
+
+					try {
+						publishProgress(i);
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
-//				}
-			
-			
-			
+			}
+			// }
+
 			return null;
 		}
 
 		@Override
 		protected void onProgressUpdate(Integer... values) {
-			((ImageView)findViewById(R.id.connectivity)).setImageResource(connectivity_images[values[0]]);
+			((ImageView) findViewById(R.id.connectivity))
+					.setImageResource(connectivity_images[values[0]]);
 		}
 	}
+
 	private int index;
 	private WristbandTask wristbandTask = new WristbandTask();
 	private boolean inBackground;
-	@Override 
-	public void onDeviceFound()
-	{
-		
+
+	@Override
+	public void onDeviceFound() {
+
 	}
-	
-	
+
 	@Override
 	public void onStatisticPagerChangedCallback(int page) {
 		// TODO Auto-generated method stub
@@ -395,7 +388,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		Log.v(TAG, msg);
 
 	}
-	
+
 	private void setUiState() {
 		switch (mState) {
 		case BLE_PROFILE_CONNECTED:
@@ -419,36 +412,40 @@ public class Main extends BLEBaseFragmentActivity implements
 		super.onConnected();
 		showMessage("Connected");
 		setUiState();
-		((ImageView)findViewById(R.id.connectivity)).setImageResource(connectivity_images[1]);
+		((ImageView) findViewById(R.id.connectivity))
+				.setImageResource(connectivity_images[1]);
 	}
 
 	@Override
 	public void onDisconnected() {
 		super.onDisconnected();
-		if(!this.isDestroyed())
-		{
-		showMessage("Disconnected");
-		setUiState();
-		((ImageView)findViewById(R.id.connectivity)).setImageResource(connectivity_images[0]);
-		wristbandTask.cancel(true);
-		wristbandTask.pd.dismiss();
-		
-		new AlertDialog.Builder(this)
-	    .setTitle(R.string.wristband_disconnected)
-	    .setMessage(R.string.do_you_want_to_reconnect)
-	    .setPositiveButton(R.string.popup_yes, new DialogInterface.OnClickListener() {
-	        public void onClick(DialogInterface dialog, int which) { 
-	            // continue with delete
-	        	connect();
-	        }
-	     })
-	    .setNegativeButton(R.string.popup_no, new DialogInterface.OnClickListener() {
-	        public void onClick(DialogInterface dialog, int which) { 
-	            // do nothing
-//	        	finish();
-	        }
-	     })
-	     .show();
+		if (!this.isDestroyed()) {
+			showMessage("Disconnected");
+			setUiState();
+			((ImageView) findViewById(R.id.connectivity))
+					.setImageResource(connectivity_images[0]);
+			wristbandTask.cancel(true);
+			wristbandTask.pd.dismiss();
+
+			new AlertDialog.Builder(this)
+					.setTitle(R.string.wristband_disconnected)
+					.setMessage(R.string.do_you_want_to_reconnect)
+					.setPositiveButton(R.string.popup_yes,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// continue with delete
+									connect();
+								}
+							})
+					.setNegativeButton(R.string.popup_no,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// do nothing
+									// finish();
+								}
+							}).show();
 		}
 	}
 
@@ -465,13 +462,15 @@ public class Main extends BLEBaseFragmentActivity implements
 		super.onServiceDiscovered();
 		setUiState();
 		showMessage("Service Discovered");
-		
-		((ImageView)findViewById(R.id.connectivity)).setImageResource(connectivity_images[connectivity_images.length-1]);
-		
+
+		((ImageView) findViewById(R.id.connectivity))
+				.setImageResource(connectivity_images[connectivity_images.length - 1]);
+
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(getString(R.string.pref_last_sync_time), Utilities.getCurrentDate() );
+		editor.putString(getString(R.string.pref_last_sync_time),
+				Utilities.getCurrentDate());
 		editor.commit();
 		mStartUpState = WristbandStartupConstant.CONNECT;
 		try {
@@ -481,52 +480,51 @@ public class Main extends BLEBaseFragmentActivity implements
 			e.printStackTrace();
 		}
 		wristbandTask.execute();
-		
+
 	}
+
 	private class WristbandTask extends AsyncTask<Void, Integer, Void> {
 
-		 private ProgressDialog pd;
-		 @Override
-         protected void onPreExecute() {
-                  pd = new ProgressDialog(mContext);
-                  pd.setTitle("Processing...");
-                  pd.setMessage("Please wait.");
-                  pd.setCancelable(false);
-                  pd.setIndeterminate(true);
-                  pd.show();
-         }
+		private ProgressDialog pd;
+
+		@Override
+		protected void onPreExecute() {
+			pd = new ProgressDialog(mContext);
+			pd.setTitle("Processing...");
+			pd.setMessage("Please wait.");
+			pd.setCancelable(false);
+			pd.setIndeterminate(true);
+			pd.show();
+		}
 
 		@Override
 		protected Void doInBackground(Void... params) {
-		
-				
-				try{
-					Thread.sleep(2000);
-					Log.v(TAG,"enableNotification()");
-					enableNotification();
-					Thread.sleep(2000);
-					checkState(mStartUpState);
-				}catch(Exception e)
-				{
-					Log.v(TAG,e.getMessage());
-				}
-				
+
+			try {
+				Thread.sleep(2000);
+				Log.v(TAG, "enableNotification()");
+				enableNotification();
+				Thread.sleep(2000);
+				checkState(mStartUpState);
+			} catch (Exception e) {
+				Log.v(TAG, e.getMessage());
+			}
+
 			return null;
 		}
 
 		@Override
 		protected void onProgressUpdate(Integer... values) {
-			if(isCancelled())
-			{
+			if (isCancelled()) {
 				pd.dismiss();
 			}
 		}
+
 		@Override
-        protected void onPostExecute(Void result) {
-                pd.dismiss();
-        }
+		protected void onPostExecute(Void result) {
+			pd.dismiss();
+		}
 	}
-	
 
 	@Override
 	public void onStreamMessage(int steps, int calories, float distance,
@@ -539,16 +537,16 @@ public class Main extends BLEBaseFragmentActivity implements
 		s += "distance : " + distance + "\n";
 		s += "activityTime : " + activityTime + "\n";
 		s += "batteryLevel : " + batteryLevel + "\n";
-//		new UpdateConnectivityTask().execute();
-		Log.v(TAG,s);
+		// new UpdateConnectivityTask().execute();
+		Log.v(TAG, s);
 		try {
-			
+
 			frag.onStreamMessage(steps, calories, distance, activityTime,
 					batteryLevel);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			Log.e(TAG,"frag is null");
-//			e.printStackTrace();
+			Log.e(TAG, "frag is null");
+			// e.printStackTrace();
 		}
 
 	}
@@ -567,7 +565,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		s += "SECOND : " + second + "\n";
 		s += "WEEKDAY : " + weekday + "\n";
 		showMessage(s);
-		mStartUpState = WristbandStartupConstant.SYNC_TIME ;
+		mStartUpState = WristbandStartupConstant.SYNC_TIME;
 		checkState(mStartUpState);
 	}
 
@@ -656,14 +654,12 @@ public class Main extends BLEBaseFragmentActivity implements
 		showMessage("Unknown Message");
 		showMessage(s);
 		showMessage(_msg);
-		
-		
 
 	}
 
 	@Override
 	public void onReadVersion(int xx, int yy) {
-		String s =  xx + "." + yy;
+		String s = xx + "." + yy;
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = prefs.edit();
@@ -675,50 +671,47 @@ public class Main extends BLEBaseFragmentActivity implements
 		mStartUpState = WristbandStartupConstant.GET_SOFTWARE_VERSION;
 		checkState(mStartUpState);
 	}
+
 	@Override
 	public void onReadHistoryData(byte[] value) {
-		
+
 		mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
 		checkState(mStartUpState);
 	}
+
 	@Override
 	public void dispatchSelf(MainSlideFragment mainSlideFragment) {
 		// TODO Auto-generated method stub
 		frag = mainSlideFragment;
 		Log.v(TAG, "MainSlideFragment " + frag.toString());
 	}
-	
-	private void checkState(int state)
-	{
-		switch(state)
-		{
+
+	private void checkState(int state) {
+		switch (state) {
 		case WristbandStartupConstant.DISCONNECT:
 			break;
-		case WristbandStartupConstant.CONNECT:
-		{
-			try{
-			SharedPreferences sharedPreferences = PreferenceManager
-			.getDefaultSharedPreferences(this);
-			
-			Calendar c = DatePreference.getDateFor(sharedPreferences, "prefDateOfBirth");
-			
-			
-			String gender = sharedPreferences.getString("prefUserGender",
-					getString(R.string.default_user_gender));
-			
-			
-			
-			int height = Integer.valueOf(sharedPreferences.getString("prefHeight",
-					getString(R.string.default_user_height)));
-			
-			int weight = Integer.valueOf(sharedPreferences.getString("prefWeight",
-					getString(R.string.default_user_weight)));
-			
-			setProfile((gender.equals("Male"))?0:1, c.get(Calendar.YEAR), c.get(Calendar.MONTH), height,weight);
-			}
-			catch(Exception e)
-			{
-				Log.e(TAG,e.getMessage());
+		case WristbandStartupConstant.CONNECT: {
+			try {
+				SharedPreferences sharedPreferences = PreferenceManager
+						.getDefaultSharedPreferences(this);
+
+				Calendar c = DatePreference.getDateFor(sharedPreferences,
+						"prefDateOfBirth");
+
+				String gender = sharedPreferences.getString("prefUserGender",
+						getString(R.string.default_user_gender));
+
+				int height = Integer.valueOf(sharedPreferences.getString(
+						"prefHeight", getString(R.string.default_user_height)));
+
+				int weight = Integer.valueOf(sharedPreferences.getString(
+						"prefWeight", getString(R.string.default_user_weight)));
+
+				setProfile((gender.equals("Male")) ? 0 : 1,
+						c.get(Calendar.YEAR), c.get(Calendar.MONTH), height,
+						weight);
+			} catch (Exception e) {
+				Log.e(TAG, e.getMessage());
 			}
 		}
 			break;
@@ -728,13 +721,10 @@ public class Main extends BLEBaseFragmentActivity implements
 		case WristbandStartupConstant.SYNC_DAILY_TARGET:
 			setSleep(12, 0, 23, 0, 3);
 			break;
-		case WristbandStartupConstant.SYNC_WAKE_UP_TIME:
-		{
+		case WristbandStartupConstant.SYNC_WAKE_UP_TIME: {
 			Calendar c = Calendar.getInstance();
-			setTime(c.get(Calendar.YEAR) - 2000,
-					c.get(Calendar.MONTH) + 1,
-					c.get(Calendar.DAY_OF_MONTH),
-					c.get(Calendar.HOUR_OF_DAY),
+			setTime(c.get(Calendar.YEAR) - 2000, c.get(Calendar.MONTH) + 1,
+					c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY),
 					c.get(Calendar.MINUTE), c.get(Calendar.SECOND),
 					c.get(Calendar.WEDNESDAY));
 		}
@@ -743,63 +733,65 @@ public class Main extends BLEBaseFragmentActivity implements
 			getVersion();
 			break;
 		case WristbandStartupConstant.GET_SOFTWARE_VERSION:
-			onReadHistoryData(null); 
+			onReadHistoryData(null);
 			break;
 		case WristbandStartupConstant.GET_HISTORY_DATA:
 			startStream();
-			((ImageView)findViewById(R.id.connectivity)).setImageResource(connectivity_images[connectivity_images.length-1]);
+			((ImageView) findViewById(R.id.connectivity))
+					.setImageResource(connectivity_images[connectivity_images.length - 1]);
 			break;
 		case WristbandStartupConstant.START_STREAM:
-			Log.v(TAG,"Woo hooo start Streaming now");
+			Log.v(TAG, "Woo hooo start Streaming now");
 			break;
 		}
 	}
-	
-	@Override
-	public void onBackPressed() {
-		
-			new AlertDialog.Builder(this)
-					.setIcon(android.R.drawable.ic_dialog_alert)
-					.setTitle(R.string.popup_title)
-					.setMessage(R.string.popup_message)
-					.setPositiveButton(R.string.popup_yes,
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									disconnect();
-									finish();
-								}
-							}).setNegativeButton(R.string.popup_no, null)
-					.show();
-		
-	}
-	@Override
-    public void onUserLeaveHint() {
-        inBackground = true;
-    }
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		// Inflate the menu; this adds items to the action bar if it is present.
-//		getMenuInflater().inflate(R.menu.main, menu);
-//		return true;
-//	}
-//	@Override
-//	public boolean onOptionsItemSelected(MenuItem item) {
-//	    // Handle item selection
-//	    switch (item.getItemId()) {
-//	        case R.id.action_settings:
-//	        	disconnect();
-//				showSetting();
-//	            return true;
-//	        
-//	        default:
-//	            return super.onOptionsItemSelected(item);
-//	    }
-//	}
 
 	@Override
-	public void onPagerChangedCallback(int position ,Fragment fragment) {
+	public void onBackPressed() {
+
+		new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle(R.string.popup_title)
+				.setMessage(R.string.popup_message)
+				.setPositiveButton(R.string.popup_yes,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								disconnect();
+								finish();
+							}
+						}).setNegativeButton(R.string.popup_no, null).show();
+
+	}
+
+	@Override
+	public void onUserLeaveHint() {
+		inBackground = true;
+	}
+
+	// @Override
+	// public boolean onCreateOptionsMenu(Menu menu) {
+	// // Inflate the menu; this adds items to the action bar if it is present.
+	// getMenuInflater().inflate(R.menu.main, menu);
+	// return true;
+	// }
+	// @Override
+	// public boolean onOptionsItemSelected(MenuItem item) {
+	// // Handle item selection
+	// switch (item.getItemId()) {
+	// case R.id.action_settings:
+	// disconnect();
+	// showSetting();
+	// return true;
+	//
+	// default:
+	// return super.onOptionsItemSelected(item);
+	// }
+	// }
+
+	@Override
+	public void onPagerChangedCallback(int position, Fragment fragment) {
 		// TODO Auto-generated method stub
 		if (position == MainFragmentPager.ACTIVITY) {
 			((TextView) findViewById(R.id.titlebar_textview))
@@ -811,14 +803,12 @@ public class Main extends BLEBaseFragmentActivity implements
 			((Button) findViewById(R.id.btn_settings_done))
 					.setVisibility(View.GONE);
 		}
-		try{
-		
-		frag = (MainSlideFragment) fragment;
-		}catch(Exception e)
-		{
-			Log.e(TAG,e.getMessage());
+		try {
+
+			frag = (MainSlideFragment) fragment;
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage());
 		}
 	}
-
 
 }
