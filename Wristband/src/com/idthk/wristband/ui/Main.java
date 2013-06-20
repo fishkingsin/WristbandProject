@@ -2,8 +2,11 @@ package com.idthk.wristband.ui;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -14,14 +17,19 @@ import com.idthk.wristband.socialnetwork.TwitterShareActivity;
 import com.idthk.wristband.ui.R;
 import com.idthk.wristband.ui.MainSlideFragment.OnShareButtonClickedListener;
 
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
 //import android.content.res.Configuration;
@@ -79,6 +87,8 @@ public class Main extends BLEBaseFragmentActivity implements
 	static final String TAG = "Main";
 
 	static final String FIRST_TIME = "firsttime";
+	
+	
 	public static final String TITLE = "title";
 	public static final String TARGET_ORIENTTION = "target_orientation";
 
@@ -87,15 +97,26 @@ public class Main extends BLEBaseFragmentActivity implements
 	MainSlideFragment frag;
 	OrientationEventListener orientationListener;
 	OnShareButtonClickedListener myShareButtonClickedListener;
-	private boolean firstTime;
+	
 	Context mContext;
 	Integer connectivity_images[] = { R.drawable.wireless_connection_icon_0,
 			R.drawable.wireless_connection_icon_1,
 			R.drawable.wireless_connection_icon_2,
 			R.drawable.wireless_connection_icon_3,
 			R.drawable.wireless_connection_icon_4 };
+
 	private CountDownTimer mCountDownTimer;
+//	private WristbandTask wristbandTask;
+//	private UpdateConnectivityTask connectivityTask;
 	
+	private ProgressDialog pd;
+	
+
+	private boolean firstTime;
+	private boolean isInLandscapeActivity;
+	private boolean inBackground;
+	private boolean isInPreferenceActivity;
+	private boolean bRoateionView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -107,6 +128,13 @@ public class Main extends BLEBaseFragmentActivity implements
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
 		mContext = this;
+		
+		pd = new ProgressDialog(mContext);
+		pd.setTitle("Processing...");
+		pd.setMessage("Please wait.");
+		pd.setCancelable(false);
+		pd.setIndeterminate(true);
+		
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		setContentView(R.layout.main);
 		// Intent intent = new Intent(this, BLEBaseActivity.class);
@@ -114,6 +142,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		firstTime = prefs.getBoolean(FIRST_TIME, true);
+		bRoateionView = prefs.getBoolean(getString(R.string.pref_enable_rotation_view), false);
 		((ImageView) findViewById(R.id.connectivity))
 				.setImageResource(R.drawable.wireless_connection_icon_0);
 		if (firstTime) {
@@ -135,7 +164,7 @@ public class Main extends BLEBaseFragmentActivity implements
 				@Override
 				public void onOrientationChanged(int orientation) {
 					// TODO Auto-generated method stub
-					if (canShow(orientation)) {
+					if (canShow(orientation) && bRoateionView) {
 						startLandscapeActivity(orientation);
 
 					}
@@ -176,17 +205,23 @@ public class Main extends BLEBaseFragmentActivity implements
 
 		Log.v(TAG, "requestCode " + requestCode + " resultCode " + resultCode);
 		if (requestCode == USER_PREFERENCES_REQUEST) {
-
+			isInPreferenceActivity = false;
 		} else if (requestCode == TO_INSTRUCTION_REQUEST) {
 //			if (mState == BLE_PROFILE_DISCONNECTED) {
 
 				connect();
 //			}
+				
+		}
+		else if (requestCode == LANSCAPE_REQUEST)
+		{
+			isInLandscapeActivity = false;
 		}
 	}
 
 	private void startLandscapeActivity(int orientation) {
-
+		isInLandscapeActivity = true;
+		disconnect();
 		Intent intent = new Intent(this, LandscapeActivity.class);
 		if (isLandscapeLeft(orientation)) {
 			intent.putExtra(Main.TARGET_ORIENTTION,
@@ -263,7 +298,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		Intent intent = new Intent(this, PreferencesActivity.class);
 		intent.putExtra(MainSlideFragment.FACEBOOK,
 				"I'm going for my daily goal");
-
+		isInPreferenceActivity = true;
 		startActivityForResult(intent, Main.USER_PREFERENCES_REQUEST);
 	}
 
@@ -291,11 +326,11 @@ public class Main extends BLEBaseFragmentActivity implements
 		if (orientationListener != null)
 			orientationListener.disable();
 //		if (mState == BLE_PROFILE_CONNECTED) {
-
-			disconnect();
+//
+//			disconnect();
 //		}
 		if (inBackground) {
-
+			if(mConnectionTimeout!=null)mConnectionTimeout.cancel();
 			mCountDownTimer = new CountDownTimer(1000 * 60 * 5, 1000) {
 
 				public void onFinish() {
@@ -311,13 +346,17 @@ public class Main extends BLEBaseFragmentActivity implements
 			}.start();
 			Log.v(TAG, "I think i am going into background");
 		}
+		else
+		{
+			disconnect();
+		}
 	}
 
 	private class UpdateConnectivityTask extends AsyncTask<Void, Integer, Void> {
 
 		@Override
 		protected void onPreExecute() {
-			index = 0;
+			
 		}
 
 		@Override
@@ -325,7 +364,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 			Log.v("UpdateBarTask", "doInBackground");
 
-			while (getState() == STATE_READY) {
+			while (getState() != BLE_PROFILE_CONNECTED) {
 				for (int i = 1; i < 3; i++) {
 
 					try {
@@ -349,9 +388,6 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 	}
 
-	private int index;
-	private WristbandTask wristbandTask = new WristbandTask();
-	private boolean inBackground;
 
 	@Override
 	public void onDeviceFound() {
@@ -408,48 +444,69 @@ public class Main extends BLEBaseFragmentActivity implements
 		((ImageView) findViewById(R.id.connectivity))
 				.setImageResource(connectivity_images[1]);
 	}
+	@Override
+	public void onError(int errorType) {
+		pd.dismiss();
+	}
 
 	@Override
 	public void onDisconnected() {
 		super.onDisconnected();
-		if (!this.isDestroyed()) {
+		if(inBackground)
+		{
+			finish();
+			return;
+		}
+//		if (!this.inBackground ) {
 			showMessage("Disconnected");
 			setUiState();
 			((ImageView) findViewById(R.id.connectivity))
 					.setImageResource(connectivity_images[0]);
-			wristbandTask.cancel(true);
-			wristbandTask.pd.dismiss();
-
-			new AlertDialog.Builder(this)
-					.setTitle(R.string.wristband_disconnected)
-					.setMessage(R.string.do_you_want_to_reconnect)
-					.setPositiveButton(R.string.popup_yes,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int which) {
-									// continue with delete
-									connect();
-								}
-							})
-					.setNegativeButton(R.string.popup_no,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int which) {
-									// do nothing
-									// finish();
-								}
-							}).show();
-		}
+//			if(wristbandTask!=null)
+//			{
+//			wristbandTask.cancel(true);
+//			wristbandTask.pd.dismiss();
+//			}
+			if(!isInLandscapeActivity && !isInPreferenceActivity)
+			{
+				connect();
+			}
+//
+//			new AlertDialog.Builder(this)
+//					.setTitle(R.string.wristband_disconnected)
+//					.setMessage(R.string.do_you_want_to_reconnect)
+//					.setPositiveButton(R.string.popup_yes,
+//							new DialogInterface.OnClickListener() {
+//								public void onClick(DialogInterface dialog,
+//										int which) {
+//									// continue with delete
+//									connect();
+//								}
+//							})
+//					.setNegativeButton(R.string.popup_no,
+//							new DialogInterface.OnClickListener() {
+//								public void onClick(DialogInterface dialog,
+//										int which) {
+//									// do nothing
+//									// finish();
+//								}
+//							}).show();
+//		}
 	}
-
+	@Override
+	public void connect()
+	{
+		super.connect();
+		new UpdateConnectivityTask().execute();
+	}
 	@Override
 	public void onReady() {
 		super.onReady();
 		setUiState();
 		showMessage("BLE Ready");
-		new UpdateConnectivityTask().execute();
+		
 	}
-
+	
 	@Override
 	public void onServiceDiscovered() {
 		super.onServiceDiscovered();
@@ -466,37 +523,55 @@ public class Main extends BLEBaseFragmentActivity implements
 				Utilities.getCurrentDate());
 		editor.commit();
 		mStartUpState = WristbandStartupConstant.CONNECT;
+		
+		
+		if(!inBackground)pd.show();
+		
+//		if(wristbandTask!=null)
+//		{
+//			wristbandTask.cancel(true);
+//			wristbandTask = null;
+//		}
+//		wristbandTask = 
+//		new WristbandTask().execute();
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		wristbandTask.execute();
+		getSerial();
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		checkState(mStartUpState);
 
 	}
 
-	private class WristbandTask extends AsyncTask<Void, Integer, Void> {
+	/*private class WristbandTask extends AsyncTask<Void, Integer, Void> {
 
-		private ProgressDialog pd;
+//		private ProgressDialog pd;
 
 		@Override
 		protected void onPreExecute() {
-			pd = new ProgressDialog(mContext);
-			pd.setTitle("Processing...");
-			pd.setMessage("Please wait.");
-			pd.setCancelable(false);
-			pd.setIndeterminate(true);
-			pd.show();
+//			pd = new ProgressDialog(mContext);
+//			pd.setTitle("Processing...");
+//			pd.setMessage("Please wait.");
+//			pd.setCancelable(false);
+//			pd.setIndeterminate(true);
+//			pd.show();
 		}
 
 		@Override
 		protected Void doInBackground(Void... params) {
 
 			try {
+				
 				Thread.sleep(2000);
-				Log.v(TAG, "enableNotification()");
-				enableNotification();
+				getSerial();
 				Thread.sleep(2000);
 				checkState(mStartUpState);
 			} catch (Exception e) {
@@ -508,16 +583,16 @@ public class Main extends BLEBaseFragmentActivity implements
 
 		@Override
 		protected void onProgressUpdate(Integer... values) {
-			if (isCancelled()) {
-				pd.dismiss();
-			}
+//			if (isCancelled()) {
+//				pd.dismiss();
+//			}
 		}
 
 		@Override
 		protected void onPostExecute(Void result) {
-			pd.dismiss();
+//			pd.dismiss();
 		}
-	}
+	}*/
 
 	@Override
 	public void onStreamMessage(int steps, int calories, float distance,
@@ -578,7 +653,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		showMessage(s);
 		mStartUpState = WristbandStartupConstant.SYNC_USER_PROFILE;
 		checkState(mStartUpState);
-		super.onReadProfile(gender, year, month, weight, height);
+		
 	}
 
 	@Override
@@ -651,7 +726,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		showMessage("Unknown Message");
 		showMessage(s);
 		showMessage(_msg);
-		super.onReadUnknownProtocol(value);
+//		super.onReadUnknownProtocol(value);
 
 	}
 
@@ -670,6 +745,20 @@ public class Main extends BLEBaseFragmentActivity implements
 		checkState(mStartUpState);
 		super.onReadVersion( xx, yy) ;
 	}
+	@Override
+	public void onReadSerial(byte serial[]) {
+		Charset charset = Charset.forName("UTF-8"); 
+		CharSequence seq2 = new String(serial, charset);
+		Log.v(TAG,"Serial : "+seq2);
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putString(getString(R.string.pref_serial), "0000000000");
+		// Commit the edits!
+		editor.commit();
+		
+		super.onReadSerial(serial);
+	}
 
 	@Override
 	public void onReadHistoryData(byte[] value) {
@@ -678,9 +767,32 @@ public class Main extends BLEBaseFragmentActivity implements
 		checkState(mStartUpState);
 		super.onReadHistoryData(value);
 	}
+	
+	public static boolean isApplicationBroughtToBackground(final Activity activity) {
+		  ActivityManager activityManager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+		  List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(1);
+
+		  // Check the top Activity against the list of Activities contained in the Application's package.
+		  if (!tasks.isEmpty()) {
+		    ComponentName topActivity = tasks.get(0).topActivity;
+		    try {
+		      PackageInfo pi = activity.getPackageManager().getPackageInfo(activity.getPackageName(), PackageManager.GET_ACTIVITIES);
+		      for (ActivityInfo activityInfo : pi.activities) {
+		        if(topActivity.getClassName().equals(activityInfo.name)) {
+		          return false;
+		        }
+		      }
+		    } catch( PackageManager.NameNotFoundException e) {
+		      return false; // Never happens.
+		    }
+		  }
+		  return true;
+		}
 	@Override
 	public void onConnectionTimeout()
 	{
+		if(!this.isDestroyed())
+		{
 		new AlertDialog.Builder(this)
 		.setTitle(R.string.connection_time_out)
 		.setMessage(R.string.do_you_want_to_reconnect)
@@ -706,6 +818,7 @@ public class Main extends BLEBaseFragmentActivity implements
 						
 					}	
 				}).show();
+		}
 		super.onConnectionTimeout();
 	}
 
@@ -736,10 +849,10 @@ public class Main extends BLEBaseFragmentActivity implements
 
 				int weight = Integer.valueOf(sharedPreferences.getString(
 						"prefWeight", getString(R.string.default_user_weight)));
-
+				Log.v(TAG,"set Profile");
 				setProfile((gender.equals("Male")) ? 0 : 1,
-						c.get(Calendar.YEAR), c.get(Calendar.MONTH), height,
-						weight);
+						c.get(Calendar.YEAR), c.get(Calendar.MONTH), weight,
+						height);
 			} catch (Exception e) {
 				Log.e(TAG, e.getMessage());
 			}
@@ -769,9 +882,12 @@ public class Main extends BLEBaseFragmentActivity implements
 			startStream();
 			((ImageView) findViewById(R.id.connectivity))
 					.setImageResource(connectivity_images[connectivity_images.length - 1]);
+			mStartUpState = WristbandStartupConstant.START_STREAM;
+			checkState(mStartUpState);
 			break;
 		case WristbandStartupConstant.START_STREAM:
 			Log.v(TAG, "Woo hooo start Streaming now");
+			pd.dismiss();
 			break;
 		}
 	}
@@ -797,7 +913,14 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	public void onUserLeaveHint() {
-		inBackground = true;
+		if(!isInLandscapeActivity && !isInPreferenceActivity)
+		{
+			inBackground = true;//isApplicationBroughtToBackground(this);
+		}
+		else
+		{
+			inBackground = false;
+		}
 		super.onUserLeaveHint();
 	}
 
