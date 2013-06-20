@@ -119,6 +119,8 @@
     <string name="pref_user_weight_title">Width(kg)</string>
     <string name="pref_unit_title">Unit</string>
     <string name="default_unit">Metric</string>
+    <string name="pref_serial">prefSerial</string>
+    <string name="default_serial_summary">Serial#:0000000000</string>
     <string name="pref_unit_dialogtitle">Metric/Imperial</string>
     <string name="pref_unit_title">Unit</string>
     <string name="pref_user_name">User</string>
@@ -146,6 +148,8 @@
     <string name="Select_Daily_Activity_Target">Select_Daily_Activity_Target</string>
     <string name="Target">Target</string>
     <string name="serial">Serial</string>
+    <string name="pref_enable_rotation_view">prefEnableRotationView</string>
+    <string name="enable_rotation_view">Enable Rotation</string>
     <string name="unknown">Unknown</string>
     <string name="steps">Steps</string>
     <string name="calories">Calories</string>

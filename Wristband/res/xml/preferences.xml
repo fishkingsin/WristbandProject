@@ -31,7 +31,7 @@
     <PreferenceCategory android:title="@string/pairing">
     <com.idthk.wristband.ui.preference.MyDialogPreference
          android:title="@string/unpair_wrist_band"
-         android:summary="Serial#:0000000000"
+         android:summary="@string/default_serial_summary"
         android:dialogMessage="@string/are_you_sure" 
         android:dialogTitle="@string/unpair_wrist_band" 
         android:negativeButtonText="@string/no" 
@@ -46,6 +46,11 @@
             android:entryValues="@array/pref_user_activity_entryvalues"
             android:key="@string/pref_targetActivity"
             android:title="@string/Daily_Activity_Target_mins" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_enable_rotation_view"
+            android:title="@string/enable_rotation_view" >
+        </CheckBoxPreference>
 
         <CheckBoxPreference
             android:defaultValue="true"
