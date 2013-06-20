@@ -93,7 +93,7 @@ public class StatisticFragment extends Fragment implements
 		GraphViewData data[] = new GraphViewData[numBars];
 
 		for (int i = 0; i < numBars; i++) {
-			data[i] = new GraphViewData(i, random.nextInt(10));
+			data[i] = new GraphViewData(i, random.nextInt(9)+1);
 		}
 
 		GraphViewSeries exampleSeries = new GraphViewSeries(data);
