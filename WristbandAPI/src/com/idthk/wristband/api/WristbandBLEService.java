@@ -146,12 +146,23 @@ public class WristbandBLEService extends Service {
 	final static byte[] SET_DISCONNECT_PREFIX = { (byte) 0xAA, (byte) 0x50,
 			(byte) 0xF0, (byte) 0xFE, (byte) 0xFE, (byte) 0xFE, (byte) 0xFE,
 			(byte) 0xFE, (byte) 0x55 };
+	
+	final static byte[] TEST_SERIAL_PREFIX = { (byte) 0xAA, (byte) 0x50,
+		(byte) 0xF1, (byte) 0x00, (byte) 0x03, (byte) 0x01,(byte) 0x05,(byte) 0x01, (byte) 0x55};
+	
+	final static byte[] TEST_SERIAL_RETURN_PREFIX = { (byte) 0xAA, (byte) 0x42,
+		(byte) 0x10, (byte) 0x00, (byte) 0x0D, (byte) 0x01,(byte) 0x05,(byte) 0x01,
+		(byte) 0x00 , (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x55 };
 
 	public static final int BLE_STREAM_MSG = 20;
 	public static final int BLE_CONNECT_MSG = 21;
 	public static final int BLE_DISCONNECT_MSG = 22;
 	public static final int BLE_READY_MSG = 23;
 	public static final int BLE_VALUE_MSG = 24;
+	public static final int BLE_ERROR_MSG = 0xF0;
+	
+	public static final int BLE_CONNECTTION_ERROR = 0xF1;
 
 	// James Kong 20130506
 	// ------------------------------------------------------
@@ -170,6 +181,8 @@ public class WristbandBLEService extends Service {
 	public static final int DEVICE_RETURN_STARTSTREAM = 34;
 	public static final int DEVICE_RETURN_STOPSTREAM = 35;
 	public static final int DEVICE_RETURN_VERSION = 36;
+	public static final int DEVICE_RETURN_SERIAL = 37;
+	
 	/**
 	 * Source of device entries in the device list
 	 */
@@ -653,7 +666,14 @@ public class WristbandBLEService extends Service {
 
 	public void connect(BluetoothDevice device, boolean autoconnect) {
 		if (mBluetoothGatt != null) {
-			mBluetoothGatt.connect(device, autoconnect);
+			if(!mBluetoothGatt.connect(device, autoconnect))
+			{
+				Bundle mBundle = new Bundle();
+				Message msg = Message.obtain(mActivityHandler, BLE_ERROR_MSG);
+				mBundle.putInt(EXTRA_VALUE, BLE_CONNECTTION_ERROR);
+				msg.setData(mBundle);
+				msg.sendToTarget();
+			}
 		}
 	}
 
@@ -1000,6 +1020,18 @@ public class WristbandBLEService extends Service {
 			if (ret)
 				return DEVICE_RETURN_VERSION;
 //		}
+			
+		ret = false;
+		for (int i = 0; i < 8; i++) {
+			if (data[i] == TEST_SERIAL_RETURN_PREFIX[i]) {
+				ret = true;
+			} else {
+				ret = false;
+				break;
+			}
+		}
+		if (ret)
+			return DEVICE_RETURN_SERIAL;
 
 		return 0;
 	}
@@ -1020,6 +1052,9 @@ public class WristbandBLEService extends Service {
 			break;
 		case DEVICE_RETURN_VERSION:
 			Log.d(TAG, "DEVICE_RETURN_VERSION");
+			break;
+		case DEVICE_RETURN_SERIAL:
+			Log.d(TAG, "DEVICE_RETURN_SERIAL");
 			break;
 		default:
 			Log.d(TAG, "Unknown");
