@@ -317,7 +317,7 @@ public class MainSlideFragment extends Fragment implements
 			
 			publishSettings(sharedPreferences);
 			populateGraph(mRootView);
-			mCallback.dispatchSelf(this);
+//			mCallback.dispatchSelf(this);
 			new UpdateBarTask().execute();
 		}
 
@@ -590,7 +590,7 @@ public class MainSlideFragment extends Fragment implements
 		s += "distance : " + distance + "\n";
 		s += "activityTime : " + activityTime + "\n";
 		s += "batteryLevel : " + batteryLevel + "\n";
-		
+		Log.v(TAG,s);
 		currentSteps = steps;
 		currentCalories = calories;
 		currentActivityTime = activityTime;
