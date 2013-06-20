@@ -9,6 +9,7 @@ import com.samsung.android.sdk.bt.gatt.BluetoothGattCharacteristic;
 import com.samsung.android.sdk.bt.gatt.BluetoothGattService;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -43,17 +44,17 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	protected static final int BLE_PROFILE_CONNECTED = 20;
 	protected static final int BLE_PROFILE_DISCONNECTED = 21;
 	protected static final int BLE_SERVICE_DISCOVERED = 22;
-	
+
 	protected static final int STATE_OFF = 10;
-//	protected static final int BLE_STREAM_MODE_ON = 23;
-//	protected static final int BLE_STREAM_MODE_OFF = 24;
-	protected int mState = BLE_PROFILE_DISCONNECTED;
+	// protected static final int BLE_STREAM_MODE_ON = 23;
+	// protected static final int BLE_STREAM_MODE_OFF = 24;
+	private int mState = BLE_PROFILE_DISCONNECTED;
 
 	protected WristbandBLEService mService = null;
 	protected BluetoothDevice mDevice = null;
 	protected BluetoothAdapter mBtAdapter = null;
 	protected ServiceConnection onService = null;
-
+	private CountDownTimer mConnectionTimeout;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -89,7 +90,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	@Override
 	public void onDestroy() {
-		
+
 		if (mService != null) {
 			mService.scan(false);
 			mService.disconnect(mDevice);
@@ -108,14 +109,13 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	@Override
 	protected void onStop() {
-		
 
 		super.onStop();
 	}
 
 	@Override
 	protected void onPause() {
-	
+
 		super.onPause();
 	}
 
@@ -127,7 +127,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	@Override
 	public void onResume() {
-		
+
 		super.onResume();
 
 		if (!mBtAdapter.isEnabled()) {
@@ -135,11 +135,8 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 			Intent enableIntent = new Intent(
 					BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-		}
-		else
-		{
-			if(mState==BLE_PROFILE_DISCONNECTED)
-			{
+		} else {
+			if (mState == BLE_PROFILE_DISCONNECTED) {
 				connect();
 			}
 		}
@@ -201,8 +198,8 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 						mDevice = BluetoothAdapter.getDefaultAdapter()
 								.getRemoteDevice(device.getAddress());
 
-//						Log.v(TAG, "Device Name : "
-//								+ device.getName().charAt(0));
+						// Log.v(TAG, "Device Name : "
+						// + device.getName().charAt(0));
 						if (device.getName().charAt(0) == 'A') {
 							mService.connect(mDevice, false);
 
@@ -217,13 +214,17 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 			case WristbandBLEService.BLE_DISCONNECT_MSG:
 				runOnUiThread(new Runnable() {
 					public void run() {
-						if (mDevice != null && mDevice.getAddress().equals(data.getString(BluetoothDevice.EXTRA_DEVICE))) {
-							
+						if (mDevice != null
+								&& mDevice
+										.getAddress()
+										.equals(data
+												.getString(BluetoothDevice.EXTRA_DEVICE))) {
+
 							mService.disconnect(mDevice);
-							
+
 						}
 					}
-					
+
 				});
 				mState = BLE_PROFILE_DISCONNECTED;
 				onDisconnected();
@@ -242,7 +243,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 				break;
 			case WristbandBLEService.BLE_STREAM_MSG:
-//				mState = BLE_STREAM_MODE_ON;
+				// mState = BLE_STREAM_MODE_ON;
 				final byte[] value_ = data
 						.getByteArray(WristbandBLEService.EXTRA_VALUE);
 
@@ -319,9 +320,9 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 										value[dataStart + 4]);
 
 							} else if (ret == WristbandBLEService.DEVICE_RETURN_VERSION) {
-								int xx = Integer.valueOf(value[17]-30);
-								int yy = Integer.valueOf(value[18]-30);
-								
+								int xx = Integer.valueOf(value[17] - 30);
+								int yy = Integer.valueOf(value[18] - 30);
+
 								onReadVersion(xx, yy);
 
 							}
@@ -388,21 +389,21 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 					}
 				}
 				mService.scan(false);
-				
+
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-//						try {
-//							Thread.sleep(1000);
-//						} catch (InterruptedException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
+						// try {
+						// Thread.sleep(1000);
+						// } catch (InterruptedException e) {
+						// // TODO Auto-generated catch block
+						// e.printStackTrace();
+						// }
 
 						mService.EnableDeviceNoti(mDevice,
 								WristbandBLEService.PE128_SERVICE,
 								WristbandBLEService.PE128_CHAR_RCVD);
-						
+
 					}
 				});
 
@@ -504,12 +505,12 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	}
 
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		// Inflate the menu; this adds items to the action bar if it is present.
-//		getMenuInflater().inflate(R.menu.main, menu);
-//		return true;
-//	}
+	// @Override
+	// public boolean onCreateOptionsMenu(Menu menu) {
+	// // Inflate the menu; this adds items to the action bar if it is present.
+	// getMenuInflater().inflate(R.menu.main, menu);
+	// return true;
+	// }
 
 	public static String bytesToHex(byte[] bytes) {
 		final char[] hexArray = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
@@ -527,14 +528,14 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	// public set function
 	// wristband specify function
-	public void enableNotification()
-	{
+	public void enableNotification() {
 		mService.enableWristbandNotification(mDevice);
 	}
+
 	public void startStream() {
 		mService.EnableDeviceNoti(mDevice,
 				WristbandBLEService.PE128_NOTI_SERVICE,
-				WristbandBLEService.PE128_CHAR_STREAMING);	
+				WristbandBLEService.PE128_CHAR_STREAMING);
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -551,7 +552,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 		mService.WriteDevice(mDevice, WristbandBLEService.PE128_SERVICE,
 				WristbandBLEService.PE128_CHAR_XFER,
 				WristbandBLEService.STREAM_MODE_STOP);
-//		mState = BLE_STREAM_MODE_OFF;
+		// mState = BLE_STREAM_MODE_OFF;
 	}
 
 	public void setTime(int year, int month, int day, int hour, int minute,
@@ -601,7 +602,6 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 		int dataStart = 9;
 		data[dataStart] = (byte) duration;
 		data[dataStart + 1] = (byte) togggle;
-		
 
 		int steps_high = step / 10000;
 		int steps_medium = (step - (steps_high) * 10000) / 100;
@@ -624,11 +624,11 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	}
 
 	public void getVersion() {
-		
+
 		mService.WriteDevice(mDevice, WristbandBLEService.PE128_SERVICE,
 				WristbandBLEService.PE128_CHAR_XFER,
 				WristbandBLEService.TEST_VERSION_PREFIX);
-		
+
 	}
 
 	public void setDemand() {
@@ -640,40 +640,63 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	// public callback function
 	public void connect() {
-		Log.v(TAG, "Connecting to BLE Device");
-		Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
-		for (BluetoothDevice pairedDevice : pairedDevices) {
-			boolean result = false;
-			result = mService.isBLEDevice(pairedDevice);
-			if (result == true) {
+		if (mState == BLE_PROFILE_DISCONNECTED) {
+			Log.v(TAG, "Connecting to BLE Device");
+			Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
+			for (BluetoothDevice pairedDevice : pairedDevices) {
+				boolean result = false;
+				result = mService.isBLEDevice(pairedDevice);
+				if (result == true) {
 
-				if (pairedDevice.getName().charAt(0) == 'A') {
-					mDevice = pairedDevice;
-					mService.connect(mDevice, false);
+					if (pairedDevice.getName().charAt(0) == 'A') {
+						mDevice = pairedDevice;
+						mService.connect(mDevice, false);
 
-					Log.v(TAG, "Device Name : " + mDevice.getName().toString());
+						Log.v(TAG, "Device Name : "
+								+ mDevice.getName().toString());
+					}
+					onDeviceFound();
 				}
-				onDeviceFound();
+			}
+			if (mDevice == null) {
+				if (mService != null)
+				{
+					mService.scan(true);
+					mConnectionTimeout = new CountDownTimer(1000 * 30 , 1000) {
+
+						public void onFinish() {
+							Log.v(TAG, "30 pass finish app");
+							disconnect();
+							onConnectionTimeout();	
+						}
+
+						@Override
+						public void onTick(long millisUntilFinished) {
+							// TODO Auto-generated method stub
+
+						}
+					}.start();
+				}
+			} else {
+				mService.connect(mDevice, false);
 			}
 		}
-		if (mDevice == null) {
-			if (mService != null)
-				mService.scan(true);
-		}
-		else
-		{
-			mService.connect(mDevice, false);
-		}
 	}
-
+	public int getState()
+	{
+		return mState;
+	}
 	public void disconnect() {
-		mService.WriteDevice(mDevice, WristbandBLEService.PE128_SERVICE,
-				WristbandBLEService.PE128_CHAR_XFER,
-				WristbandBLEService.SET_DISCONNECT_PREFIX);
-		if (mService != null) {
-			mService.scan(false);
-			mService.disconnect(mDevice);
+		if (mState == BLE_PROFILE_CONNECTED) {
+			mService.WriteDevice(mDevice, WristbandBLEService.PE128_SERVICE,
+					WristbandBLEService.PE128_CHAR_XFER,
+					WristbandBLEService.SET_DISCONNECT_PREFIX);
 		}
+			if (mService != null) {
+				mService.scan(false);
+				mService.disconnect(mDevice);
+			}
+
 	}
 
 	public void discover(boolean scan) {
@@ -686,6 +709,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	// }
 	public void onConnected() {
 		mState = BLE_PROFILE_CONNECTED;
+		mConnectionTimeout.cancel();
 	}
 
 	public void onDisconnected() {
@@ -705,14 +729,14 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	}
 
 	public void onStreamMessage(int steps, int calories, float distance,
-			int activityTime, int activityLevel) {
+			int activityTime, int batteryLevel) {
 		// TODO Auto-generated method stub
 
 	}
 
 	public void onReadVersion(int xx, int yy) {
 		String s = xx + "." + yy;
-		
+
 	}
 
 	public void onReadTime(int year, int month, int day, int hour, int minute,
@@ -795,14 +819,18 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 		}
 		String _msg = "";
 		for (int i = 0; i < value.length; i++) {
-			_msg += Integer.toHexString( value[i]) + " , ";
+			_msg += Integer.toHexString(value[i]) + " , ";
 		}
 		Log.v(TAG, s);
 		Log.v(TAG, _msg);
 
 	}
-	
+
 	public void onReadHistoryData(byte[] value) {
+
+	}
+	public void onConnectionTimeout()
+	{
 		
 	}
 

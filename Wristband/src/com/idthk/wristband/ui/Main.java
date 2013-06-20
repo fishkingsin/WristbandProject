@@ -95,6 +95,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			R.drawable.wireless_connection_icon_3,
 			R.drawable.wireless_connection_icon_4 };
 	private CountDownTimer mCountDownTimer;
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -163,10 +164,10 @@ public class Main extends BLEBaseFragmentActivity implements
 		Log.v(TAG, "prepareToConnect");
 		if (!firstTime) {
 			// TODO Auto-generated method stub
-			if (mState == BLE_PROFILE_DISCONNECTED) {
+//			if (mState == BLE_PROFILE_DISCONNECTED) {
 
 				connect();
-			}
+//			}
 		}
 
 	}
@@ -177,10 +178,10 @@ public class Main extends BLEBaseFragmentActivity implements
 		if (requestCode == USER_PREFERENCES_REQUEST) {
 
 		} else if (requestCode == TO_INSTRUCTION_REQUEST) {
-			if (mState == BLE_PROFILE_DISCONNECTED) {
+//			if (mState == BLE_PROFILE_DISCONNECTED) {
 
 				connect();
-			}
+//			}
 		}
 	}
 
@@ -289,10 +290,10 @@ public class Main extends BLEBaseFragmentActivity implements
 		super.onPause();
 		if (orientationListener != null)
 			orientationListener.disable();
-		if (mState == BLE_PROFILE_CONNECTED) {
+//		if (mState == BLE_PROFILE_CONNECTED) {
 
 			disconnect();
-		}
+//		}
 		if (inBackground) {
 
 			mCountDownTimer = new CountDownTimer(1000 * 60 * 5, 1000) {
@@ -324,7 +325,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 			Log.v("UpdateBarTask", "doInBackground");
 
-			while (mState == STATE_READY) {
+			while (getState() == STATE_READY) {
 				for (int i = 1; i < 3; i++) {
 
 					try {
@@ -382,7 +383,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	}
 
 	private void setUiState() {
-		switch (mState) {
+		switch (getState()) {
 		case BLE_PROFILE_CONNECTED:
 			showMessage("STATE_CONNECTED::device name" + mDevice.getName());
 
@@ -540,7 +541,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			Log.e(TAG, "frag is null");
 			// e.printStackTrace();
 		}
-
+		super.onStreamMessage(steps, calories, distance, activityTime, batteryLevel);
 	}
 
 	@Override
@@ -559,6 +560,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		showMessage(s);
 		mStartUpState = WristbandStartupConstant.SYNC_TIME;
 		checkState(mStartUpState);
+		super.onReadTime(year, month, day, hour, minute, second, weekday);
 	}
 
 	@Override
@@ -576,6 +578,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		showMessage(s);
 		mStartUpState = WristbandStartupConstant.SYNC_USER_PROFILE;
 		checkState(mStartUpState);
+		super.onReadProfile(gender, year, month, weight, height);
 	}
 
 	@Override
@@ -609,16 +612,17 @@ public class Main extends BLEBaseFragmentActivity implements
 		showMessage(s);
 		mStartUpState = WristbandStartupConstant.SYNC_WAKE_UP_TIME;
 		checkState(mStartUpState);
+		super.onReadSleep(weekday_hour, weekday_minute, weekend_hour, weekend_minute, toggle);
 	}
 
 	@Override
-	public void onReadTarget(int activity, int toggle, long step, int distance,
-			int calories) {
+	public void onReadTarget(int duration, int toggle, long step, int distance,
+			int calories)  {
 		// TODO Auto-generated method stub
 		String s = "";
 		s += "Wristband Set Target :\n";
 
-		s += "Activity Value " + activity + "\n";
+		s += "Activity Value " + duration + "\n";
 		s += "Toggle Gauge " + toggle + "\n";
 		s += "Step " + step + "\n";
 		s += "Distance " + distance + "km \n";
@@ -626,6 +630,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		showMessage(s);
 		mStartUpState = WristbandStartupConstant.SYNC_DAILY_TARGET;
 		checkState(mStartUpState);
+		super.onReadTarget(duration, toggle, step, distance, calories);
 	}
 
 	@Override
@@ -646,6 +651,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		showMessage("Unknown Message");
 		showMessage(s);
 		showMessage(_msg);
+		super.onReadUnknownProtocol(value);
 
 	}
 
@@ -662,6 +668,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		showMessage("ReadVersion " + s);
 		mStartUpState = WristbandStartupConstant.GET_SOFTWARE_VERSION;
 		checkState(mStartUpState);
+		super.onReadVersion( xx, yy) ;
 	}
 
 	@Override
@@ -669,6 +676,37 @@ public class Main extends BLEBaseFragmentActivity implements
 
 		mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
 		checkState(mStartUpState);
+		super.onReadHistoryData(value);
+	}
+	@Override
+	public void onConnectionTimeout()
+	{
+		new AlertDialog.Builder(this)
+		.setTitle(R.string.connection_time_out)
+		.setMessage(R.string.do_you_want_to_reconnect)
+		.setPositiveButton(R.string.popup_retry,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,
+							int which) {
+						// continue with delete
+						connect();
+					}
+				})
+		.setNegativeButton(R.string.popup_quite,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,
+							int which) {
+						// do nothing
+						 finish();
+					}
+				})
+		.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,
+							int which) {
+						
+					}	
+				}).show();
+		super.onConnectionTimeout();
 	}
 
 	@Override

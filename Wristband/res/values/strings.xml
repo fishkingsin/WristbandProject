@@ -195,4 +195,8 @@
     <string name="weekend_wakeup_time">Weekend wake up time</string>
     <string name="wristband_disconnected">Wristband Desconnected</string>
     <string name="do_you_want_to_reconnect">Do you want to reconnect?</string>
+    <string name="connection_time_out">Connection time out</string>
+    <string name="popup_retry">Retry</string>
+    <string name="popup_quite">Quite</string>
+    
 </resources>

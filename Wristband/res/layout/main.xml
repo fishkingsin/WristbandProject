@@ -42,7 +42,8 @@
 		        android:layout_alignParentLeft="true"
 		        android:layout_centerHorizontal="true"
 		        android:layout_centerVertical="true"
-		        android:background="@drawable/btn_done_selector" />
+		        android:background="@drawable/btn_done_selector"
+		        android:visibility="gone" />
 
 		</RelativeLayout>
 	<fragment
