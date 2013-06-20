@@ -92,10 +92,10 @@ public class PreferencesActivity extends Activity {
 			boolean isWeekday = sharedPreferences.getBoolean(getString(R.string.pref_week_up_weekday),false);
 			boolean isWeekend = sharedPreferences.getBoolean(getString(R.string.pref_week_up_weekend),false);
 			
-//			PreferenceScreen prefScreen = (PreferenceScreen) findPreference(getString(R.string.pref_week_up_time));
-//			String summary=((isWeekday==true)?"Weekday":" ")+((isWeekend == false)?"Weekend":" ");
-//			prefScreen.setSummary(summary);
-			
+			pref = findPreference(getString(R.string.pref_unpair));
+			pref.setSummary(getString(R.string.serial)+"#:"+sharedPreferences.getString(
+					getString(R.string.pref_serial),
+					getString(R.string.default_serial_summary)));
 
 			try {
 				PackageInfo pInfo;
