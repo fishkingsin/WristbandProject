@@ -93,25 +93,25 @@
             android:title="@string/weak_up_time" >
         -->
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="@string/pref_week_up_weekday"
             android:title="@string/weekday" />
 
         <com.idthk.wristband.ui.preference.TimePreference
-            
+            android:defaultValue="7:00"
             android:dependency="@string/pref_week_up_weekday"
             android:key="@string/pref_weekday"
             android:title="@string/weekday_wakeup_time" />
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="@string/pref_week_up_weekend"
             android:title="@string/weekend" />
 
         <!-- </PreferenceScreen> -->
 
         <com.idthk.wristband.ui.preference.TimePreference
-            
+            android:defaultValue="8:00"
             android:dependency="@string/pref_week_up_weekend"
             android:key="@string/pref_weekend"
             android:title="@string/weekend_wakeup_time" />

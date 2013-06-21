@@ -63,7 +63,7 @@
     <string name="EnergyExpended">EnergyExpended</string>
     <string name="removeBond">Remove Bond</string>
     <string name="NotificationDisable">disNoti</string>
-    <string name="popup_title">QUIT HRP Collector?</string>
+    <string name="popup_title">QUIT?</string>
     <string name="popup_message">Device Quit , Do you want to quit this Application?</string>
     <string name="popup_yes">YES</string>
     <string name="popup_no">NO</string>
