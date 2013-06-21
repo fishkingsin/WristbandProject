@@ -364,7 +364,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 			Log.v("UpdateBarTask", "doInBackground");
 
-			while (getState() != BLE_PROFILE_CONNECTED) {
+			while (getState() == STATE_READY) {
 				for (int i = 1; i < 3; i++) {
 
 					try {
@@ -497,18 +497,19 @@ public class Main extends BLEBaseFragmentActivity implements
 	public void connect()
 	{
 		super.connect();
-		new UpdateConnectivityTask().execute();
+
 	}
 	@Override
 	public void onReady() {
 		super.onReady();
 		setUiState();
 		showMessage("BLE Ready");
-		
+		new UpdateConnectivityTask().execute();
 	}
 	
 	@Override
 	public void onServiceDiscovered() {
+		if(!inBackground)pd.show();
 		super.onServiceDiscovered();
 		setUiState();
 		showMessage("Service Discovered");
@@ -519,13 +520,14 @@ public class Main extends BLEBaseFragmentActivity implements
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = prefs.edit();
+		Log.v(TAG,"Set "+getString(R.string.pref_last_sync_time) +" "+ Utilities.getCurrentDate());
 		editor.putString(getString(R.string.pref_last_sync_time),
 				Utilities.getCurrentDate());
 		editor.commit();
 		mStartUpState = WristbandStartupConstant.CONNECT;
 		
 		
-		if(!inBackground)pd.show();
+		
 		
 //		if(wristbandTask!=null)
 //		{
@@ -606,7 +608,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		s += "activityTime : " + activityTime + "\n";
 		s += "batteryLevel : " + batteryLevel + "\n";
 		// new UpdateConnectivityTask().execute();
-		Log.v(TAG, s);
+//		Log.v(TAG, s);
 		try {
 
 			frag.onStreamMessage(steps, calories, distance, activityTime,
