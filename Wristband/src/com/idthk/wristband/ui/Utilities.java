@@ -188,7 +188,13 @@ public class Utilities {
 	public static String getCurrentDate()
 	{
 		Calendar rightNow = Calendar.getInstance();
-		return rightNow.getDisplayName(Calendar.DATE, Calendar.ALL_STYLES, Locale.CHINA) ;
+		
+		int hour = rightNow.get(Calendar.HOUR_OF_DAY);
+		int minute =rightNow.get(Calendar.MINUTE);
+		
+		String format = "%1$02d";
+        String time=String.format(format,hour)+":"+String.format(format,minute);
+		return  time;
 		 
 	}
 	
