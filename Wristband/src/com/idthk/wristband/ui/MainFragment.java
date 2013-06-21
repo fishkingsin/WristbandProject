@@ -94,8 +94,7 @@ import com.jjoe64.graphview.GraphViewSeries;
  * </p>
  */
 public class MainFragment extends Fragment implements
-		SharedPreferences.OnSharedPreferenceChangeListener 
-		{
+		SharedPreferences.OnSharedPreferenceChangeListener {
 	public static final String FACEBOOK = "Facebook";
 	public static final String TWITTER = "Twitter";
 	/**
@@ -107,28 +106,30 @@ public class MainFragment extends Fragment implements
 	private OnShareButtonClickedListener mCallback;
 	private CustomProgressBar m_activityTimeProgressBar;
 
-	private ProgressBar m_stepsProgressBar;
-	private ProgressBar m_caloriesProgressBar;
-	private ProgressBar m_distancesProgressBar;
+	private ProgressBar m_stepsProgressBar = null;
+	private ProgressBar m_caloriesProgressBar = null;
+	private ProgressBar m_distancesProgressBar = null;
 
-	private View targetView;
-	private View nonTargetView;
-	private TextView goalStepsTv;
-	private TextView goalCaloriesTv;
-	private TextView goalDistancesTv;
-	private TextView userNameTv;
-	private GraphView mGraphView;
+	private View targetView = null;
+	private View nonTargetView = null;
+	private TextView goalStepsTv = null;
+	private TextView goalCaloriesTv = null;
+	private TextView goalDistancesTv = null;
+	private TextView userNameTv = null;
+	private GraphView mGraphView = null;
 
-	private TextView target_steps_indicated_textview;
-	private TextView target_calories_indicated_textview;
-	private TextView target_distances_indicated_textview;
-	
-	private TextView steps_indicated_textview;
-	private TextView calories_indicated_textview;
-	private TextView distances_indicated_textview;
+	private TextView target_steps_indicated_textview = null;
+	private TextView target_calories_indicated_textview = null;
+	private TextView target_distances_indicated_textview = null;
+
+	private TextView steps_indicated_textview = null;
+	private TextView calories_indicated_textview = null;
+	private TextView distances_indicated_textview = null;
+	private ImageView battery_indicated_imageview = null;
+
 	public interface OnShareButtonClickedListener {
 		public void onShareButtonClicked(String s);
-		
+
 		public void dispatchSelf(MainFragment mainSlideFragment);
 	}
 
@@ -147,7 +148,7 @@ public class MainFragment extends Fragment implements
 	private Integer currentCalories = 0;
 	private Integer currentSteps = 0;
 	private Integer currentBatteryLevel = 0;
-	private ImageView battery_indicated_imageview;
+
 	/**
 	 * Factory method for this fragment class. Constructs a new fragment for the
 	 * given page number.
@@ -163,6 +164,7 @@ public class MainFragment extends Fragment implements
 
 	public MainFragment() {
 	}
+
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -171,20 +173,20 @@ public class MainFragment extends Fragment implements
 		// the callback interface. If not, it throws an exception
 		try {
 			mCallback = (OnShareButtonClickedListener) activity;
-			
+
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnHeadlineSelectedListener");
 		}
-		Main mainActivity = (Main)activity;
-		
+		Main mainActivity = (Main) activity;
+
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mPageNumber = getArguments().getInt(ARG_PAGE);
-//		Log.v(TAG, "ScreenSlidePageFragment : ID " + this.getId());
+		// Log.v(TAG, "ScreenSlidePageFragment : ID " + this.getId());
 	}
 
 	@Override
@@ -199,8 +201,8 @@ public class MainFragment extends Fragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		
-//		Log.v(TAG,"Tag : "+getTag());
+
+		// Log.v(TAG,"Tag : "+getTag());
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this.getActivity());
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -216,55 +218,69 @@ public class MainFragment extends Fragment implements
 
 			m_activityTimeProgressBar.setTarget(0);
 			m_activityTimeProgressBar.setProgressInMins(0);
+			if (mRootView.findViewById(R.id.steps_progressbar) != null) {
+				m_stepsProgressBar = (ProgressBar) mRootView
+						.findViewById(R.id.steps_progressbar);
+				m_stepsProgressBar.setProgress(0);
+			}
+			if (mRootView.findViewById(R.id.calories_progressbar) != null) {
+				m_caloriesProgressBar = (ProgressBar) mRootView
+						.findViewById(R.id.calories_progressbar);
+				m_caloriesProgressBar.setProgress(0);
+			}
+			if (mRootView.findViewById(R.id.distances_progressbar) != null) {
+				m_distancesProgressBar = (ProgressBar) mRootView
+						.findViewById(R.id.distances_progressbar);
+				m_distancesProgressBar.setProgress(0);
+			}
 
-			m_stepsProgressBar = (ProgressBar) mRootView
-					.findViewById(R.id.steps_progressbar);
-			m_caloriesProgressBar = (ProgressBar) mRootView
-					.findViewById(R.id.calories_progressbar);
-			m_distancesProgressBar = (ProgressBar) mRootView
-					.findViewById(R.id.distances_progressbar);
+			target_steps_indicated_textview = ((TextView) mRootView
+					.findViewById(R.id.target_steps_indicated_textview));
+			target_calories_indicated_textview = ((TextView) mRootView
+					.findViewById(R.id.target_calories_indicated_textview));
+			target_distances_indicated_textview = ((TextView) mRootView
+					.findViewById(R.id.target_distances_indicated_textview));
 
-			m_stepsProgressBar.setProgress(0);
-			m_caloriesProgressBar.setProgress(0);
-			m_distancesProgressBar.setProgress(0);
-			
-			
-			target_steps_indicated_textview = ((TextView) mRootView.findViewById(R.id.target_steps_indicated_textview));
-			target_calories_indicated_textview = ((TextView) mRootView.findViewById(R.id.target_calories_indicated_textview));
-			target_distances_indicated_textview = ((TextView) mRootView.findViewById(R.id.target_distances_indicated_textview));
-			
-			steps_indicated_textview = ((TextView) mRootView.findViewById(R.id.steps_indicated_textview));
-			calories_indicated_textview = ((TextView) mRootView.findViewById(R.id.calories_indicated_textview));
-			distances_indicated_textview = ((TextView) mRootView.findViewById(R.id.distances_indicated_textview));
-			
-			
+			steps_indicated_textview = ((TextView) mRootView
+					.findViewById(R.id.steps_indicated_textview));
+			calories_indicated_textview = ((TextView) mRootView
+					.findViewById(R.id.calories_indicated_textview));
+			distances_indicated_textview = ((TextView) mRootView
+					.findViewById(R.id.distances_indicated_textview));
+
 			publishSettings(sharedPreferences);
 
 			String path = sharedPreferences.getString(
 					getString(R.string.pref_profile_pic), "");
-//			Log.v(TAG, "profile path : " + path);
+			// Log.v(TAG, "profile path : " + path);
 			if (path != "") {
 				Bitmap myBitmap = Utilities.decodeFile(new File(path),
 						this.getActivity());
 				((ImageView) mRootView.findViewById(R.id.profile_pic))
 						.setImageBitmap(myBitmap);
 			}
-			((Button) mRootView.findViewById(R.id.button_facebook_share))
-					.setOnClickListener(new OnClickListener() {
-						public void onClick(View m) {
+			if (mRootView.findViewById(R.id.button_facebook_share) != null) {
+				((Button) mRootView.findViewById(R.id.button_facebook_share))
+						.setOnClickListener(new OnClickListener() {
+							public void onClick(View m) {
 
-							mCallback.onShareButtonClicked(FACEBOOK);
-						}
-					});
+								mCallback.onShareButtonClicked(FACEBOOK);
+							}
+						});
+			}
+			if (mRootView.findViewById(R.id.button_twitter_share) != null) {
+				((Button) mRootView.findViewById(R.id.button_twitter_share))
+						.setOnClickListener(new OnClickListener() {
+							public void onClick(View m) {
 
-			((Button) mRootView.findViewById(R.id.button_twitter_share))
-					.setOnClickListener(new OnClickListener() {
-						public void onClick(View m) {
-
-							mCallback.onShareButtonClicked(TWITTER);
-						}
-					});
-			battery_indicated_imageview = ((ImageView) mRootView.findViewById(R.id.battery_image));
+								mCallback.onShareButtonClicked(TWITTER);
+							}
+						});
+			}
+			if (mRootView.findViewById(R.id.battery_image) != null) {
+				battery_indicated_imageview = ((ImageView) mRootView
+						.findViewById(R.id.battery_image));
+			}
 			final ScrollView scrollView = (ScrollView) mRootView
 					.findViewById(R.id.main_activity_scroll_view);
 
@@ -281,9 +297,10 @@ public class MainFragment extends Fragment implements
 			((TextView) mRootView.findViewById(R.id.today_text_view))
 					.setText(sdf.format(cal.getTime()));
 
-//			 new UpdateBarTask().execute();//currentActivityTime, currentDistanceProgress, currentCalories, currentSteps,currentBatteryLevel);
-			
-				
+			// new UpdateBarTask().execute();//currentActivityTime,
+			// currentDistanceProgress, currentCalories,
+			// currentSteps,currentBatteryLevel);
+
 		} else {
 			mRootView = (ViewGroup) inflater.inflate(
 					R.layout.main_scrollview_sleep, container, false);
@@ -304,35 +321,40 @@ public class MainFragment extends Fragment implements
 							mCallback.onShareButtonClicked(TWITTER);
 						}
 					});
-			battery_indicated_imageview = ((ImageView) mRootView.findViewById(R.id.battery_image));
+			if (mRootView.findViewById(R.id.battery_image) != null) {
+				battery_indicated_imageview = ((ImageView) mRootView
+						.findViewById(R.id.battery_image));
+			}
 			String path = sharedPreferences.getString(
 					getString(R.string.pref_profile_pic), "");
-//			Log.v(TAG, "profile path : " + path);
+			// Log.v(TAG, "profile path : " + path);
 			if (path != "") {
 				Bitmap myBitmap = Utilities.decodeFile(new File(path),
 						this.getActivity());
 				((ImageView) mRootView.findViewById(R.id.profile_pic))
 						.setImageBitmap(myBitmap);
 			}
-			
+
 			publishSettings(sharedPreferences);
 			populateGraph(mRootView);
-//			mCallback.dispatchSelf(this);
-//			new UpdateBarTask().execute();
+			// mCallback.dispatchSelf(this);
+			// new UpdateBarTask().execute();
 		}
 
 		return mRootView;
 	}
+
 	@Override
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		super.setUserVisibleHint(isVisibleToUser);
 
-//		Log.v(TAG,"setUserVisibleHint " + isVisibleToUser + " " + mPageNumber );
-		if(isVisibleToUser)
-		{
+		// Log.v(TAG,"setUserVisibleHint " + isVisibleToUser + " " + mPageNumber
+		// );
+		if (isVisibleToUser) {
 			mCallback.dispatchSelf(this);
 		}
 	}
+
 	private void publishSettings(SharedPreferences prefs) {
 		// TODO Auto-generated method stub
 		if (mPageNumber == 0) {
@@ -349,18 +371,24 @@ public class MainFragment extends Fragment implements
 			int targetActivity = Integer.valueOf(prefs.getString(
 					getString(R.string.pref_targetActivity), "30"));
 
-			targetSteps = prefs.getInt(
-					getString(R.string.pref_targetSteps), Integer.valueOf(getString(R.string.defalut_target_steps)));
-			targetCalories = prefs.getInt(
-					getString(R.string.pref_targetCalories), Integer.valueOf(getString(R.string.defalut_target_calories)));
-			targetDistances = prefs.getInt(
-					getString(R.string.pref_targetDistances), Integer.valueOf(getString(R.string.defalut_target_distances)));
+			targetSteps = prefs.getInt(getString(R.string.pref_targetSteps),
+					Integer.valueOf(getString(R.string.defalut_target_steps)));
+			targetCalories = prefs
+					.getInt(getString(R.string.pref_targetCalories),
+							Integer.valueOf(getString(R.string.defalut_target_calories)));
+			targetDistances = prefs
+					.getInt(getString(R.string.pref_targetDistances),
+							Integer.valueOf(getString(R.string.defalut_target_distances)));
 
-			m_activityTimeProgressBar.setTarget(targetActivity);
-			m_stepsProgressBar.setMax(targetSteps);
-			m_caloriesProgressBar.setMax(targetCalories);
-			m_distancesProgressBar.setMax(100);
-			
+			if (m_activityTimeProgressBar != null)
+				m_activityTimeProgressBar.setTarget(targetActivity);
+			if (m_stepsProgressBar != null)
+				m_stepsProgressBar.setMax(targetSteps);
+			if (m_caloriesProgressBar != null)
+				m_caloriesProgressBar.setMax(targetCalories);
+			if (m_distancesProgressBar != null)
+				m_distancesProgressBar.setMax(100);
+
 			goalStepsTv = ((TextView) mRootView
 					.findViewById(R.id.goal_steps_indicat_textview));
 			goalStepsTv.setText("" + targetSteps);
@@ -406,21 +434,23 @@ public class MainFragment extends Fragment implements
 				endSleep = prefs.getString(
 						getString(R.string.pref_weekend_wake), "08:00AM");
 			}
+			if (mRootView.findViewById(R.id.sleep_start_textfield) != null)
+				((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
+						.setText(startSleep);
+			if (mRootView.findViewById(R.id.sleep_end_textfield) != null)
+				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
+						.setText(endSleep);
+			if (mRootView.findViewById(R.id.sleep_duration_textfield) != null)
+				((TextView) mRootView
+						.findViewById(R.id.sleep_duration_textfield))
+						.setText(String.valueOf(inbedTime));
 
-			((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
-					.setText(startSleep);
-			((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
-					.setText(endSleep);
-			((TextView) mRootView.findViewById(R.id.sleep_duration_textfield))
-					.setText(String.valueOf(inbedTime));
-			
-			
 		}
 
-		lastSyncTimeTv.setText(prefs.getString(
+		if(lastSyncTimeTv!=null)lastSyncTimeTv.setText(prefs.getString(
 				getString(R.string.pref_last_sync_time),
 				getString(R.string.default_last_sync_time)));
-		userNameTv.setText(prefs.getString(getString(R.string.pref_user_name),
+		if(userNameTv!=null)userNameTv.setText(prefs.getString(getString(R.string.pref_user_name),
 				getString(R.string.default_user_name)));
 	}
 
@@ -504,7 +534,7 @@ public class MainFragment extends Fragment implements
 						.getString(getString(R.string.pref_targetActivity),
 								"30"));
 				try {
-//					Log.v(TAG, "targetActivity " + targetActivity);
+					// Log.v(TAG, "targetActivity " + targetActivity);
 					m_activityTimeProgressBar.setTarget(targetActivity);
 				} catch (NullPointerException errr) {
 					Log.e(TAG, "On error " + errr.getMessage());
@@ -525,19 +555,15 @@ public class MainFragment extends Fragment implements
 			}
 
 		}
-		if(key.equals(getString(R.string.pref_last_sync_time)))
-		{
+		if (key.equals(getString(R.string.pref_last_sync_time))) {
 			lastSyncTimeTv.setText(sharedPreferences.getString(
-				getString(R.string.pref_last_sync_time),
-				getString(R.string.default_last_sync_time)));
+					getString(R.string.pref_last_sync_time),
+					getString(R.string.default_last_sync_time)));
 		}
 	}
 
-	
-	
-	public void onStreamMessage(int steps, int calories,
-			float	 distance, int activityTime,
-			int batteryLevel) {
+	public void onStreamMessage(int steps, int calories, float distance,
+			int activityTime, int batteryLevel) {
 		// TODO Auto-generated method stub
 		String s = "";
 		s += "Wristband Stream :\n";
@@ -546,63 +572,77 @@ public class MainFragment extends Fragment implements
 		s += "distance : " + distance + "\n";
 		s += "activityTime : " + activityTime + "\n";
 		s += "batteryLevel : " + batteryLevel + "\n";
-		Log.v(TAG,s);
+		Log.v(TAG, s);
 		currentSteps = steps;
 		currentCalories = calories;
 		currentActivityTime = activityTime;
 		currentDistanceProgress = distance;
 		currentBatteryLevel = batteryLevel;
-		
-//		new UpdateBarTask().execute();
-//		class UpdateBarTask extends AsyncTask<Void, Integer, Void> {
-//
-//			
-//
-//			@Override
-//			protected Void doInBackground(Void... params) {
-//				//***sometime wont do
-//					Log.v("UpdateBarTask", "doInBackground");
-//				publishProgress();
-//				
-//
-//				return null;
-//			}
-//
-//			@Override
-//			protected void onProgressUpdate(Integer... values) {
-				if(mPageNumber==0)
-				{
-					m_stepsProgressBar.setProgress(currentSteps);
-					m_caloriesProgressBar.setProgress(currentCalories);
-					m_distancesProgressBar.setProgress((int) ((currentDistanceProgress/targetDistances)*100));
-					m_activityTimeProgressBar.setProgressInMins(currentActivityTime);
-					
-					target_steps_indicated_textview.setText(String.valueOf(currentSteps));
-					target_calories_indicated_textview.setText(String.valueOf(currentCalories));
-					target_distances_indicated_textview.setText(String.valueOf(currentDistanceProgress));
-					
-					steps_indicated_textview.setText(String.valueOf(currentSteps));
-					calories_indicated_textview.setText(String.valueOf(currentCalories));
-					distances_indicated_textview.setText(String.valueOf(currentDistanceProgress));
-				}
-				if(currentBatteryLevel <33 )
-				{
-					battery_indicated_imageview.setImageResource(R.drawable.battery_0);
-				}
-				else if(currentBatteryLevel >33 && currentBatteryLevel <66)
-				{
-					battery_indicated_imageview.setImageResource(R.drawable.battery_1);
-				}
-				else if(currentBatteryLevel >66)
-				{
-					battery_indicated_imageview.setImageResource(R.drawable.battery_2);
-				}
+
+		// new UpdateBarTask().execute();
+		// class UpdateBarTask extends AsyncTask<Void, Integer, Void> {
+		//
+		//
+		//
+		// @Override
+		// protected Void doInBackground(Void... params) {
+		// //***sometime wont do
+		// Log.v("UpdateBarTask", "doInBackground");
+		// publishProgress();
+		//
+		//
+		// return null;
+		// }
+		//
+		// @Override
+		// protected void onProgressUpdate(Integer... values) {
+		if (mPageNumber == 0) {
+			if (m_stepsProgressBar != null)
+				m_stepsProgressBar.setProgress(currentSteps);
+			if (m_caloriesProgressBar != null)
+				m_caloriesProgressBar.setProgress(currentCalories);
+			if (m_distancesProgressBar != null)
+				m_distancesProgressBar
+						.setProgress((int) ((currentDistanceProgress / targetDistances) * 100));
+			if (m_activityTimeProgressBar != null)
+				m_activityTimeProgressBar
+						.setProgressInMins(currentActivityTime);
+
+			if (target_steps_indicated_textview != null)
+				target_steps_indicated_textview.setText(String
+						.valueOf(currentSteps));
+			if (target_calories_indicated_textview != null)
+				target_calories_indicated_textview.setText(String
+						.valueOf(currentCalories));
+			if (target_distances_indicated_textview != null)
+				target_distances_indicated_textview.setText(String
+						.valueOf(currentDistanceProgress));
+
+			if (target_distances_indicated_textview != null)
+				steps_indicated_textview.setText(String.valueOf(currentSteps));
+			if (calories_indicated_textview != null)
+				calories_indicated_textview.setText(String
+						.valueOf(currentCalories));
+			if (distances_indicated_textview != null)
+				distances_indicated_textview.setText(String
+						.valueOf(currentDistanceProgress));
+		}
+		if (battery_indicated_imageview != null) {
+			if (currentBatteryLevel < 33) {
+				battery_indicated_imageview
+						.setImageResource(R.drawable.battery_0);
+			} else if (currentBatteryLevel > 33 && currentBatteryLevel < 66) {
+				battery_indicated_imageview
+						.setImageResource(R.drawable.battery_1);
+			} else if (currentBatteryLevel > 66) {
+				battery_indicated_imageview
+						.setImageResource(R.drawable.battery_2);
 			}
-//		}
-//		UpdateBarTask myTask = new UpdateBarTask();
-//		myTask.execute();
-//	}
-	
-	
-	
+		}
+	}
+	// }
+	// UpdateBarTask myTask = new UpdateBarTask();
+	// myTask.execute();
+	// }
+
 }

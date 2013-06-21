@@ -125,7 +125,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		/* Hide title bar. This has to be placed before setContentView. */
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
+//		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		mContext = this;
 
@@ -135,7 +135,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		pd.setCancelable(false);
 		pd.setIndeterminate(true);
 
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		setContentView(R.layout.main);
 		// Intent intent = new Intent(this, BLEBaseActivity.class);
 		// startActivityForResult(intent, TO_INSTRUCTION_REQUEST);
@@ -166,7 +166,7 @@ public class Main extends BLEBaseFragmentActivity implements
 				public void onOrientationChanged(int orientation) {
 					// TODO Auto-generated method stub
 					if (canShow(orientation) && bRoateionView) {
-						startLandscapeActivity(orientation);
+						// startLandscapeActivity(orientation);
 
 					}
 
@@ -187,6 +187,16 @@ public class Main extends BLEBaseFragmentActivity implements
 		// TwitterShareActivity.class),ACTIVITY_REQUEST);
 		// this.startActivity(new Intent(this, SimpleGraph.class));
 
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		
+		super.onSaveInstanceState(outState);
+	}
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
 	}
 
 	@Override
@@ -344,7 +354,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			}.start();
 			Log.v(TAG, "I think i am going into background");
 		} else {
-			disconnect();
+//			disconnect();
 		}
 	}
 
@@ -394,19 +404,21 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	public void onStatisticPagerChangedCallback(int page) {
-		// TODO Auto-generated method stub
-		if (page == 0) {
-			((TextView) findViewById(R.id.titlebar_textview))
-					.setText("Activity Level");
-			((Button) findViewById(R.id.btn_settings_done))
-					.setVisibility(View.GONE);
-		}
+		if (findViewById(R.id.titlebar_textview)!=null) {
+			// TODO Auto-generated method stub
+			if (page == 0) {
+				((TextView) findViewById(R.id.titlebar_textview))
+						.setText("Activity Level");
+				((Button) findViewById(R.id.btn_settings_done))
+						.setVisibility(View.GONE);
+			}
 
-		else if (page == 1) {
-			((TextView) findViewById(R.id.titlebar_textview))
-					.setText("Sleep Level");
-			((Button) findViewById(R.id.btn_settings_done))
-					.setVisibility(View.GONE);
+			else if (page == 1) {
+				((TextView) findViewById(R.id.titlebar_textview))
+						.setText("Sleep Level");
+				((Button) findViewById(R.id.btn_settings_done))
+						.setVisibility(View.GONE);
+			}
 		}
 	}
 
@@ -503,13 +515,13 @@ public class Main extends BLEBaseFragmentActivity implements
 		setUiState();
 		showMessage("BLE Ready");
 		// prepareToConnect();
-		new UpdateConnectivityTask().execute();
+		// new UpdateConnectivityTask().execute();
 	}
 
 	@Override
 	public void onServiceDiscovered() {
-		if (!inBackground)
-			pd.show();
+//		if (!inBackground)
+//			pd.show();
 		super.onServiceDiscovered();
 		setUiState();
 		showMessage("Service Discovered");
@@ -825,161 +837,157 @@ public class Main extends BLEBaseFragmentActivity implements
 		case WristbandStartupConstant.CONNECT: {
 			// try {
 			Log.v(TAG, "checkState set Profile");
-			try{
-			SharedPreferences sharedPreferences = PreferenceManager
-					.getDefaultSharedPreferences(this);
+			try {
+				SharedPreferences sharedPreferences = PreferenceManager
+						.getDefaultSharedPreferences(this);
 
-			Calendar c = DatePreference.getDateFor(sharedPreferences,
-					"prefDateOfBirth");
+				Calendar c = DatePreference.getDateFor(sharedPreferences,
+						"prefDateOfBirth");
 
-			String gender = sharedPreferences.getString("prefUserGender",
-					"Female");
+				String gender = sharedPreferences.getString("prefUserGender",
+						"Female");
 
-			int height = sharedPreferences.getInt("prefHeight", 170);
+				int height = sharedPreferences.getInt("prefHeight", 170);
 
-			int weight = sharedPreferences.getInt("prefWeight", 50);
+				int weight = sharedPreferences.getInt("prefWeight", 50);
 
-			Log.v(TAG, "set Profile");
+				Log.v(TAG, "set Profile");
 
-			setProfile((gender.equals("Male")) ? 0 : 1, c.get(Calendar.YEAR),
-					c.get(Calendar.MONTH), weight, height);
-			}
-			catch(Exception e)
-			{
+				setProfile((gender.equals("Male")) ? 0 : 1,
+						c.get(Calendar.YEAR), c.get(Calendar.MONTH), weight,
+						height);
+			} catch (Exception e) {
 				new AlertDialog.Builder(this)
-				.setTitle("Shit happen")
-				.setMessage("Set Profile")
-				.setNeutralButton(R.string.cancel,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-							}
-						}).show();
+						.setTitle("Shit happen")
+						.setMessage("Set Profile")
+						.setNeutralButton(R.string.cancel,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
+									}
+								}).show();
 			}
-			
+
 		}
 			break;
 		case WristbandStartupConstant.SYNC_USER_PROFILE:
 		// setTarget(60, 1, 94184, 6, 1869);
 		{
-			try{
-			SharedPreferences sharedPreferences = PreferenceManager
-					.getDefaultSharedPreferences(this);
+			try {
+				SharedPreferences sharedPreferences = PreferenceManager
+						.getDefaultSharedPreferences(this);
 
-			setTarget(Integer.valueOf(sharedPreferences.getString(
-					getString(R.string.pref_targetActivity), "30")),
-					(sharedPreferences.getBoolean(
-							getString(R.string.pref_toggle_target), false)) ? 0
-							: 1, sharedPreferences.getInt(
-							getString(R.string.pref_targetSteps), 10000),
-					sharedPreferences.getInt(
-							getString(R.string.pref_targetDistances), 7),
-					sharedPreferences.getInt(
-							getString(R.string.pref_targetCalories), 1000));
-			}catch(Exception e)
-			{
+				setTarget(
+						Integer.valueOf(sharedPreferences.getString(
+								getString(R.string.pref_targetActivity), "30")),
+						(sharedPreferences.getBoolean(
+								getString(R.string.pref_toggle_target), false)) ? 0
+								: 1, sharedPreferences.getInt(
+								getString(R.string.pref_targetSteps), 10000),
+						sharedPreferences.getInt(
+								getString(R.string.pref_targetDistances), 7),
+						sharedPreferences.getInt(
+								getString(R.string.pref_targetCalories), 1000));
+			} catch (Exception e) {
 				new AlertDialog.Builder(this)
-				.setTitle("Shit happen")
-				.setMessage("Set Target")
-				.setNeutralButton(R.string.cancel,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-							}
-						}).show();
+						.setTitle("Shit happen")
+						.setMessage("Set Target")
+						.setNeutralButton(R.string.cancel,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
+									}
+								}).show();
 			}
 		}
 			break;
 		case WristbandStartupConstant.SYNC_DAILY_TARGET:
 		// setSleep(12, 0, 23, 0, 3);
 		{
-			try{
-			SharedPreferences sharedPreferences = PreferenceManager
-					.getDefaultSharedPreferences(this);
-			// Map<String,?> keys = sharedPreferences.getAll();
-			//
-			// for(Map.Entry<String,?> entry : keys.entrySet()){
-			// Log.d("map values",entry.getKey() + ": " +
-			// entry.getValue().toString());
-			// }
-			//
-			String weekday = sharedPreferences.getString(
-					getString(R.string.pref_weekday), "7:00");
-			String weekend = sharedPreferences.getString(
-					getString(R.string.pref_weekend), "8:00");
-			Boolean do_wakeup_weekday = sharedPreferences.getBoolean(
-					getString(R.string.pref_week_up_weekday), false);
-			Boolean do_wakeup_weekend = sharedPreferences.getBoolean(
-					getString(R.string.pref_week_up_weekend), false);
-			setSleep(TimePreference.getHour(weekday),
-					TimePreference.getMinute(weekday),
-					TimePreference.getHour(weekend),
-					TimePreference.getMinute(weekend), 
-					(do_wakeup_weekday && do_wakeup_weekend)?3:
-						(!do_wakeup_weekday && do_wakeup_weekend)?2:
-							(do_wakeup_weekday && !do_wakeup_weekend)?1:
-								0);
-			}
-			catch(Exception e)
-			{
+			try {
+				SharedPreferences sharedPreferences = PreferenceManager
+						.getDefaultSharedPreferences(this);
+				// Map<String,?> keys = sharedPreferences.getAll();
+				//
+				// for(Map.Entry<String,?> entry : keys.entrySet()){
+				// Log.d("map values",entry.getKey() + ": " +
+				// entry.getValue().toString());
+				// }
+				//
+				String weekday = sharedPreferences.getString(
+						getString(R.string.pref_weekday), "7:00");
+				String weekend = sharedPreferences.getString(
+						getString(R.string.pref_weekend), "8:00");
+				Boolean do_wakeup_weekday = sharedPreferences.getBoolean(
+						getString(R.string.pref_week_up_weekday), false);
+				Boolean do_wakeup_weekend = sharedPreferences.getBoolean(
+						getString(R.string.pref_week_up_weekend), false);
+				setSleep(
+						TimePreference.getHour(weekday),
+						TimePreference.getMinute(weekday),
+						TimePreference.getHour(weekend),
+						TimePreference.getMinute(weekend),
+						(do_wakeup_weekday && do_wakeup_weekend) ? 3
+								: (!do_wakeup_weekday && do_wakeup_weekend) ? 2
+										: (do_wakeup_weekday && !do_wakeup_weekend) ? 1
+												: 0);
+			} catch (Exception e) {
 				new AlertDialog.Builder(this)
-				.setTitle("Shit Sleep")
-				.setMessage("Set Profile")
-				.setNeutralButton(R.string.cancel,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-							}
-						}).show();
+						.setTitle("Shit Sleep")
+						.setMessage("Set Profile")
+						.setNeutralButton(R.string.cancel,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
+									}
+								}).show();
 			}
 		}
 			break;
 		case WristbandStartupConstant.SYNC_WAKE_UP_TIME: {
-			try{
-			Calendar c = Calendar.getInstance();
-			setTime(c.get(Calendar.YEAR) - 2000, c.get(Calendar.MONTH) + 1,
-					c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY),
-					c.get(Calendar.MINUTE), c.get(Calendar.SECOND),
-					c.get(Calendar.WEDNESDAY));
-			}catch(Exception e)
-			{
+			try {
+				Calendar c = Calendar.getInstance();
+				setTime(c.get(Calendar.YEAR) - 2000, c.get(Calendar.MONTH) + 1,
+						c.get(Calendar.DAY_OF_MONTH),
+						c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE),
+						c.get(Calendar.SECOND), c.get(Calendar.WEDNESDAY));
+			} catch (Exception e) {
 				new AlertDialog.Builder(this)
-				.setTitle("Shit happen")
-				.setMessage("Set Time")
-				.setNeutralButton(R.string.cancel,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-							}
-						}).show();
+						.setTitle("Shit happen")
+						.setMessage("Set Time")
+						.setNeutralButton(R.string.cancel,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
+									}
+								}).show();
 			}
 		}
 			break;
 		case WristbandStartupConstant.SYNC_TIME:
-			
+
 			getVersion();
 			break;
 		case WristbandStartupConstant.GET_SOFTWARE_VERSION:
 			onReadHistoryData(null);
 			break;
 		case WristbandStartupConstant.GET_HISTORY_DATA:
-			try{
-			startStream();
-			((ImageView) findViewById(R.id.connectivity))
-					.setImageResource(connectivity_images[connectivity_images.length - 1]);
-			mStartUpState = WristbandStartupConstant.START_STREAM;
-			checkState(mStartUpState);
-			}catch(Exception e)
-			{
+			try {
+				startStream();
+				((ImageView) findViewById(R.id.connectivity))
+						.setImageResource(connectivity_images[connectivity_images.length - 1]);
+				mStartUpState = WristbandStartupConstant.START_STREAM;
+				checkState(mStartUpState);
+			} catch (Exception e) {
 				new AlertDialog.Builder(this)
-				.setTitle("Shit happen")
-				.setMessage("Start Stream")
-				.setNeutralButton(R.string.cancel,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-							}
-						}).show();
+						.setTitle("Shit happen")
+						.setMessage("Start Stream")
+						.setNeutralButton(R.string.cancel,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
+									}
+								}).show();
 			}
 			break;
 		case WristbandStartupConstant.START_STREAM:
@@ -1039,39 +1047,42 @@ public class Main extends BLEBaseFragmentActivity implements
 	// }
 	@Override
 	public void onPagerChangedCallback(int position) {
-		// TODO Auto-generated method stub
-		if (position == MainFragmentPager.ACTIVITY) {
-			((TextView) findViewById(R.id.titlebar_textview))
-					.setText("Activity");
-			((Button) findViewById(R.id.btn_settings_done))
-					.setVisibility(View.GONE);
-		} else if (position == MainFragmentPager.SLEEP) {
-			((TextView) findViewById(R.id.titlebar_textview)).setText("Sleep");
-			((Button) findViewById(R.id.btn_settings_done))
-					.setVisibility(View.GONE);
+		if (findViewById(R.id.titlebar_textview)!=null) {
+			// TODO Auto-generated method stub
+			if (position == MainFragmentPager.ACTIVITY) {
+				((TextView) findViewById(R.id.titlebar_textview))
+						.setText("Activity");
+				((Button) findViewById(R.id.btn_settings_done))
+						.setVisibility(View.GONE);
+			} else if (position == MainFragmentPager.SLEEP) {
+				((TextView) findViewById(R.id.titlebar_textview))
+						.setText("Sleep");
+				((Button) findViewById(R.id.btn_settings_done))
+						.setVisibility(View.GONE);
+			}
 		}
 
 	}
 
-	@Override
-	public void onPagerChangedCallback(int position, Fragment fragment) {
-		// TODO Auto-generated method stub
-		if (position == MainFragmentPager.ACTIVITY) {
-			((TextView) findViewById(R.id.titlebar_textview))
-					.setText("Activity");
-			((Button) findViewById(R.id.btn_settings_done))
-					.setVisibility(View.GONE);
-		} else if (position == MainFragmentPager.SLEEP) {
-			((TextView) findViewById(R.id.titlebar_textview)).setText("Sleep");
-			((Button) findViewById(R.id.btn_settings_done))
-					.setVisibility(View.GONE);
-		}
-		try {
-
-			frag = (MainFragment) fragment;
-		} catch (Exception e) {
-			Log.e(TAG, e.getMessage());
-		}
-	}
+	// @Override
+	// public void onPagerChangedCallback(int position, Fragment fragment) {
+	// // TODO Auto-generated method stub
+	// if (position == MainFragmentPager.ACTIVITY) {
+	// ((TextView) findViewById(R.id.titlebar_textview))
+	// .setText("Activity");
+	// ((Button) findViewById(R.id.btn_settings_done))
+	// .setVisibility(View.GONE);
+	// } else if (position == MainFragmentPager.SLEEP) {
+	// ((TextView) findViewById(R.id.titlebar_textview)).setText("Sleep");
+	// ((Button) findViewById(R.id.btn_settings_done))
+	// .setVisibility(View.GONE);
+	// }
+	// try {
+	//
+	// frag = (MainFragment) fragment;
+	// } catch (Exception e) {
+	// Log.e(TAG, e.getMessage());
+	// }
+	// }
 
 }

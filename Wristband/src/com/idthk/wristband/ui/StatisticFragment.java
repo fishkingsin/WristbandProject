@@ -109,7 +109,9 @@ public class StatisticFragment extends Fragment implements
 		mGraphView.addSeries(exampleSeries); // data
 
 //		mGraphView.setViewPort(10, 5);
-		((ViewGroup) mRootView.findViewById(R.id.graph1)).addView(mGraphView);
+		ViewGroup graph = ((ViewGroup) mRootView.findViewById(R.id.graph1));
+		
+		graph.addView(mGraphView);
 		//test value
 		return mRootView;
 	}

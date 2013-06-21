@@ -31,7 +31,7 @@ public class MainFragmentPager extends Fragment {
 	// Container Activity must implement this interface
 	public interface PagerChangedCallback {
 		public void onPagerChangedCallback(int page);
-		public void onPagerChangedCallback(int page, Fragment fragment);
+		
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class MainFragmentPager extends Fragment {
 					public void onPageSelected(int position) {
 						mCurrentPage = position;
 						
-						
+						mCallback.onPagerChangedCallback(mCurrentPage);
 						// When changing pages, reset the action bar actions
 						// since they are dependent
 						// on which page is currently active. An alternative
@@ -81,7 +81,7 @@ public class MainFragmentPager extends Fragment {
 		// the callback interface. If not, it throws an exception
 		try {
 			mCallback = (PagerChangedCallback) activity;
-			// mCallback.onPagerChangedCallback(ACTIVITY,mMyFragmentPagerAdapter.getRegisteredFragment(ACTIVITY));
+			mCallback.onPagerChangedCallback(ACTIVITY);
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnHeadlineSelectedListener");
