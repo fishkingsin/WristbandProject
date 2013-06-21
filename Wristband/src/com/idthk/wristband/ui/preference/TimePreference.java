@@ -104,7 +104,9 @@ public class TimePreference extends DialogPreference {
 
         lastHour=getHour(time);
         lastMinute=getMinute(time);
-        
+        if (callChangeListener(time)) {
+            persistString(time);
+        }
         setSummary(lastHour, lastMinute);
     }
     
