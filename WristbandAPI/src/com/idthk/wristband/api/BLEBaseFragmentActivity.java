@@ -90,11 +90,11 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	@Override
 	public void onDestroy() {
-
-		if (mService != null) {
-			mService.scan(false);
-			mService.disconnect(mDevice);
-		}
+		disconnect();
+//		if (mService != null) {
+//			mService.scan(false);
+//			mService.disconnect(mDevice);
+//		}
 
 		try {
 			unregisterReceiver(bleStatusChangeReceiver);
@@ -234,7 +234,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 				runOnUiThread(new Runnable() {
 					public void run() {
-						mState = STATE_READY;
+						
 						onReady();
 					}
 				});
@@ -418,14 +418,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						 try {
-						 Thread.sleep(2000);
-						 } catch (InterruptedException e) {
-						 // TODO Auto-generated catch block
-						 e.printStackTrace();
-						 }
-
-						 enableNotification();
+						 
 						onServiceDiscovered();
 					}
 				});
@@ -718,6 +711,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 		return mState;
 	}
 	public void disconnect() {
+		Log.v(TAG,"disconnect()");
 		if (mState == BLE_PROFILE_CONNECTED) {
 			mService.WriteDevice(mDevice, WristbandBLEService.PE128_SERVICE,
 					WristbandBLEService.PE128_CHAR_XFER,
@@ -762,6 +756,14 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	public void onServiceDiscovered() {
 		mState = BLE_SERVICE_DISCOVERED;
+		try {
+			 Thread.sleep(2000);
+			 } catch (InterruptedException e) {
+			 // TODO Auto-generated catch block
+			 e.printStackTrace();
+			 }
+
+			 enableNotification();
 	}
 
 	public void onDeviceFound() {
