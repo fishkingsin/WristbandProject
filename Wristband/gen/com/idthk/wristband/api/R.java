@@ -15,23 +15,23 @@ public final class R {
 		public static final int ic_launcher = 0x7f020047;
 	}
 	public static final class id {
-		public static final int action_settings = 0x7f09009d;
-		public static final int btn_clearlog = 0x7f090057;
-		public static final int btn_connect = 0x7f090050;
-		public static final int btn_disconnect = 0x7f090056;
-		public static final int btn_enable_notify = 0x7f09005b;
-		public static final int btn_ondemand = 0x7f090051;
-		public static final int btn_startstream = 0x7f090058;
-		public static final int btn_stopstream = 0x7f090053;
-		public static final int btn_version = 0x7f090059;
-		public static final int btn_writeportfile = 0x7f090054;
-		public static final int btn_writesleep = 0x7f090055;
-		public static final int btn_writetime = 0x7f090052;
+		public static final int action_settings = 0x7f0900a2;
+		public static final int btn_clearlog = 0x7f09005a;
+		public static final int btn_connect = 0x7f090053;
+		public static final int btn_disconnect = 0x7f090059;
+		public static final int btn_enable_notify = 0x7f09005e;
+		public static final int btn_ondemand = 0x7f090054;
+		public static final int btn_startstream = 0x7f09005b;
+		public static final int btn_stopstream = 0x7f090056;
+		public static final int btn_version = 0x7f09005c;
+		public static final int btn_writeportfile = 0x7f090057;
+		public static final int btn_writesleep = 0x7f090058;
+		public static final int btn_writetime = 0x7f090055;
 		public static final int linearLayout1 = 0x7f090028;
-		public static final int linearLayout3 = 0x7f09004f;
-		public static final int scroll_view = 0x7f09005c;
-		public static final int textView = 0x7f09005d;
-		public static final int writetarget = 0x7f09005a;
+		public static final int linearLayout3 = 0x7f090052;
+		public static final int scroll_view = 0x7f09005f;
+		public static final int textView = 0x7f090060;
+		public static final int writetarget = 0x7f09005d;
 	}
 	public static final class layout {
 		public static final int main = 0x7f030018;

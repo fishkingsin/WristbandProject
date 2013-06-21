@@ -202,5 +202,6 @@
     <string name="connection_time_out">Connection time out</string>
     <string name="popup_retry">Retry</string>
     <string name="popup_quite">Quite</string>
+        <string name="activity_level">Activity Level(mins)</string>
     
 </resources>
