@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -16,6 +17,7 @@ import com.idthk.wristband.socialnetwork.FacebookShareActivity;
 import com.idthk.wristband.socialnetwork.TwitterShareActivity;
 import com.idthk.wristband.ui.R;
 import com.idthk.wristband.ui.MainFragment.OnShareButtonClickedListener;
+import com.idthk.wristband.ui.preference.TimePreference;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -87,8 +89,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	static final String TAG = "Main";
 
 	static final String FIRST_TIME = "firsttime";
-	
-	
+
 	public static final String TITLE = "title";
 	public static final String TARGET_ORIENTTION = "target_orientation";
 
@@ -97,7 +98,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	MainFragment frag;
 	OrientationEventListener orientationListener;
 	OnShareButtonClickedListener myShareButtonClickedListener;
-	
+
 	Context mContext;
 	Integer connectivity_images[] = { R.drawable.wireless_connection_icon_0,
 			R.drawable.wireless_connection_icon_1,
@@ -106,11 +107,10 @@ public class Main extends BLEBaseFragmentActivity implements
 			R.drawable.wireless_connection_icon_4 };
 
 	private CountDownTimer mCountDownTimer;
-//	private WristbandTask wristbandTask;
-//	private UpdateConnectivityTask connectivityTask;
-	
+	// private WristbandTask wristbandTask;
+	// private UpdateConnectivityTask connectivityTask;
+
 	private ProgressDialog pd;
-	
 
 	private boolean firstTime;
 	private boolean isInLandscapeActivity;
@@ -122,19 +122,19 @@ public class Main extends BLEBaseFragmentActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		/* Set Fullscreen, hide statusbar */
-		getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
-		WindowManager.LayoutParams. FLAG_FULLSCREEN);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		/* Hide title bar. This has to be placed before setContentView. */
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
+
 		mContext = this;
-		
+
 		pd = new ProgressDialog(mContext);
 		pd.setTitle("Processing...");
 		pd.setMessage("Please wait.");
 		pd.setCancelable(false);
 		pd.setIndeterminate(true);
-		
+
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		setContentView(R.layout.main);
 		// Intent intent = new Intent(this, BLEBaseActivity.class);
@@ -142,7 +142,8 @@ public class Main extends BLEBaseFragmentActivity implements
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		firstTime = prefs.getBoolean(FIRST_TIME, true);
-		bRoateionView = prefs.getBoolean(getString(R.string.pref_enable_rotation_view), false);
+		bRoateionView = prefs.getBoolean(
+				getString(R.string.pref_enable_rotation_view), false);
 		((ImageView) findViewById(R.id.connectivity))
 				.setImageResource(R.drawable.wireless_connection_icon_0);
 		if (firstTime) {
@@ -193,10 +194,10 @@ public class Main extends BLEBaseFragmentActivity implements
 		Log.v(TAG, "prepareToConnect");
 		if (!firstTime) {
 			// TODO Auto-generated method stub
-//			if (mState == BLE_PROFILE_DISCONNECTED) {
+			// if (mState == BLE_PROFILE_DISCONNECTED) {
 
-				connect();
-//			}
+			connect();
+			// }
 		}
 
 	}
@@ -207,14 +208,12 @@ public class Main extends BLEBaseFragmentActivity implements
 		if (requestCode == USER_PREFERENCES_REQUEST) {
 			isInPreferenceActivity = false;
 		} else if (requestCode == TO_INSTRUCTION_REQUEST) {
-//			if (mState == BLE_PROFILE_DISCONNECTED) {
+			// if (mState == BLE_PROFILE_DISCONNECTED) {
 
-				connect();
-//			}
-				
-		}
-		else if (requestCode == LANSCAPE_REQUEST)
-		{
+			connect();
+			// }
+
+		} else if (requestCode == LANSCAPE_REQUEST) {
 			isInLandscapeActivity = false;
 		}
 	}
@@ -271,8 +270,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		} else if (s.equals(MainFragment.TWITTER)) {
 			Intent intent = new Intent(this, TwitterShareActivity.class);
 
-			intent.putExtra(MainFragment.TWITTER,
-					"I'm going for my daily goal");
+			intent.putExtra(MainFragment.TWITTER, "I'm going for my daily goal");
 			intent.putExtra(TITLE, MainFragment.TWITTER);
 			startActivityForResult(intent, TWITTER_REQUEST);
 			overridePendingTransition(R.anim.slide_in_right,
@@ -296,8 +294,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		// TODO Auto-generated method stub
 
 		Intent intent = new Intent(this, PreferencesActivity.class);
-		intent.putExtra(MainFragment.FACEBOOK,
-				"I'm going for my daily goal");
+		intent.putExtra(MainFragment.FACEBOOK, "I'm going for my daily goal");
 		isInPreferenceActivity = true;
 		startActivityForResult(intent, Main.USER_PREFERENCES_REQUEST);
 	}
@@ -325,12 +322,13 @@ public class Main extends BLEBaseFragmentActivity implements
 		super.onPause();
 		if (orientationListener != null)
 			orientationListener.disable();
-//		if (mState == BLE_PROFILE_CONNECTED) {
-//
-//			disconnect();
-//		}
+		// if (mState == BLE_PROFILE_CONNECTED) {
+		//
+		// disconnect();
+		// }
 		if (inBackground) {
-			if(mConnectionTimeout!=null)mConnectionTimeout.cancel();
+			if (mConnectionTimeout != null)
+				mConnectionTimeout.cancel();
 			mCountDownTimer = new CountDownTimer(1000 * 60 * 5, 1000) {
 
 				public void onFinish() {
@@ -345,9 +343,7 @@ public class Main extends BLEBaseFragmentActivity implements
 				}
 			}.start();
 			Log.v(TAG, "I think i am going into background");
-		}
-		else
-		{
+		} else {
 			disconnect();
 		}
 	}
@@ -356,7 +352,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 		@Override
 		protected void onPreExecute() {
-			
+
 		}
 
 		@Override
@@ -376,6 +372,9 @@ public class Main extends BLEBaseFragmentActivity implements
 					}
 				}
 			}
+			if (getState() == BLE_PROFILE_CONNECTED) {
+				publishProgress(connectivity_images.length - 2);
+			}
 			// }
 
 			return null;
@@ -387,7 +386,6 @@ public class Main extends BLEBaseFragmentActivity implements
 					.setImageResource(connectivity_images[values[0]]);
 		}
 	}
-
 
 	@Override
 	public void onDeviceFound() {
@@ -444,6 +442,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		((ImageView) findViewById(R.id.connectivity))
 				.setImageResource(connectivity_images[1]);
 	}
+
 	@Override
 	public void onError(int errorType) {
 		pd.dismiss();
@@ -452,64 +451,65 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onDisconnected() {
 		super.onDisconnected();
-		if(inBackground)
-		{
+		if (inBackground) {
 			finish();
 			return;
 		}
-//		if (!this.inBackground ) {
-			showMessage("Disconnected");
-			setUiState();
-			((ImageView) findViewById(R.id.connectivity))
-					.setImageResource(connectivity_images[0]);
-//			if(wristbandTask!=null)
-//			{
-//			wristbandTask.cancel(true);
-//			wristbandTask.pd.dismiss();
-//			}
-			if(!isInLandscapeActivity && !isInPreferenceActivity)
-			{
-				connect();
-			}
-//
-//			new AlertDialog.Builder(this)
-//					.setTitle(R.string.wristband_disconnected)
-//					.setMessage(R.string.do_you_want_to_reconnect)
-//					.setPositiveButton(R.string.popup_yes,
-//							new DialogInterface.OnClickListener() {
-//								public void onClick(DialogInterface dialog,
-//										int which) {
-//									// continue with delete
-//									connect();
-//								}
-//							})
-//					.setNegativeButton(R.string.popup_no,
-//							new DialogInterface.OnClickListener() {
-//								public void onClick(DialogInterface dialog,
-//										int which) {
-//									// do nothing
-//									// finish();
-//								}
-//							}).show();
-//		}
+		// if (!this.inBackground ) {
+		showMessage("Disconnected");
+		setUiState();
+		((ImageView) findViewById(R.id.connectivity))
+				.setImageResource(connectivity_images[0]);
+		// if(wristbandTask!=null)
+		// {
+		// wristbandTask.cancel(true);
+		// wristbandTask.pd.dismiss();
+		// }
+		if (!isInLandscapeActivity && !isInPreferenceActivity) {
+			connect();
+		}
+		//
+		// new AlertDialog.Builder(this)
+		// .setTitle(R.string.wristband_disconnected)
+		// .setMessage(R.string.do_you_want_to_reconnect)
+		// .setPositiveButton(R.string.popup_yes,
+		// new DialogInterface.OnClickListener() {
+		// public void onClick(DialogInterface dialog,
+		// int which) {
+		// // continue with delete
+		// connect();
+		// }
+		// })
+		// .setNegativeButton(R.string.popup_no,
+		// new DialogInterface.OnClickListener() {
+		// public void onClick(DialogInterface dialog,
+		// int which) {
+		// // do nothing
+		// // finish();
+		// }
+		// }).show();
+		// }
 	}
+
 	@Override
-	public void connect()
-	{
+	public void connect() {
 		super.connect();
 
 	}
+
 	@Override
 	public void onReady() {
 		super.onReady();
 		setUiState();
 		showMessage("BLE Ready");
+		// prepareToConnect();
 		new UpdateConnectivityTask().execute();
 	}
-	
+
 	@Override
 	public void onServiceDiscovered() {
-		if(!inBackground)pd.show();
+		if (!inBackground)
+			pd.show();
 		super.onServiceDiscovered();
 		setUiState();
 		showMessage("Service Discovered");
@@ -520,81 +520,56 @@ public class Main extends BLEBaseFragmentActivity implements
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = prefs.edit();
-		Log.v(TAG,"Set "+getString(R.string.pref_last_sync_time) +" "+ Utilities.getCurrentDate());
+		Log.v(TAG, "Set " + getString(R.string.pref_last_sync_time) + " "
+				+ Utilities.getCurrentDate());
 		editor.putString(getString(R.string.pref_last_sync_time),
 				Utilities.getCurrentDate());
 		editor.commit();
 		mStartUpState = WristbandStartupConstant.CONNECT;
-		
-		
-		
-		
-//		if(wristbandTask!=null)
-//		{
-//			wristbandTask.cancel(true);
-//			wristbandTask = null;
-//		}
-//		wristbandTask = 
-//		new WristbandTask().execute();
+
+		// if(wristbandTask!=null)
+		// {
+		// wristbandTask.cancel(true);
+		// wristbandTask = null;
+		// }
+		// wristbandTask =
+		// new WristbandTask().execute();
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(4000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		getSerial();
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		checkState(mStartUpState);
 
 	}
 
-	/*private class WristbandTask extends AsyncTask<Void, Integer, Void> {
-
-//		private ProgressDialog pd;
-
-		@Override
-		protected void onPreExecute() {
-//			pd = new ProgressDialog(mContext);
-//			pd.setTitle("Processing...");
-//			pd.setMessage("Please wait.");
-//			pd.setCancelable(false);
-//			pd.setIndeterminate(true);
-//			pd.show();
-		}
-
-		@Override
-		protected Void doInBackground(Void... params) {
-
-			try {
-				
-				Thread.sleep(2000);
-				getSerial();
-				Thread.sleep(2000);
-				checkState(mStartUpState);
-			} catch (Exception e) {
-				Log.v(TAG, e.getMessage());
-			}
-
-			return null;
-		}
-
-		@Override
-		protected void onProgressUpdate(Integer... values) {
-//			if (isCancelled()) {
-//				pd.dismiss();
-//			}
-		}
-
-		@Override
-		protected void onPostExecute(Void result) {
-//			pd.dismiss();
-		}
-	}*/
+	/*
+	 * private class WristbandTask extends AsyncTask<Void, Integer, Void> {
+	 * 
+	 * // private ProgressDialog pd;
+	 * 
+	 * @Override protected void onPreExecute() { // pd = new
+	 * ProgressDialog(mContext); // pd.setTitle("Processing..."); //
+	 * pd.setMessage("Please wait."); // pd.setCancelable(false); //
+	 * pd.setIndeterminate(true); // pd.show(); }
+	 * 
+	 * @Override protected Void doInBackground(Void... params) {
+	 * 
+	 * try {
+	 * 
+	 * Thread.sleep(2000); getSerial(); Thread.sleep(2000);
+	 * checkState(mStartUpState); } catch (Exception e) { Log.v(TAG,
+	 * e.getMessage()); }
+	 * 
+	 * return null; }
+	 * 
+	 * @Override protected void onProgressUpdate(Integer... values) { // if
+	 * (isCancelled()) { // pd.dismiss(); // } }
+	 * 
+	 * @Override protected void onPostExecute(Void result) { // pd.dismiss(); }
+	 * }
+	 */
 
 	@Override
 	public void onStreamMessage(int steps, int calories, float distance,
@@ -608,7 +583,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		s += "activityTime : " + activityTime + "\n";
 		s += "batteryLevel : " + batteryLevel + "\n";
 		// new UpdateConnectivityTask().execute();
-//		Log.v(TAG, s);
+		// Log.v(TAG, s);
 		try {
 
 			frag.onStreamMessage(steps, calories, distance, activityTime,
@@ -618,7 +593,8 @@ public class Main extends BLEBaseFragmentActivity implements
 			Log.e(TAG, "frag is null");
 			// e.printStackTrace();
 		}
-		super.onStreamMessage(steps, calories, distance, activityTime, batteryLevel);
+		super.onStreamMessage(steps, calories, distance, activityTime,
+				batteryLevel);
 	}
 
 	@Override
@@ -655,7 +631,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		showMessage(s);
 		mStartUpState = WristbandStartupConstant.SYNC_USER_PROFILE;
 		checkState(mStartUpState);
-		
+
 	}
 
 	@Override
@@ -689,12 +665,13 @@ public class Main extends BLEBaseFragmentActivity implements
 		showMessage(s);
 		mStartUpState = WristbandStartupConstant.SYNC_WAKE_UP_TIME;
 		checkState(mStartUpState);
-		super.onReadSleep(weekday_hour, weekday_minute, weekend_hour, weekend_minute, toggle);
+		super.onReadSleep(weekday_hour, weekday_minute, weekend_hour,
+				weekend_minute, toggle);
 	}
 
 	@Override
 	public void onReadTarget(int duration, int toggle, long step, int distance,
-			int calories)  {
+			int calories) {
 		// TODO Auto-generated method stub
 		String s = "";
 		s += "Wristband Set Target :\n";
@@ -728,7 +705,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		showMessage("Unknown Message");
 		showMessage(s);
 		showMessage(_msg);
-//		super.onReadUnknownProtocol(value);
+		// super.onReadUnknownProtocol(value);
 
 	}
 
@@ -745,21 +722,25 @@ public class Main extends BLEBaseFragmentActivity implements
 		showMessage("ReadVersion " + s);
 		mStartUpState = WristbandStartupConstant.GET_SOFTWARE_VERSION;
 		checkState(mStartUpState);
-		super.onReadVersion( xx, yy) ;
+		super.onReadVersion(xx, yy);
 	}
+
 	@Override
 	public void onReadSerial(byte serial[]) {
-		Charset charset = Charset.forName("UTF-8"); 
+		Charset charset = Charset.forName("UTF-8");
 		CharSequence seq2 = new String(serial, charset);
-		Log.v(TAG,"Serial : "+seq2);
+		Log.v(TAG, "Serial : " + seq2);
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.putString(getString(R.string.pref_serial), "0000000000");
 		// Commit the edits!
 		editor.commit();
-		
+
 		super.onReadSerial(serial);
+
+		mStartUpState = WristbandStartupConstant.CONNECT;
+		checkState(mStartUpState);
 	}
 
 	@Override
@@ -769,57 +750,63 @@ public class Main extends BLEBaseFragmentActivity implements
 		checkState(mStartUpState);
 		super.onReadHistoryData(value);
 	}
-	
-	public static boolean isApplicationBroughtToBackground(final Activity activity) {
-		  ActivityManager activityManager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-		  List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(1);
 
-		  // Check the top Activity against the list of Activities contained in the Application's package.
-		  if (!tasks.isEmpty()) {
-		    ComponentName topActivity = tasks.get(0).topActivity;
-		    try {
-		      PackageInfo pi = activity.getPackageManager().getPackageInfo(activity.getPackageName(), PackageManager.GET_ACTIVITIES);
-		      for (ActivityInfo activityInfo : pi.activities) {
-		        if(topActivity.getClassName().equals(activityInfo.name)) {
-		          return false;
-		        }
-		      }
-		    } catch( PackageManager.NameNotFoundException e) {
-		      return false; // Never happens.
-		    }
-		  }
-		  return true;
+	public static boolean isApplicationBroughtToBackground(
+			final Activity activity) {
+		ActivityManager activityManager = (ActivityManager) activity
+				.getSystemService(Context.ACTIVITY_SERVICE);
+		List<ActivityManager.RunningTaskInfo> tasks = activityManager
+				.getRunningTasks(1);
+
+		// Check the top Activity against the list of Activities contained in
+		// the Application's package.
+		if (!tasks.isEmpty()) {
+			ComponentName topActivity = tasks.get(0).topActivity;
+			try {
+				PackageInfo pi = activity.getPackageManager().getPackageInfo(
+						activity.getPackageName(),
+						PackageManager.GET_ACTIVITIES);
+				for (ActivityInfo activityInfo : pi.activities) {
+					if (topActivity.getClassName().equals(activityInfo.name)) {
+						return false;
+					}
+				}
+			} catch (PackageManager.NameNotFoundException e) {
+				return false; // Never happens.
+			}
 		}
+		return true;
+	}
+
 	@Override
-	public void onConnectionTimeout()
-	{
-		if(!this.isDestroyed())
-		{
-		new AlertDialog.Builder(this)
-		.setTitle(R.string.connection_time_out)
-		.setMessage(R.string.do_you_want_to_reconnect)
-		.setPositiveButton(R.string.popup_retry,
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,
-							int which) {
-						// continue with delete
-						connect();
-					}
-				})
-		.setNegativeButton(R.string.popup_quite,
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,
-							int which) {
-						// do nothing
-						 finish();
-					}
-				})
-		.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,
-							int which) {
-						
-					}	
-				}).show();
+	public void onConnectionTimeout() {
+		if (!this.isDestroyed()) {
+			new AlertDialog.Builder(this)
+					.setTitle(R.string.connection_time_out)
+					.setMessage(R.string.do_you_want_to_reconnect)
+					.setPositiveButton(R.string.popup_retry,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// continue with delete
+									connect();
+								}
+							})
+					.setNegativeButton(R.string.popup_quite,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// do nothing
+									finish();
+								}
+							})
+					.setNeutralButton(R.string.cancel,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+
+								}
+							}).show();
 		}
 		super.onConnectionTimeout();
 	}
@@ -836,56 +823,164 @@ public class Main extends BLEBaseFragmentActivity implements
 		case WristbandStartupConstant.DISCONNECT:
 			break;
 		case WristbandStartupConstant.CONNECT: {
-			try {
-				SharedPreferences sharedPreferences = PreferenceManager
-						.getDefaultSharedPreferences(this);
+			// try {
+			Log.v(TAG, "checkState set Profile");
+			try{
+			SharedPreferences sharedPreferences = PreferenceManager
+					.getDefaultSharedPreferences(this);
 
-				Calendar c = DatePreference.getDateFor(sharedPreferences,
-						"prefDateOfBirth");
+			Calendar c = DatePreference.getDateFor(sharedPreferences,
+					"prefDateOfBirth");
 
-				String gender = sharedPreferences.getString("prefUserGender",
-						getString(R.string.default_user_gender));
+			String gender = sharedPreferences.getString("prefUserGender",
+					"Female");
 
-				int height = Integer.valueOf(sharedPreferences.getString(
-						"prefHeight", getString(R.string.default_user_height)));
+			int height = sharedPreferences.getInt("prefHeight", 170);
 
-				int weight = Integer.valueOf(sharedPreferences.getString(
-						"prefWeight", getString(R.string.default_user_weight)));
-				Log.v(TAG,"set Profile");
-				setProfile((gender.equals("Male")) ? 0 : 1,
-						c.get(Calendar.YEAR), c.get(Calendar.MONTH), weight,
-						height);
-			} catch (Exception e) {
-				Log.e(TAG, e.getMessage());
+			int weight = sharedPreferences.getInt("prefWeight", 50);
+
+			Log.v(TAG, "set Profile");
+
+			setProfile((gender.equals("Male")) ? 0 : 1, c.get(Calendar.YEAR),
+					c.get(Calendar.MONTH), weight, height);
 			}
+			catch(Exception e)
+			{
+				new AlertDialog.Builder(this)
+				.setTitle("Shit happen")
+				.setMessage("Set Profile")
+				.setNeutralButton(R.string.cancel,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+							}
+						}).show();
+			}
+			
 		}
 			break;
 		case WristbandStartupConstant.SYNC_USER_PROFILE:
-			setTarget(60, 1, 94184, 6, 1869);
+		// setTarget(60, 1, 94184, 6, 1869);
+		{
+			try{
+			SharedPreferences sharedPreferences = PreferenceManager
+					.getDefaultSharedPreferences(this);
+
+			setTarget(Integer.valueOf(sharedPreferences.getString(
+					getString(R.string.pref_targetActivity), "30")),
+					(sharedPreferences.getBoolean(
+							getString(R.string.pref_toggle_target), false)) ? 0
+							: 1, sharedPreferences.getInt(
+							getString(R.string.pref_targetSteps), 10000),
+					sharedPreferences.getInt(
+							getString(R.string.pref_targetDistances), 7),
+					sharedPreferences.getInt(
+							getString(R.string.pref_targetCalories), 1000));
+			}catch(Exception e)
+			{
+				new AlertDialog.Builder(this)
+				.setTitle("Shit happen")
+				.setMessage("Set Target")
+				.setNeutralButton(R.string.cancel,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+							}
+						}).show();
+			}
+		}
 			break;
 		case WristbandStartupConstant.SYNC_DAILY_TARGET:
-			setSleep(12, 0, 23, 0, 3);
+		// setSleep(12, 0, 23, 0, 3);
+		{
+			try{
+			SharedPreferences sharedPreferences = PreferenceManager
+					.getDefaultSharedPreferences(this);
+			// Map<String,?> keys = sharedPreferences.getAll();
+			//
+			// for(Map.Entry<String,?> entry : keys.entrySet()){
+			// Log.d("map values",entry.getKey() + ": " +
+			// entry.getValue().toString());
+			// }
+			//
+			String weekday = sharedPreferences.getString(
+					getString(R.string.pref_weekday), "7:00");
+			String weekend = sharedPreferences.getString(
+					getString(R.string.pref_weekend), "8:00");
+			Boolean do_wakeup_weekday = sharedPreferences.getBoolean(
+					getString(R.string.pref_week_up_weekday), false);
+			Boolean do_wakeup_weekend = sharedPreferences.getBoolean(
+					getString(R.string.pref_week_up_weekend), false);
+			setSleep(TimePreference.getHour(weekday),
+					TimePreference.getMinute(weekday),
+					TimePreference.getHour(weekend),
+					TimePreference.getMinute(weekend), 
+					(do_wakeup_weekday && do_wakeup_weekend)?3:
+						(!do_wakeup_weekday && do_wakeup_weekend)?2:
+							(do_wakeup_weekday && !do_wakeup_weekend)?1:
+								0);
+			}
+			catch(Exception e)
+			{
+				new AlertDialog.Builder(this)
+				.setTitle("Shit Sleep")
+				.setMessage("Set Profile")
+				.setNeutralButton(R.string.cancel,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+							}
+						}).show();
+			}
+		}
 			break;
 		case WristbandStartupConstant.SYNC_WAKE_UP_TIME: {
+			try{
 			Calendar c = Calendar.getInstance();
 			setTime(c.get(Calendar.YEAR) - 2000, c.get(Calendar.MONTH) + 1,
 					c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.HOUR_OF_DAY),
 					c.get(Calendar.MINUTE), c.get(Calendar.SECOND),
 					c.get(Calendar.WEDNESDAY));
+			}catch(Exception e)
+			{
+				new AlertDialog.Builder(this)
+				.setTitle("Shit happen")
+				.setMessage("Set Time")
+				.setNeutralButton(R.string.cancel,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+							}
+						}).show();
+			}
 		}
 			break;
 		case WristbandStartupConstant.SYNC_TIME:
+			
 			getVersion();
 			break;
 		case WristbandStartupConstant.GET_SOFTWARE_VERSION:
 			onReadHistoryData(null);
 			break;
 		case WristbandStartupConstant.GET_HISTORY_DATA:
+			try{
 			startStream();
 			((ImageView) findViewById(R.id.connectivity))
 					.setImageResource(connectivity_images[connectivity_images.length - 1]);
 			mStartUpState = WristbandStartupConstant.START_STREAM;
 			checkState(mStartUpState);
+			}catch(Exception e)
+			{
+				new AlertDialog.Builder(this)
+				.setTitle("Shit happen")
+				.setMessage("Start Stream")
+				.setNeutralButton(R.string.cancel,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int which) {
+							}
+						}).show();
+			}
 			break;
 		case WristbandStartupConstant.START_STREAM:
 			Log.v(TAG, "Woo hooo start Streaming now");
@@ -915,12 +1010,9 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	public void onUserLeaveHint() {
-		if(!isInLandscapeActivity && !isInPreferenceActivity)
-		{
-			inBackground = true;//isApplicationBroughtToBackground(this);
-		}
-		else
-		{
+		if (!isInLandscapeActivity && !isInPreferenceActivity) {
+			inBackground = true;// isApplicationBroughtToBackground(this);
+		} else {
 			inBackground = false;
 		}
 		super.onUserLeaveHint();
@@ -982,5 +1074,4 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 	}
 
-	
 }
