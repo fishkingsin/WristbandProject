@@ -89,8 +89,8 @@ public class PreferencesActivity extends Activity {
 					
 				}
 			});
-			boolean isWeekday = sharedPreferences.getBoolean(getString(R.string.pref_week_up_weekday),false);
-			boolean isWeekend = sharedPreferences.getBoolean(getString(R.string.pref_week_up_weekend),false);
+//			boolean isWeekday = sharedPreferences.getBoolean(getString(R.string.pref_week_up_weekday),false);
+//			boolean isWeekend = sharedPreferences.getBoolean(getString(R.string.pref_week_up_weekend),false);
 			
 			pref = findPreference(getString(R.string.pref_unpair));
 			pref.setSummary(getString(R.string.serial)+"#:"+sharedPreferences.getString(

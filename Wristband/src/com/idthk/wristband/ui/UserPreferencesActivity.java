@@ -175,8 +175,8 @@ public class UserPreferencesActivity extends Activity {
 				SharedPreferences sharedPreferences, String key) {
 			// handle the preference change here'
 
-			Log.v(TAG, "key : " + sharedPreferences.toString() + " " + key
-					+ " " + sharedPreferences.getAll().toString());
+//			Log.v(TAG, "key : " + sharedPreferences.toString() + " " + key
+//					+ " " + sharedPreferences.getAll().toString());
 			Preference pref = findPreference(key);
 			if (key.equals("prefUserGender")) {
 				
