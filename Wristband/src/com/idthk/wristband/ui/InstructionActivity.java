@@ -96,5 +96,8 @@ public class InstructionActivity extends FragmentActivity implements ScreenSlide
 	        return numberOfPages;
 	    }
 	}
+	@Override
+	public void onBackPressed() {
+	}
 
 }
