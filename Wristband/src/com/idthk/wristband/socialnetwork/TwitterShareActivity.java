@@ -35,7 +35,7 @@ public class TwitterShareActivity extends Activity {
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		Intent intent = getIntent();
         String title = intent.getStringExtra(Main.TITLE);
-        String contentString = intent.getStringExtra(MainSlideFragment.TWITTER);
+        String contentString = intent.getStringExtra(MainFragment.TWITTER);
         ((TextView)findViewById(R.id.titlebar_textview)).setText(title);
         EditText editText = (EditText) findViewById(R.id.twitter_share_textfield);
         editText.append(contentString);

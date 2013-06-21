@@ -15,7 +15,7 @@ import org.bostonandroid.datepreference.DatePreference;
 import com.idthk.wristband.socialnetwork.FacebookShareActivity;
 import com.idthk.wristband.socialnetwork.TwitterShareActivity;
 import com.idthk.wristband.ui.R;
-import com.idthk.wristband.ui.MainSlideFragment.OnShareButtonClickedListener;
+import com.idthk.wristband.ui.MainFragment.OnShareButtonClickedListener;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -59,7 +59,7 @@ import com.idthk.wristband.api.*;
 public class Main extends BLEBaseFragmentActivity implements
 		MainFragmentPager.PagerChangedCallback,
 		StatisticFragmentPager.StatisticPagerChangedCallback,
-		MainSlideFragment.OnShareButtonClickedListener,
+		MainFragment.OnShareButtonClickedListener,
 		TabsFragment.OnFragmentTabbedListener {
 	class WristbandStartupConstant {
 		static final int DISCONNECT = 0x210;
@@ -94,7 +94,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	int mStartUpState = WristbandStartupConstant.DISCONNECT;
 
-	MainSlideFragment frag;
+	MainFragment frag;
 	OrientationEventListener orientationListener;
 	OnShareButtonClickedListener myShareButtonClickedListener;
 	
@@ -259,21 +259,21 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onShareButtonClicked(String s) {
 		// TODO Auto-generated method stub
-		if (s.equals(MainSlideFragment.FACEBOOK)) {
+		if (s.equals(MainFragment.FACEBOOK)) {
 			Intent intent = new Intent(this, FacebookShareActivity.class);
-			intent.putExtra(MainSlideFragment.FACEBOOK,
+			intent.putExtra(MainFragment.FACEBOOK,
 					"I'm going for my daily goal");
-			intent.putExtra(TITLE, MainSlideFragment.FACEBOOK);
+			intent.putExtra(TITLE, MainFragment.FACEBOOK);
 			startActivityForResult(intent, FACEBOOK_REQUEST);
 			overridePendingTransition(R.anim.slide_in_right,
 					R.anim.slide_out_left);
 
-		} else if (s.equals(MainSlideFragment.TWITTER)) {
+		} else if (s.equals(MainFragment.TWITTER)) {
 			Intent intent = new Intent(this, TwitterShareActivity.class);
 
-			intent.putExtra(MainSlideFragment.TWITTER,
+			intent.putExtra(MainFragment.TWITTER,
 					"I'm going for my daily goal");
-			intent.putExtra(TITLE, MainSlideFragment.TWITTER);
+			intent.putExtra(TITLE, MainFragment.TWITTER);
 			startActivityForResult(intent, TWITTER_REQUEST);
 			overridePendingTransition(R.anim.slide_in_right,
 					R.anim.slide_out_left);
@@ -296,7 +296,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		// TODO Auto-generated method stub
 
 		Intent intent = new Intent(this, PreferencesActivity.class);
-		intent.putExtra(MainSlideFragment.FACEBOOK,
+		intent.putExtra(MainFragment.FACEBOOK,
 				"I'm going for my daily goal");
 		isInPreferenceActivity = true;
 		startActivityForResult(intent, Main.USER_PREFERENCES_REQUEST);
@@ -823,7 +823,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	}
 
 	@Override
-	public void dispatchSelf(MainSlideFragment mainSlideFragment) {
+	public void dispatchSelf(MainFragment mainSlideFragment) {
 		// TODO Auto-generated method stub
 		frag = mainSlideFragment;
 		Log.v(TAG, "MainSlideFragment " + frag.toString());
@@ -974,7 +974,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 		try {
 
-			frag = (MainSlideFragment) fragment;
+			frag = (MainFragment) fragment;
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage());
 		}

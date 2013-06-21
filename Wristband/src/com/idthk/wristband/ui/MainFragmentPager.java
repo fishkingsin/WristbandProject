@@ -98,7 +98,7 @@ public class MainFragmentPager extends Fragment {
 		@Override
 		public Fragment getItem(int index) {
 			
-			return MainSlideFragment.create(index);
+			return MainFragment.create(index);
 		}
 
 		@Override

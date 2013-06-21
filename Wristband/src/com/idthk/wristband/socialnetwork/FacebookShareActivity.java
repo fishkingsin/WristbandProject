@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.idthk.wristband.ui.Main;
 import com.idthk.wristband.ui.R;
-import com.idthk.wristband.ui.MainSlideFragment;
+import com.idthk.wristband.ui.MainFragment;
 //import com.idthk.wristband.R.id;
 //import com.idthk.wristband.R.layout;
 import com.facebook.FacebookAuthorizationException;
@@ -263,7 +263,7 @@ public class FacebookShareActivity extends Activity implements OnCancelListener{
         uiHelper.onCreate(savedInstanceState);
         Intent intent = getIntent();
         String title = intent.getStringExtra(Main.TITLE);
-        String contentString = intent.getStringExtra(MainSlideFragment.FACEBOOK);
+        String contentString = intent.getStringExtra(MainFragment.FACEBOOK);
         ((TextView)findViewById(R.id.titlebar_textview)).setText(title);
         EditText editText = (EditText) findViewById(R.id.facebook_share_textfield);
         editText.append(contentString);

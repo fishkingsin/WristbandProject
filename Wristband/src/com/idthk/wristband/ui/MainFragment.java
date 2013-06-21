@@ -93,7 +93,7 @@ import com.jjoe64.graphview.GraphViewSeries;
  * {@link ScreenSlideActivity} samples.
  * </p>
  */
-public class MainSlideFragment extends Fragment implements
+public class MainFragment extends Fragment implements
 		SharedPreferences.OnSharedPreferenceChangeListener 
 		{
 	public static final String FACEBOOK = "Facebook";
@@ -129,7 +129,7 @@ public class MainSlideFragment extends Fragment implements
 	public interface OnShareButtonClickedListener {
 		public void onShareButtonClicked(String s);
 		
-		public void dispatchSelf(MainSlideFragment mainSlideFragment);
+		public void dispatchSelf(MainFragment mainSlideFragment);
 	}
 
 	/**
@@ -153,15 +153,15 @@ public class MainSlideFragment extends Fragment implements
 	 * given page number.
 	 */
 
-	public static MainSlideFragment create(int pageNumber) {
-		MainSlideFragment fragment = new MainSlideFragment();
+	public static MainFragment create(int pageNumber) {
+		MainFragment fragment = new MainFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_PAGE, pageNumber);
 		fragment.setArguments(args);
 		return fragment;
 	}
 
-	public MainSlideFragment() {
+	public MainFragment() {
 	}
 	@Override
 	public void onAttach(Activity activity) {
