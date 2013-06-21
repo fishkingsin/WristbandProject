@@ -281,7 +281,7 @@ public class MainFragment extends Fragment implements
 			((TextView) mRootView.findViewById(R.id.today_text_view))
 					.setText(sdf.format(cal.getTime()));
 
-			 new UpdateBarTask().execute();//currentActivityTime, currentDistanceProgress, currentCalories, currentSteps,currentBatteryLevel);
+//			 new UpdateBarTask().execute();//currentActivityTime, currentDistanceProgress, currentCalories, currentSteps,currentBatteryLevel);
 			
 				
 		} else {
@@ -318,7 +318,7 @@ public class MainFragment extends Fragment implements
 			publishSettings(sharedPreferences);
 			populateGraph(mRootView);
 //			mCallback.dispatchSelf(this);
-			new UpdateBarTask().execute();
+//			new UpdateBarTask().execute();
 		}
 
 		return mRootView;
@@ -533,51 +533,7 @@ public class MainFragment extends Fragment implements
 		}
 	}
 
-	private class UpdateBarTask extends AsyncTask<Void, Integer, Void> {
-
-		
-
-		@Override
-		protected Void doInBackground(Void... params) {
-			
-				Log.v("UpdateBarTask", "doInBackground");
-			publishProgress();
-			
-
-			return null;
-		}
-
-		@Override
-		protected void onProgressUpdate(Integer... values) {
-			if(mPageNumber==0)
-			{
-				m_stepsProgressBar.setProgress(currentSteps);
-				m_caloriesProgressBar.setProgress(currentCalories);
-				m_distancesProgressBar.setProgress((int) ((currentDistanceProgress/targetDistances)*100));
-				m_activityTimeProgressBar.setProgressInMins(currentActivityTime);
-				
-				target_steps_indicated_textview.setText(String.valueOf(currentSteps));
-				target_calories_indicated_textview.setText(String.valueOf(currentCalories));
-				target_distances_indicated_textview.setText(String.valueOf(currentDistanceProgress));
-				
-				steps_indicated_textview.setText(String.valueOf(currentSteps));
-				calories_indicated_textview.setText(String.valueOf(currentCalories));
-				distances_indicated_textview.setText(String.valueOf(currentDistanceProgress));
-			}
-			if(currentBatteryLevel <33 )
-			{
-				battery_indicated_imageview.setImageResource(R.drawable.battery_0);
-			}
-			else if(currentBatteryLevel >33 && currentBatteryLevel <66)
-			{
-				battery_indicated_imageview.setImageResource(R.drawable.battery_1);
-			}
-			else if(currentBatteryLevel >66)
-			{
-				battery_indicated_imageview.setImageResource(R.drawable.battery_2);
-			}
-		}
-	}
+	
 	
 	public void onStreamMessage(int steps, int calories,
 			float	 distance, int activityTime,
@@ -596,7 +552,55 @@ public class MainFragment extends Fragment implements
 		currentActivityTime = activityTime;
 		currentDistanceProgress = distance;
 		currentBatteryLevel = batteryLevel;
-		new UpdateBarTask().execute();
+		
+//		new UpdateBarTask().execute();
+		class UpdateBarTask extends AsyncTask<Void, Integer, Void> {
+
+			
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				//***sometime wont do
+					Log.v("UpdateBarTask", "doInBackground");
+				publishProgress();
+				
+
+				return null;
+			}
+
+			@Override
+			protected void onProgressUpdate(Integer... values) {
+				if(mPageNumber==0)
+				{
+					m_stepsProgressBar.setProgress(currentSteps);
+					m_caloriesProgressBar.setProgress(currentCalories);
+					m_distancesProgressBar.setProgress((int) ((currentDistanceProgress/targetDistances)*100));
+					m_activityTimeProgressBar.setProgressInMins(currentActivityTime);
+					
+					target_steps_indicated_textview.setText(String.valueOf(currentSteps));
+					target_calories_indicated_textview.setText(String.valueOf(currentCalories));
+					target_distances_indicated_textview.setText(String.valueOf(currentDistanceProgress));
+					
+					steps_indicated_textview.setText(String.valueOf(currentSteps));
+					calories_indicated_textview.setText(String.valueOf(currentCalories));
+					distances_indicated_textview.setText(String.valueOf(currentDistanceProgress));
+				}
+				if(currentBatteryLevel <33 )
+				{
+					battery_indicated_imageview.setImageResource(R.drawable.battery_0);
+				}
+				else if(currentBatteryLevel >33 && currentBatteryLevel <66)
+				{
+					battery_indicated_imageview.setImageResource(R.drawable.battery_1);
+				}
+				else if(currentBatteryLevel >66)
+				{
+					battery_indicated_imageview.setImageResource(R.drawable.battery_2);
+				}
+			}
+		}
+		UpdateBarTask myTask = new UpdateBarTask();
+		myTask.execute();
 	}
 	
 	
