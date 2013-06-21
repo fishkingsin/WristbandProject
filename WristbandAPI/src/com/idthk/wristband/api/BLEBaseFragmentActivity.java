@@ -1,6 +1,7 @@
 package com.idthk.wristband.api;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
@@ -353,7 +354,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 							}
 						} catch (Exception e) {
-
+							Log.v(TAG,e.getMessage());
 						}
 					}
 
@@ -401,18 +402,18 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 				Bundle _data = msg.getData();
 				final BluetoothDevice _device = _data
 						.getParcelable(BluetoothDevice.EXTRA_DEVICE);
-
-				List<BluetoothGattService> services = mService.mBluetoothGatt
-						.getServices(_device);
-				for (BluetoothGattService service : services) {
-					Log.v(TAG, "service " + service.getUuid().toString());
-					List<BluetoothGattCharacteristic> characteristics = service
-							.getCharacteristics();
-					for (BluetoothGattCharacteristic characteristic : characteristics) {
-						Log.v(TAG, "characteristic "
-								+ characteristic.getUuid().toString());
-					}
-				}
+//
+//				List<BluetoothGattService> services = mService.mBluetoothGatt
+//						.getServices(_device);
+//				for (BluetoothGattService service : services) {
+//					Log.v(TAG, "service " + service.getUuid().toString());
+//					List<BluetoothGattCharacteristic> characteristics = service
+//							.getCharacteristics();
+//					for (BluetoothGattCharacteristic characteristic : characteristics) {
+//						Log.v(TAG, "characteristic "
+//								+ characteristic.getUuid().toString());
+//					}
+//				}
 				mService.scan(false);
 
 				runOnUiThread(new Runnable() {
@@ -514,7 +515,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	public void prepareToConnect() {
 		// TODO Auto-generated method stub
-		if (mState == BLE_PROFILE_DISCONNECTED) {
+		if (mState == BLE_PROFILE_DISCONNECTED || mState == STATE_READY) {
 
 			connect();
 		}
@@ -612,12 +613,23 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 				WristbandBLEService.PE128_CHAR_XFER, data);
 	}
 
-	public void setTarget(int duration, int togggle, int step, int distance,
+	public void setTarget(int duration, int toggle, int step, int distance,
 			int calories) {
+		
+		String s = "";
+		s += "Wristband Set Target :\n";
+
+		s += "Activity duration " + duration + "minutes\n";
+		s += "Toggle Gauge" + toggle + "\n";
+		s += "Step " + step + "\n";
+		s += "Distance " + distance + "km \n";
+		s += "Calories " + calories + "kcal \n";
+		Log.v(TAG,s);
+		
 		byte data[] = WristbandBLEService.SET_TARGET_PREFIX;
 		int dataStart = 9;
 		data[dataStart] = (byte) duration;
-		data[dataStart + 1] = (byte) togggle;
+		data[dataStart + 1] = (byte) toggle;
 
 		int steps_high = step / 10000;
 		int steps_medium = (step - (steps_high) * 10000) / 100;
@@ -665,23 +677,23 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	public void connect() {
 		
 //		if (mState == BLE_PROFILE_DISCONNECTED) {
-			Log.v(TAG, "Connecting to BLE Device");
-			Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
-			for (BluetoothDevice pairedDevice : pairedDevices) {
-				boolean result = false;
-				result = mService.isBLEDevice(pairedDevice);
-				if (result == true) {
-
-					if (pairedDevice.getName().charAt(0) == 'A') {
-						mDevice = pairedDevice;
-						mService.connect(mDevice, false);
-
-						Log.v(TAG, "Device Name : "
-								+ mDevice.getName().toString());
-					}
-					onDeviceFound();
-				}
-			}
+//			Log.v(TAG, "Connecting to BLE Device");
+//			Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
+//			for (BluetoothDevice pairedDevice : pairedDevices) {
+//				boolean result = false;
+//				result = mService.isBLEDevice(pairedDevice);
+//				if (result == true) {
+//
+//					if (pairedDevice.getName().charAt(0) == 'A') {
+//						mDevice = pairedDevice;
+//						mService.connect(mDevice, false);
+//
+//						Log.v(TAG, "Device Name : "
+//								+ mDevice.getName().toString());
+//					}
+//					onDeviceFound();
+//				}
+//			}
 			if (mDevice == null) {
 				if (mService != null)
 				{
@@ -701,9 +713,10 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 //						}
 //					}.start();
 				}
-			} else {
-				mService.connect(mDevice, false);
 			}
+//				else {
+//				mService.connect(mDevice, false);
+//			}
 //		}
 	}
 	public int getState()
@@ -752,6 +765,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	public void onReady() {
 		mState = STATE_READY;
+		connect();
 	}
 
 	public void onServiceDiscovered() {
@@ -781,8 +795,10 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	}
 	public void onReadSerial(byte serial[]) {
-		String s = serial.toString();
-		Log.v(TAG,s);
+		Charset charset = Charset.forName("UTF-8"); 
+		CharSequence seq2 = new String(serial, charset);
+		Log.v(TAG,"Serial : "+seq2);
+		
 	}
 
 	public void onReadTime(int year, int month, int day, int hour, int minute,
@@ -803,7 +819,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 			int height) {
 		// TODO Auto-generated method stub
 		String s = "";
-		s += "Wristband Set Profile :\n";
+		s += "Wristband Read Profile :\n";
 		s += "GENDER : " + ((gender == 0) ? "Male" : "Female") + "\n";
 		s += "YEAR : " + (year) + "\n";
 		s += "MONTH : " + (month) + "\n";
@@ -843,7 +859,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 			int calories) {
 		// TODO Auto-generated method stub
 		String s = "";
-		s += "Wristband Set Target :\n";
+		s += "Wristband Read Target :\n";
 
 		s += "Activity duration " + duration + "minutes\n";
 		s += "Toggle Gauge" + toggle + "\n";
