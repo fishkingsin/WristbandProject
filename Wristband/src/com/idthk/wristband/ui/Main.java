@@ -135,12 +135,12 @@ public class Main extends BLEBaseFragmentActivity implements
 		pd.setCancelable(false);
 		pd.setIndeterminate(true);
 
-		 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		setContentView(R.layout.main);
 		// Intent intent = new Intent(this, BLEBaseActivity.class);
 		// startActivityForResult(intent, TO_INSTRUCTION_REQUEST);
 		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
+				.getDefaultSharedPreferences(this); 
 		firstTime = prefs.getBoolean(FIRST_TIME, true);
 		bRoateionView = prefs.getBoolean(
 				getString(R.string.pref_enable_rotation_view), false);
