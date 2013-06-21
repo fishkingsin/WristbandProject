@@ -554,22 +554,22 @@ public class MainFragment extends Fragment implements
 		currentBatteryLevel = batteryLevel;
 		
 //		new UpdateBarTask().execute();
-		class UpdateBarTask extends AsyncTask<Void, Integer, Void> {
-
-			
-
-			@Override
-			protected Void doInBackground(Void... params) {
-				//***sometime wont do
-					Log.v("UpdateBarTask", "doInBackground");
-				publishProgress();
-				
-
-				return null;
-			}
-
-			@Override
-			protected void onProgressUpdate(Integer... values) {
+//		class UpdateBarTask extends AsyncTask<Void, Integer, Void> {
+//
+//			
+//
+//			@Override
+//			protected Void doInBackground(Void... params) {
+//				//***sometime wont do
+//					Log.v("UpdateBarTask", "doInBackground");
+//				publishProgress();
+//				
+//
+//				return null;
+//			}
+//
+//			@Override
+//			protected void onProgressUpdate(Integer... values) {
 				if(mPageNumber==0)
 				{
 					m_stepsProgressBar.setProgress(currentSteps);
@@ -598,10 +598,10 @@ public class MainFragment extends Fragment implements
 					battery_indicated_imageview.setImageResource(R.drawable.battery_2);
 				}
 			}
-		}
-		UpdateBarTask myTask = new UpdateBarTask();
-		myTask.execute();
-	}
+//		}
+//		UpdateBarTask myTask = new UpdateBarTask();
+//		myTask.execute();
+//	}
 	
 	
 	
