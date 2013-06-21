@@ -7,8 +7,9 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent">
 		<LinearLayout 
+		    android:orientation="vertical"
 			android:layout_width="fill_parent"
-			android:layout_height="250dip"
+			android:layout_height="125dip"
 			android:id="@+id/graph1" />
 
 		<!-- <LinearLayout
