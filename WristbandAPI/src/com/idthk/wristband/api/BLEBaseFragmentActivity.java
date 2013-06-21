@@ -91,11 +91,12 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	@Override
 	public void onDestroy() {
+		Log.v(TAG,"onDestroy");
 		disconnect();
-//		if (mService != null) {
-//			mService.scan(false);
-//			mService.disconnect(mDevice);
-//		}
+		if (mService != null) {
+			mService.scan(false);
+			mService.disconnect(mDevice);
+		}
 
 		try {
 			unregisterReceiver(bleStatusChangeReceiver);
@@ -765,7 +766,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	public void onReady() {
 		mState = STATE_READY;
-		connect();
+
 	}
 
 	public void onServiceDiscovered() {
