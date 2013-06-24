@@ -74,9 +74,9 @@ public class InstructionActivity extends FragmentActivity implements ScreenSlide
 	            Intent data) {
 	        
 	        Log.v(TAG,"requestCode " + requestCode +" resultCode "+ resultCode);
-//	        if(requestCode==Main.TO_USER_PROFILE_REQUEST)
+	        if(requestCode==Main.TO_USER_PROFILE_REQUEST)
 	        {
-//	        	finish();
+	        	finish();
 	        }
 	    }
 	// Adapters
