@@ -26,7 +26,9 @@ import android.util.Log;
 //import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 //import android.widget.ArrayAdapter;
 //import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,6 +37,12 @@ public class StatisticFragment extends Fragment implements
 		LoaderCallbacks<Void> {
 	public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
 	private static final String TAG = "StatisticFragment";
+	private Button nextEntryButton;
+	private Button prevEntryButton;
+	View mRootView = null;
+	String message = null;
+	GraphView mGraphView = null;
+	GraphViewSeries series = null;
 
 	public static final StatisticFragment newInstance(String message) {
 		StatisticFragment f = new StatisticFragment();
@@ -47,73 +55,87 @@ public class StatisticFragment extends Fragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		String message = getArguments().getString(EXTRA_MESSAGE);
-		View mRootView = inflater.inflate(R.layout.statistic_fragment,
-				container, false);
-		TextView messageTextView = (TextView) mRootView
-				.findViewById(R.id.activity_indicator);
+		message = getArguments().getString(EXTRA_MESSAGE);
+		mRootView = inflater.inflate(R.layout.statistic_fragment, container,
+				false);
+		try {
+			nextEntryButton = (Button) mRootView
+					.findViewById(R.id.btn_next_entry);
+			nextEntryButton.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					// TODO Auto-generated method stub
+					publishGraph(message);
+				}
+
+			});
+			prevEntryButton = (Button) mRootView
+					.findViewById(R.id.btn_prev_entry);
+			prevEntryButton.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					// TODO Auto-generated method stub
+					publishGraph(message);
+				}
+
+			});
+		} catch (Exception e) {
+			Log.v(TAG, e.getMessage());
+		}
+		// TextView messageTextView = (TextView) mRootView
+		// .findViewById(R.id.activity_indicator);
+		publishGraph(message);
+		// test value
+		return mRootView;
+	}
+
+	private void publishGraph(String message) {
+		// TODO Auto-generated method stub
 		Random random = new Random();
-		int numBars = random.nextInt(50)+50;
-		Log.v(TAG,"message : "+message);
-		
-		if(message.equals(SleepStatisticTabFragment.TAB_WEEK))
-		{
+		int numBars = random.nextInt(50) + 50;
+		Log.v(TAG, "message : " + message);
+
+		if (message.equals(SleepStatisticTabFragment.TAB_WEEK)) {
 			numBars = 7;
-		}
-		else if(message.equals(SleepStatisticTabFragment.TAB_MONTH))
-		{
-			numBars =31;
-		}
-		else if(message.equals(SleepStatisticTabFragment.TAB_YEAR))
-		{
+		} else if (message.equals(SleepStatisticTabFragment.TAB_MONTH)) {
+			numBars = 31;
+		} else if (message.equals(SleepStatisticTabFragment.TAB_YEAR)) {
 			numBars = 12;
-		}
-		else if(message.equals(ActivityStatisticTabFragment.TAB_DAY))
-		{
+		} else if (message.equals(ActivityStatisticTabFragment.TAB_DAY)) {
 			numBars = 24;
-		}
-		else if(message.equals(ActivityStatisticTabFragment.TAB_WEEK))
-		{
+		} else if (message.equals(ActivityStatisticTabFragment.TAB_WEEK)) {
 			numBars = 7;
-		}
-		else if(message.equals(ActivityStatisticTabFragment.TAB_MONTH))
-		{
-			numBars =31;
-		}
-		else if(message.equals(ActivityStatisticTabFragment.TAB_YEAR))
-		{
+		} else if (message.equals(ActivityStatisticTabFragment.TAB_MONTH)) {
+			numBars = 31;
+		} else if (message.equals(ActivityStatisticTabFragment.TAB_YEAR)) {
 			numBars = 12;
 		}
-		
-		
-		messageTextView.setText(message);
 
-		//test value
-		
-		GraphViewData data[] = new GraphViewData[numBars];
+		// messageTextView.setText(message);
 
-		for (int i = 0; i < numBars; i++) {
-			data[i] = new GraphViewData(i, random.nextInt(9)+1);
-		}
-
-		GraphViewSeries exampleSeries = new GraphViewSeries(data);
+		// test value
 
 		// graph with dynamically genereated horizontal and vertical labels
 
-		GraphView mGraphView = new RoundBarGraphView(getActivity(), "");
-
+		mGraphView = new RoundBarGraphView(getActivity(), "");
 		mGraphView.setHorizontalLabels(new String[] {
 				getString(R.string.start), getString(R.string.end) });
 		mGraphView.setVerticalLabels(new String[] { getString(R.string.high),
 				getString(R.string.middle), getString(R.string.low) });
-		mGraphView.addSeries(exampleSeries); // data
 
-//		mGraphView.setViewPort(10, 5);
+		GraphViewData data[] = new GraphViewData[numBars];
+		for (int i = 0; i < numBars; i++) {
+			data[i] = new GraphViewData(i, random.nextInt(9) + 1);
+		}
+		series = new GraphViewSeries(data);
+
+		mGraphView.addSeries(series); // data
 		ViewGroup graph = ((ViewGroup) mRootView.findViewById(R.id.graph1));
-		
 		graph.addView(mGraphView);
-		//test value
-		return mRootView;
+		
+
 	}
 
 	@Override

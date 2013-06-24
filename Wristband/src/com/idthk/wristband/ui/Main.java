@@ -58,6 +58,8 @@ import android.widget.TextView;
 
 //import android.widget.Toast;
 import com.idthk.wristband.api.*;
+import com.idthk.wristband.database.DatabaseHandler;
+import com.idthk.wristband.database.Record;
 
 public class Main extends BLEBaseFragmentActivity implements
 		MainFragmentPager.PagerChangedCallback,
@@ -124,11 +126,13 @@ public class Main extends BLEBaseFragmentActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		/* Set Fullscreen, hide statusbar */
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		/* Hide title bar. This has to be placed before setContentView. */
-//		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		// requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+		createDBTable("activity_table");
+		createDBTable("sleep_table");
 		mContext = this;
 
 		pd = new ProgressDialog(mContext);
@@ -139,10 +143,8 @@ public class Main extends BLEBaseFragmentActivity implements
 
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		setContentView(R.layout.main);
-		// Intent intent = new Intent(this, BLEBaseActivity.class);
-		// startActivityForResult(intent, TO_INSTRUCTION_REQUEST);
 		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this); 
+				.getDefaultSharedPreferences(this);
 		firstTime = prefs.getBoolean(FIRST_TIME, true);
 		bRoateionView = prefs.getBoolean(
 				getString(R.string.pref_enable_rotation_view), false);
@@ -168,7 +170,7 @@ public class Main extends BLEBaseFragmentActivity implements
 				public void onOrientationChanged(int orientation) {
 					// TODO Auto-generated method stub
 					if (canShow(orientation) && bRoateionView) {
-						 startLandscapeActivity(orientation);
+						startLandscapeActivity(orientation);
 
 					}
 
@@ -176,26 +178,49 @@ public class Main extends BLEBaseFragmentActivity implements
 
 			};
 		}
-		// Intent intent = new Intent(this, FragmentPreferences
-		// .class);
-		// startActivityForResult(intent,ACTIVITY_REQUEST);
 
-		// Intent intent = new Intent(this, FacebookShareActivity.class);
-		// intent.putExtra(SlidePageFragment.FACEBOOK,
-		// "I'm going for my daily goal");
-		// intent.putExtra(TITLE , SlidePageFragment.FACEBOOK);
-		// this.startActivityForResult(intent,ACTIVITY_REQUEST);//,bundle);
-		// this.startActivityForResult(new Intent(this,
-		// TwitterShareActivity.class),ACTIVITY_REQUEST);
-		// this.startActivity(new Intent(this, SimpleGraph.class));
+	}
 
+	private void createDBTable(String string) {
+		DatabaseHandler db = new DatabaseHandler(this,string,null,1);
+
+		/**
+		 * CRUD Operations
+		 * */
+		// Inserting Contacts
+		Log.d("Insert: ", "Inserting ..");
+		db.addRecord(new Record(Calendar.getInstance().getTimeInMillis(), 30));
+		db.addRecord(new Record(Calendar.getInstance().getTimeInMillis(), 60));
+		db.addRecord(new Record(Calendar.getInstance().getTimeInMillis(), 120));
+		db.addRecord(new Record(Calendar.getInstance().getTimeInMillis(), 90));
+
+		// Reading all contacts
+		Log.d("Reading: ", "Reading all Record from "+string+" ...");
+		List<Record> records = db.getAllRecords();
+
+		for (Record cn : records) {
+			String log = "Id: " + cn.getID()
+					+ " ,Timestamp: " +cn.getTimeStamp()
+					+ " ,Date: " + DatePreference.summaryFormatter().format(cn.getCalendar().getTime())
+					+ " ,Year: " + cn.getYear()
+					+ " ,Month: " + cn.getMonth()
+					+ " ,Week of Year: " + cn.getWeekofYear()
+					+ " ,Day: " + cn.getDay()
+					+ " ,Hour: " + cn.getHour()
+					
+					+ " ,Minutes: " + cn.getMinutes();
+			// Writing Contacts to log
+			Log.d("Name: ", log);
+		}
+		
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		
+
 		super.onSaveInstanceState(outState);
 	}
+
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
@@ -217,10 +242,9 @@ public class Main extends BLEBaseFragmentActivity implements
 		Log.v(TAG, "requestCode " + requestCode + " resultCode " + resultCode);
 		if (requestCode == USER_PREFERENCES_REQUEST) {
 			isInPreferenceActivity = false;
-			if(mTabHost!=null)
-			{
+			if (mTabHost != null) {
 				mTabHost.setCurrentTab(0);
-			}	
+			}
 		} else if (requestCode == TO_INSTRUCTION_REQUEST) {
 			// if (mState == BLE_PROFILE_DISCONNECTED) {
 
@@ -298,16 +322,16 @@ public class Main extends BLEBaseFragmentActivity implements
 		// TODO Auto-generated method stub
 		((TextView) findViewById(R.id.titlebar_textview)).setText(s);
 		if (TabsFragment.TAB_SETTINGS.equals(s)) {
-//			disconnect();
 			showSetting();
 		}
 
 	}
+
 	@Override
-	public void dispatchTabhost(TabHost tabHost)
-	{
+	public void dispatchTabhost(TabHost tabHost) {
 		mTabHost = tabHost;
 	}
+
 	private void showSetting() {
 		// TODO Auto-generated method stub
 
@@ -340,10 +364,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		super.onPause();
 		if (orientationListener != null)
 			orientationListener.disable();
-		// if (mState == BLE_PROFILE_CONNECTED) {
-		//
-		// disconnect();
-		// }
+
 		if (inBackground) {
 			if (mConnectionTimeout != null)
 				mConnectionTimeout.cancel();
@@ -362,7 +383,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			}.start();
 			Log.v(TAG, "I think i am going into background");
 		} else {
-//			disconnect();
+
 		}
 	}
 
@@ -393,7 +414,6 @@ public class Main extends BLEBaseFragmentActivity implements
 			if (getState() == BLE_PROFILE_CONNECTED) {
 				publishProgress(connectivity_images.length - 2);
 			}
-			// }
 
 			return null;
 		}
@@ -407,13 +427,12 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	public void onDeviceFound() {
-		
-		
+
 	}
 
 	@Override
 	public void onStatisticPagerChangedCallback(int page) {
-		if (findViewById(R.id.titlebar_textview)!=null) {
+		if (findViewById(R.id.titlebar_textview) != null) {
 			// TODO Auto-generated method stub
 			if (page == 0) {
 				((TextView) findViewById(R.id.titlebar_textview))
@@ -440,7 +459,8 @@ public class Main extends BLEBaseFragmentActivity implements
 	private void setUiState() {
 		switch (getState()) {
 		case BLE_PROFILE_CONNECTED:
-			showMessage("STATE_CONNECTED::device name" + mService.mDevice.getName());
+			showMessage("STATE_CONNECTED::device name"
+					+ mService.mDevice.getName());
 
 			break;
 		case BLE_PROFILE_DISCONNECTED:
@@ -528,8 +548,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	public void onServiceDiscovered() {
-//		if (!inBackground)
-//			pd.show();
+
 		super.onServiceDiscovered();
 		setUiState();
 		showMessage("Service Discovered");
@@ -1055,7 +1074,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	// }
 	@Override
 	public void onPagerChangedCallback(int position) {
-		if (findViewById(R.id.titlebar_textview)!=null) {
+		if (findViewById(R.id.titlebar_textview) != null) {
 			// TODO Auto-generated method stub
 			if (position == MainFragmentPager.ACTIVITY) {
 				((TextView) findViewById(R.id.titlebar_textview))
