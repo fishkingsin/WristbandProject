@@ -22,7 +22,8 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-
+import android.view.Window;
+import android.view.Window;
 /**
  * Demonstration of PreferenceFragment, showing a single fragment in an
  * activity.
@@ -32,6 +33,7 @@ public class FragmentPreferences extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,  R.layout.title_bar);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         // Display the fragment as the main content.
         getFragmentManager().beginTransaction().replace(android.R.id.content,

@@ -53,6 +53,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 //import android.widget.Toast;
@@ -95,7 +96,8 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	int mStartUpState = WristbandStartupConstant.DISCONNECT;
 
-	MainFragment frag;
+	MainFragment frag = null;
+	TabHost mTabHost = null;
 	OrientationEventListener orientationListener;
 	OnShareButtonClickedListener myShareButtonClickedListener;
 
@@ -166,7 +168,7 @@ public class Main extends BLEBaseFragmentActivity implements
 				public void onOrientationChanged(int orientation) {
 					// TODO Auto-generated method stub
 					if (canShow(orientation) && bRoateionView) {
-						// startLandscapeActivity(orientation);
+						 startLandscapeActivity(orientation);
 
 					}
 
@@ -203,11 +205,9 @@ public class Main extends BLEBaseFragmentActivity implements
 	public void prepareToConnect() {
 		Log.v(TAG, "prepareToConnect");
 		if (!firstTime) {
-			// TODO Auto-generated method stub
-			// if (mState == BLE_PROFILE_DISCONNECTED) {
 
 			connect();
-			// }
+
 		}
 
 	}
@@ -217,6 +217,10 @@ public class Main extends BLEBaseFragmentActivity implements
 		Log.v(TAG, "requestCode " + requestCode + " resultCode " + resultCode);
 		if (requestCode == USER_PREFERENCES_REQUEST) {
 			isInPreferenceActivity = false;
+			if(mTabHost!=null)
+			{
+				mTabHost.setCurrentTab(0);
+			}	
 		} else if (requestCode == TO_INSTRUCTION_REQUEST) {
 			// if (mState == BLE_PROFILE_DISCONNECTED) {
 
@@ -230,7 +234,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	private void startLandscapeActivity(int orientation) {
 		isInLandscapeActivity = true;
-		disconnect();
+
 		Intent intent = new Intent(this, LandscapeActivity.class);
 		if (isLandscapeLeft(orientation)) {
 			intent.putExtra(Main.TARGET_ORIENTTION,
@@ -294,12 +298,16 @@ public class Main extends BLEBaseFragmentActivity implements
 		// TODO Auto-generated method stub
 		((TextView) findViewById(R.id.titlebar_textview)).setText(s);
 		if (TabsFragment.TAB_SETTINGS.equals(s)) {
-			disconnect();
+//			disconnect();
 			showSetting();
 		}
 
 	}
-
+	@Override
+	public void dispatchTabhost(TabHost tabHost)
+	{
+		mTabHost = tabHost;
+	}
 	private void showSetting() {
 		// TODO Auto-generated method stub
 
@@ -399,7 +407,8 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	public void onDeviceFound() {
-
+		
+		
 	}
 
 	@Override
@@ -431,7 +440,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	private void setUiState() {
 		switch (getState()) {
 		case BLE_PROFILE_CONNECTED:
-			showMessage("STATE_CONNECTED::device name" + mDevice.getName());
+			showMessage("STATE_CONNECTED::device name" + mService.mDevice.getName());
 
 			break;
 		case BLE_PROFILE_DISCONNECTED:
@@ -506,7 +515,6 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void connect() {
 		super.connect();
-
 	}
 
 	@Override

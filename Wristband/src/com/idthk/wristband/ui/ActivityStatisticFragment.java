@@ -46,7 +46,7 @@ public class ActivityStatisticFragment extends Fragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		String message = getArguments().getString(EXTRA_MESSAGE);
-		View mRootView = inflater.inflate(R.layout.activity_statistic_fragment,
+		View mRootView = inflater.inflate(R.layout.statistic_fragment,
 				container, false);
 		TextView messageTextView = (TextView) mRootView
 				.findViewById(R.id.activity_indicator);

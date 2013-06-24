@@ -27,6 +27,7 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.util.Log;
+import android.view.Window;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ public class PreferencesActivity extends Activity {
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,  R.layout.title_bar);
 		setContentView(R.layout.user_profile);
 
 		int targetPreferenceResource = R.xml.preferences;
@@ -49,9 +51,7 @@ public class PreferencesActivity extends Activity {
 		
 		mContext = this;
 	}
-    @Override
-    public void onBackPressed() {
-	}
+
 	public static class UserPrefsFragment extends PreferenceFragment implements
 			SharedPreferences.OnSharedPreferenceChangeListener {
 		static final String ARG_XML = "xml";

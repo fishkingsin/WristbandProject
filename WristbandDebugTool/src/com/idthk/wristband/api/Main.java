@@ -62,7 +62,7 @@ public class Main extends BLEBaseActivity {
 					public void onClick(View v) {
 						showMessage("Trying to connect BLE");
 						showMessage("Turn on Device now");
-						connect();
+//						connect();
 					}
 				});
 
@@ -71,7 +71,7 @@ public class Main extends BLEBaseActivity {
 					@Override
 					public void onClick(View v) {
 
-						disconnect();
+//						disconnect();
 
 					}
 				});
@@ -156,8 +156,8 @@ public class Main extends BLEBaseActivity {
 				.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						if (mDevice != null)
-							mService.enableWristbandNotification(mDevice);
+						
+							mService.enableWristbandNotification();
 					}
 				});
 
@@ -184,7 +184,7 @@ public class Main extends BLEBaseActivity {
 
 		switch (mState) {
 		case BLE_PROFILE_CONNECTED:
-			showMessage("STATE_CONNECTED::device name" + mDevice.getName());
+			showMessage("STATE_CONNECTED::device name" + mService.mDevice.getName());
 
 			break;
 		case BLE_PROFILE_DISCONNECTED:
@@ -338,5 +338,10 @@ public class Main extends BLEBaseActivity {
 	public void onReadVersion(int xx, int yy) {
 		String s = "ReadVersion " + Integer.valueOf(xx-30) + "-" + Integer.valueOf(yy-30);
 		showMessage(s);
+	}
+	@Override
+    public void onBackPressed() {
+		super.onBackPressed();
+	
 	}
 }

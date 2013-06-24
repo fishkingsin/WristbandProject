@@ -34,6 +34,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 
 public class UserPreferencesActivity extends Activity {
@@ -42,6 +43,7 @@ public class UserPreferencesActivity extends Activity {
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,  R.layout.title_bar);
 		setContentView(R.layout.user_profile);
 		mContext = this;
 		int targetPreferenceResource = R.xml.userprofile_preferences;
@@ -52,9 +54,7 @@ public class UserPreferencesActivity extends Activity {
 		
 	}
 
-	@Override
-	public void onBackPressed() {
-	}
+
 
 	public static class UserPrefsFragment extends PreferenceFragment implements
 			SharedPreferences.OnSharedPreferenceChangeListener {

@@ -41,6 +41,7 @@ public class TabsFragment extends Fragment implements OnTabChangeListener {
 	private Context mContext;
     public interface OnFragmentTabbedListener {
         public void onTabbed(String s);
+        public void dispatchTabhost(TabHost tabHost);
     }
 	@Override
 	public void onAttach(Activity activity) {
@@ -85,7 +86,7 @@ public class TabsFragment extends Fragment implements OnTabChangeListener {
 				R.id.tab_2));
 		mTabHost.addTab(newTab(TAB_SETTINGS, R.string.tab_settings,
 				R.id.tab_3));
-
+		mCallback.dispatchTabhost(mTabHost);
 	}
 
 	private TabSpec newTab(String tag, int labelId, int tabContentId) {
