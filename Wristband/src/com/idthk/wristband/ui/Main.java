@@ -20,6 +20,7 @@ import com.idthk.wristband.ui.MainFragment.OnShareButtonClickedListener;
 import com.idthk.wristband.ui.landscape.ActivityLandscapeActivity;
 import com.idthk.wristband.ui.landscape.LandscapeActivity;
 import com.idthk.wristband.ui.landscape.SleepLandscapeActivity;
+import com.idthk.wristband.ui.landscape.StatisticLandscapeActivity;
 import com.idthk.wristband.ui.preference.TimePreference;
 
 import android.app.Activity;
@@ -74,7 +75,10 @@ public class Main extends BLEBaseFragmentActivity implements
 		MainFragmentPager.PagerChangedCallback,
 		StatisticFragmentPager.StatisticPagerChangedCallback,
 		MainFragment.OnShareButtonClickedListener,
-		TabsFragment.OnFragmentTabbedListener {
+		TabsFragment.OnFragmentTabbedListener,
+		ActivityStatisticTabFragment.OnFragmentTabbedListener,
+		SleepStatisticTabFragment.OnFragmentTabbedListener
+		{
 	class WristbandStartupConstant {
 		static final int DISCONNECT = 0x210;
 		static final int CONNECT = 0x211;
@@ -136,6 +140,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	// alarm
 	final static private long ONE_SECOND = 1000;
 	final static private long TWENTY_SECONDS = ONE_SECOND * 20;
+	
 	AlarmManager am;
 	PendingIntent pi;
 	BroadcastReceiver br;
@@ -288,6 +293,16 @@ public class Main extends BLEBaseFragmentActivity implements
 
 		} else if (requestCode == LANSCAPE_REQUEST) {
 			isInLandscapeActivity = false;
+			 if(data!=null)
+			 {
+			   Bundle conData = data.getExtras();
+			   if(conData.get(LandscapeActivity.LANDSCAPE_ACTIVITY_TAG).equals(LandscapeActivity.FINISH_APP))
+			   {
+				   finish();
+			   
+			   }
+			 }
+			   
 		}
 	}
 
@@ -295,13 +310,15 @@ public class Main extends BLEBaseFragmentActivity implements
 		isInLandscapeActivity = true;
 
 		Intent intent = null;
+		Bundle bundle = new Bundle();
 		if (currentView.equals("Activity")) {
 			intent = new Intent(this, ActivityLandscapeActivity.class);
 		} else if (currentView.equals("Sleep")) {
 			intent = new Intent(this, SleepLandscapeActivity.class);
 		} else if (currentView.equals("Activity Level")
 				|| currentView.equals("Sleep Level")) {
-			intent = new Intent(this, LandscapeActivity.class);
+//			bundle.putString(KEY_RANGE, value)
+			intent = new Intent(this, StatisticLandscapeActivity.class);
 		}
 		if (intent != null) {
 			if (isLandscapeLeft(orientation)) {
@@ -311,6 +328,8 @@ public class Main extends BLEBaseFragmentActivity implements
 				intent.putExtra(Main.TARGET_ORIENTTION,
 						ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
 			}
+			
+			intent.putExtra(LandscapeActivity.LANDSCAPE_BUNDLE, bundle);
 			startActivityForResult(intent, LANSCAPE_REQUEST);
 		}
 	}
@@ -389,6 +408,8 @@ public class Main extends BLEBaseFragmentActivity implements
 		intent.putExtra(MainFragment.FACEBOOK, "I'm going for my daily goal");
 		isInPreferenceActivity = true;
 		startActivityForResult(intent, Main.USER_PREFERENCES_REQUEST);
+		overridePendingTransition(R.anim.slide_in_right,
+				R.anim.slide_out_left);
 	}
 
 	@Override
@@ -1152,6 +1173,18 @@ public class Main extends BLEBaseFragmentActivity implements
 			}
 		}
 
+	}
+
+	@Override
+	public void onActivityStatisticTabbed(String s) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSleepStatisticTabbed(String s) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	// @Override
