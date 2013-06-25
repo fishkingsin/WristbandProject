@@ -33,7 +33,20 @@ public class MainFragmentPager extends Fragment {
 		public void onPagerChangedCallback(int page);
 		
 	}
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
 
+		// This makes sure that the container activity has implemented
+		// the callback interface. If not, it throws an exception
+		try {
+			mCallback = (PagerChangedCallback) activity;
+//			mCallback.onPagerChangedCallback(mCurrentPage);
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnHeadlineSelectedListener");
+		}
+	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -44,7 +57,7 @@ public class MainFragmentPager extends Fragment {
 		mMyFragmentPagerAdapter = new MyFragmentPagerAdapter(
 				getFragmentManager());
 		mViewPager.setAdapter(mMyFragmentPagerAdapter);
-
+		mCallback.onPagerChangedCallback(ACTIVITY);
 		mViewPager
 				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
@@ -68,25 +81,12 @@ public class MainFragmentPager extends Fragment {
 
 	@Override
 	public void onResume() {
-
+//		mCallback.onPagerChangedCallback(mCurrentPage);
 		super.onResume();
 
 	}
 
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-
-		// This makes sure that the container activity has implemented
-		// the callback interface. If not, it throws an exception
-		try {
-			mCallback = (PagerChangedCallback) activity;
-			mCallback.onPagerChangedCallback(ACTIVITY);
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString()
-					+ " must implement OnHeadlineSelectedListener");
-		}
-	}
+	
 
 	private static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 //		SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();

@@ -119,11 +119,13 @@ public class TabsFragment extends Fragment implements OnTabChangeListener {
 		Log.d(TAG, "onTabChanged(): tabId=" + tabId);
 
 		if (TAB_MAIN.equals(tabId)) {
+
 			updateTabMain(tabId, R.id.tab_1);
 			mCurrentTab = 0;
 			return;
 		}
 		if (TAB_FRAGMENT_TAB.equals(tabId)) {
+
 			updateTabFragTab(tabId, R.id.tab_2);
 			mCurrentTab = 1;
 			return;
@@ -159,6 +161,7 @@ public class TabsFragment extends Fragment implements OnTabChangeListener {
 
 			fm.beginTransaction()
 					.replace(placeholder, new StatisticFragmentPager(), tabId).commit();
+			mCallback.onTabbed("Activity Level");
 		}
 		else
 		{
@@ -174,10 +177,12 @@ public class TabsFragment extends Fragment implements OnTabChangeListener {
 			// gonna to manage actvitiy here
 			fm.beginTransaction()
 			.replace(placeholder, new MainFragmentPager(), tabId)
+			.addToBackStack(tabId)
 			.commit();
 //			fm.beginTransaction()
 //					.replace(placeholder, new ScrollPagerMain(), tabId)
 //					.commit();
+			mCallback.onTabbed("Activity");
 		}
 		else
 		{

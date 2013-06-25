@@ -46,7 +46,22 @@ public class StatisticFragmentPager extends Fragment {
     public interface StatisticPagerChangedCallback {
         public void onStatisticPagerChangedCallback(int page);
     }
-	
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mCallback = (StatisticPagerChangedCallback) activity;
+            
+//            mCallback.onStatisticPagerChangedCallback(mCurrentPage);
+            
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
+    }
 	@Override
 	 public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	   Bundle savedInstanceState) {
@@ -82,29 +97,14 @@ public class StatisticFragmentPager extends Fragment {
 	@Override 
 	public void onResume()
 	{
-		if(mCallback!=null)
-		{
-			mCallback.onStatisticPagerChangedCallback(mCurrentPage);
-		}
+//		if(mCallback!=null)
+//		{
+//			mCallback.onStatisticPagerChangedCallback(mCurrentPage);
+//		}
 		super.onResume();
 		
 	}
-	@Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            mCallback = (StatisticPagerChangedCallback) activity;
-            
-            mCallback.onStatisticPagerChangedCallback(mCurrentPage);
-            
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnHeadlineSelectedListener");
-        }
-    }
+	
 	private static class MyStatisticFragmentPagerAdapter extends FragmentPagerAdapter {
 
         public MyStatisticFragmentPagerAdapter(FragmentManager fm) {

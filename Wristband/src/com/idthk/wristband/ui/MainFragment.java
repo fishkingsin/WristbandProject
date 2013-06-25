@@ -101,7 +101,7 @@ public class MainFragment extends Fragment implements
 	 * The argument key for the page number this fragment represents.
 	 */
 	public static final String ARG_PAGE = "page";
-	public static final String TAG = "MainSlideFragment";
+	public static final String TAG = "MainFragment";
 	private ViewGroup mRootView;
 	private OnShareButtonClickedListener mCallback;
 	private CustomProgressBar m_activityTimeProgressBar;
@@ -181,7 +181,12 @@ public class MainFragment extends Fragment implements
 		Main mainActivity = (Main) activity;
 
 	}
-
+	@Override
+	public void onResume()
+	{
+		Log.v(TAG,"onResume");
+		super.onResume();
+	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -572,7 +577,7 @@ public class MainFragment extends Fragment implements
 		s += "distance : " + distance + "\n";
 		s += "activityTime : " + activityTime + "\n";
 		s += "batteryLevel : " + batteryLevel + "\n";
-		Log.v(TAG, s);
+//		Log.v(TAG, s);
 		currentSteps = steps;
 		currentCalories = calories;
 		currentActivityTime = activityTime;

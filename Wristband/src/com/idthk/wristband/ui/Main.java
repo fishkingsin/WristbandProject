@@ -17,17 +17,24 @@ import com.idthk.wristband.socialnetwork.FacebookShareActivity;
 import com.idthk.wristband.socialnetwork.TwitterShareActivity;
 import com.idthk.wristband.ui.R;
 import com.idthk.wristband.ui.MainFragment.OnShareButtonClickedListener;
+import com.idthk.wristband.ui.landscape.ActivityLandscapeActivity;
+import com.idthk.wristband.ui.landscape.LandscapeActivity;
+import com.idthk.wristband.ui.landscape.SleepLandscapeActivity;
 import com.idthk.wristband.ui.preference.TimePreference;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
@@ -39,6 +46,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -55,6 +63,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 //import android.widget.Toast;
 import com.idthk.wristband.api.*;
@@ -103,6 +112,8 @@ public class Main extends BLEBaseFragmentActivity implements
 	OrientationEventListener orientationListener;
 	OnShareButtonClickedListener myShareButtonClickedListener;
 
+	String currentView = "Activity";
+
 	Context mContext;
 	Integer connectivity_images[] = { R.drawable.wireless_connection_icon_0,
 			R.drawable.wireless_connection_icon_1,
@@ -122,17 +133,39 @@ public class Main extends BLEBaseFragmentActivity implements
 	private boolean isInPreferenceActivity;
 	private boolean bRoateionView;
 
+	// alarm
+	final static private long ONE_SECOND = 1000;
+	final static private long TWENTY_SECONDS = ONE_SECOND * 20;
+	AlarmManager am;
+	PendingIntent pi;
+	BroadcastReceiver br;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		br = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context c, Intent i) {
+
+			}
+		};
+		registerReceiver(br, new IntentFilter("com.authorwjf.wakeywakey"));
+		// pi = PendingIntent.getBroadcast( this, 0, new
+		// Intent("com.authorwjf.wakeywakey"),
+
+		am = (AlarmManager) (this.getSystemService(Context.ALARM_SERVICE));
+		am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+				SystemClock.elapsedRealtime() + TWENTY_SECONDS, pi);
+
 		/* Set Fullscreen, hide statusbar */
-//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		// getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+		// WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		/* Hide title bar. This has to be placed before setContentView. */
 		// requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-		createDBTable("activity_table");
-		createDBTable("sleep_table");
+		// createDBTable("activity_table");
+		// createDBTable("sleep_table");
 		mContext = this;
 
 		pd = new ProgressDialog(mContext);
@@ -182,7 +215,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	}
 
 	private void createDBTable(String string) {
-		DatabaseHandler db = new DatabaseHandler(this,string,null,1);
+		DatabaseHandler db = new DatabaseHandler(this, string, null, 1);
 
 		/**
 		 * CRUD Operations
@@ -195,24 +228,26 @@ public class Main extends BLEBaseFragmentActivity implements
 		db.addRecord(new Record(Calendar.getInstance().getTimeInMillis(), 90));
 
 		// Reading all contacts
-		Log.d("Reading: ", "Reading all Record from "+string+" ...");
+		Log.d("Reading: ", "Reading all Record from " + string + " ...");
 		List<Record> records = db.getAllRecords();
 
 		for (Record cn : records) {
-			String log = "Id: " + cn.getID()
-					+ " ,Timestamp: " +cn.getTimeStamp()
-					+ " ,Date: " + DatePreference.summaryFormatter().format(cn.getCalendar().getTime())
-					+ " ,Year: " + cn.getYear()
-					+ " ,Month: " + cn.getMonth()
-					+ " ,Week of Year: " + cn.getWeekofYear()
-					+ " ,Day: " + cn.getDay()
-					+ " ,Hour: " + cn.getHour()
-					
+			String log = "Id: "
+					+ cn.getID()
+					+ " ,Timestamp: "
+					+ cn.getTimeStamp()
+					+ " ,Date: "
+					+ DatePreference.summaryFormatter().format(
+							cn.getCalendar().getTime()) + " ,Year: "
+					+ cn.getYear() + " ,Month: " + cn.getMonth()
+					+ " ,Week of Year: " + cn.getWeekofYear() + " ,Day: "
+					+ cn.getDay() + " ,Hour: " + cn.getHour()
+
 					+ " ,Minutes: " + cn.getMinutes();
 			// Writing Contacts to log
 			Log.d("Name: ", log);
 		}
-		
+
 	}
 
 	@Override
@@ -259,15 +294,25 @@ public class Main extends BLEBaseFragmentActivity implements
 	private void startLandscapeActivity(int orientation) {
 		isInLandscapeActivity = true;
 
-		Intent intent = new Intent(this, LandscapeActivity.class);
-		if (isLandscapeLeft(orientation)) {
-			intent.putExtra(Main.TARGET_ORIENTTION,
-					ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		} else {
-			intent.putExtra(Main.TARGET_ORIENTTION,
-					ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+		Intent intent = null;
+		if (currentView.equals("Activity")) {
+			intent = new Intent(this, ActivityLandscapeActivity.class);
+		} else if (currentView.equals("Sleep")) {
+			intent = new Intent(this, SleepLandscapeActivity.class);
+		} else if (currentView.equals("Activity Level")
+				|| currentView.equals("Sleep Level")) {
+			intent = new Intent(this, LandscapeActivity.class);
 		}
-		startActivityForResult(intent, LANSCAPE_REQUEST);
+		if (intent != null) {
+			if (isLandscapeLeft(orientation)) {
+				intent.putExtra(Main.TARGET_ORIENTTION,
+						ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			} else {
+				intent.putExtra(Main.TARGET_ORIENTTION,
+						ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+			}
+			startActivityForResult(intent, LANSCAPE_REQUEST);
+		}
 	}
 
 	private boolean isLandscapeRight(int orientation) {
@@ -323,6 +368,11 @@ public class Main extends BLEBaseFragmentActivity implements
 		((TextView) findViewById(R.id.titlebar_textview)).setText(s);
 		if (TabsFragment.TAB_SETTINGS.equals(s)) {
 			showSetting();
+			
+		}
+		else 
+		{
+			currentView = s;
 		}
 
 	}
@@ -357,6 +407,13 @@ public class Main extends BLEBaseFragmentActivity implements
 			// You just returned from another activity within your own app
 			Log.v(TAG, "returned from another activity within your own app");
 		}
+	}
+
+	@Override
+	public void onDestroy() {
+		am.cancel(pi);
+		unregisterReceiver(br);
+		super.onDestroy();
 	}
 
 	@Override
@@ -432,6 +489,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	public void onStatisticPagerChangedCallback(int page) {
+		Log.v(TAG, "onStatisticPagerChangedCallback " + page);
 		if (findViewById(R.id.titlebar_textview) != null) {
 			// TODO Auto-generated method stub
 			if (page == 0) {
@@ -439,6 +497,7 @@ public class Main extends BLEBaseFragmentActivity implements
 						.setText("Activity Level");
 				((Button) findViewById(R.id.btn_settings_done))
 						.setVisibility(View.GONE);
+				currentView = "Activity Level";
 			}
 
 			else if (page == 1) {
@@ -446,6 +505,7 @@ public class Main extends BLEBaseFragmentActivity implements
 						.setText("Sleep Level");
 				((Button) findViewById(R.id.btn_settings_done))
 						.setVisibility(View.GONE);
+				currentView = "Sleep Level";
 			}
 		}
 	}
@@ -854,7 +914,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	public void dispatchSelf(MainFragment mainSlideFragment) {
 		// TODO Auto-generated method stub
 		frag = mainSlideFragment;
-		Log.v(TAG, "MainSlideFragment " + frag.toString());
+		// Log.v(TAG, "MainSlideFragment " + frag.toString());
 	}
 
 	private void checkState(int state) {
@@ -1074,6 +1134,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	// }
 	@Override
 	public void onPagerChangedCallback(int position) {
+		Log.v(TAG, "onPagerChangedCallback " + position);
 		if (findViewById(R.id.titlebar_textview) != null) {
 			// TODO Auto-generated method stub
 			if (position == MainFragmentPager.ACTIVITY) {
@@ -1081,11 +1142,13 @@ public class Main extends BLEBaseFragmentActivity implements
 						.setText("Activity");
 				((Button) findViewById(R.id.btn_settings_done))
 						.setVisibility(View.GONE);
+				currentView = "Activity";
 			} else if (position == MainFragmentPager.SLEEP) {
 				((TextView) findViewById(R.id.titlebar_textview))
 						.setText("Sleep");
 				((Button) findViewById(R.id.btn_settings_done))
 						.setVisibility(View.GONE);
+				currentView = "Sleep";
 			}
 		}
 

@@ -49,7 +49,7 @@ public class ActivityStatisticFragment extends Fragment implements
 		View mRootView = inflater.inflate(R.layout.statistic_fragment,
 				container, false);
 		TextView messageTextView = (TextView) mRootView
-				.findViewById(R.id.activity_indicator);
+				.findViewById(R.id.graph_view_title_indicator);
 		messageTextView.setText(message);
 
 		//test value
