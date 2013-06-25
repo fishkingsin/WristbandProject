@@ -1,0 +1,30 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_bg_color"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+<include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/graph_view_controller" />
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="151dp"
+        android:layout_weight="1.25"
+        layout="@layout/graphs" />
+
+    <!-- <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal" > -->
+
+        <include
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            layout="@layout/sleep_indicator_landscape"
+            android:gravity="center_horizontal" />
+    <!-- </LinearLayout> -->
+
+</LinearLayout>
