@@ -97,6 +97,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		Cursor cursor = db.query(TABLE_RECORDS, new String[] { KEY_ID,
 				KEY_TIMESTAMP, KEY_MINUTES }, KEY_ID + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
+		Log.v(TAG,cursor.toString());
 		if (cursor != null)
 			cursor.moveToFirst();
 
@@ -132,7 +133,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return recordList;
 	}
 	
-	public List<Record> getRecordsByMonth(int startMonth , int endMonth) {
+	public List<Record> getRecordsByMonth(int month) {
 		List<Record> recordList = new ArrayList<Record>();
 		// Select All Query
 		String selectQuery = "SELECT  * FROM " + TABLE_RECORDS;
