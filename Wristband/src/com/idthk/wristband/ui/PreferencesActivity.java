@@ -38,8 +38,8 @@ public class PreferencesActivity extends Activity {
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,  R.layout.title_bar);
-		setContentView(R.layout.user_profile);
+		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,
+				R.layout.title_bar);
 
 		int targetPreferenceResource = R.xml.preferences;
 
@@ -48,8 +48,14 @@ public class PreferencesActivity extends Activity {
 				.replace(android.R.id.content,
 						UserPrefsFragment.create(targetPreferenceResource))
 				.commit();
-		
+
 		mContext = this;
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 
 	public static class UserPrefsFragment extends PreferenceFragment implements
@@ -74,45 +80,59 @@ public class PreferencesActivity extends Activity {
 			SharedPreferences sharedPreferences = PreferenceManager
 					.getDefaultSharedPreferences(this.getActivity());
 			sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-			
+
 			Preference pref = findPreference(getString(R.string.pref_targetActivity));
 			pref.setSummary(sharedPreferences.getString(
-					getString(R.string.pref_targetActivity),
-					"0"));
+					getString(R.string.pref_targetActivity), "0"));
+
 			pref = findPreference(getString(R.string.pref_user_manual));
 			pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
-
-				    
 					return false;
-					
 				}
 			});
-//			boolean isWeekday = sharedPreferences.getBoolean(getString(R.string.pref_week_up_weekday),false);
-//			boolean isWeekend = sharedPreferences.getBoolean(getString(R.string.pref_week_up_weekend),false);
-			
+
+			pref = findPreference("prefUserProfile");
+			pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+					getActivity().overridePendingTransition(
+							R.anim.slide_in_right, R.anim.slide_out_left);
+					return false;
+
+				}
+			});
+			// boolean isWeekday =
+			// sharedPreferences.getBoolean(getString(R.string.pref_week_up_weekday),false);
+			// boolean isWeekend =
+			// sharedPreferences.getBoolean(getString(R.string.pref_week_up_weekend),false);
+
 			pref = findPreference(getString(R.string.pref_unpair));
-			pref.setSummary(getString(R.string.serial)+"#:"+sharedPreferences.getString(
-					getString(R.string.pref_serial),
-					getString(R.string.default_serial_summary)));
+			pref.setSummary(getString(R.string.serial)
+					+ "#:"
+					+ sharedPreferences.getString(
+							getString(R.string.pref_serial),
+							getString(R.string.default_serial_summary)));
 
 			try {
 				PackageInfo pInfo;
-				pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
+				pInfo = mContext.getPackageManager().getPackageInfo(
+						mContext.getPackageName(), 0);
 				PreferenceScreen prefScreen = (PreferenceScreen) findPreference(getString(R.string.App_Version));
-				
+
 				prefScreen.setSummary(pInfo.versionName);
-				
+
 				prefScreen = (PreferenceScreen) findPreference(getString(R.string.Wristband_Version));
-				
-				prefScreen.setSummary(String.valueOf(sharedPreferences.getString(getString(R.string.Wristband_Version),"0.0")));
+
+				prefScreen
+						.setSummary(String.valueOf(sharedPreferences.getString(
+								getString(R.string.Wristband_Version), "0.0")));
 			} catch (NameNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-			
 		}
 
 		@Override
@@ -129,34 +149,36 @@ public class PreferencesActivity extends Activity {
 				SharedPreferences sharedPreferences, String key) {
 			// handle the preference change here'
 			Preference pref = findPreference(key);
-			if(key.equals(getString(R.string.pref_targetActivity)))
-			{
-				
+			if (key.equals(getString(R.string.pref_targetActivity))) {
+
 				pref.setSummary(sharedPreferences.getString(
-						getString(R.string.pref_targetActivity),
-						"0"));
-				
+						getString(R.string.pref_targetActivity), "0"));
+
 			}
-			if(key.equals(getString(R.string.pref_week_up_weekday)) ||
-					key.equals(getString(R.string.pref_week_up_weekend)))
-			{
-				boolean isWeekday = sharedPreferences.getBoolean(getString(R.string.pref_week_up_weekday),false);
-				boolean isWeekend = sharedPreferences.getBoolean(getString(R.string.pref_week_up_weekend),false);
-				
-//				PreferenceScreen prefScreen = (PreferenceScreen) findPreference(getString(R.string.pref_week_up_time));
-//				String summary=((isWeekday==true)?"Weekday":" ")+((isWeekend == false)?"Weekend":" ");
-////				Log.v(TAG,"isWeekday "+isWeekday + " isWeekend "+isWeekday + "summary "+summary);
-//				prefScreen.setSummary(summary);
+			if (key.equals(getString(R.string.pref_week_up_weekday))
+					|| key.equals(getString(R.string.pref_week_up_weekend))) {
+				boolean isWeekday = sharedPreferences.getBoolean(
+						getString(R.string.pref_week_up_weekday), false);
+				boolean isWeekend = sharedPreferences.getBoolean(
+						getString(R.string.pref_week_up_weekend), false);
+
+				// PreferenceScreen prefScreen = (PreferenceScreen)
+				// findPreference(getString(R.string.pref_week_up_time));
+				// String summary=((isWeekday==true)?"Weekday":" ")+((isWeekend
+				// == false)?"Weekend":" ");
+				// // Log.v(TAG,"isWeekday "+isWeekday + " isWeekend "+isWeekday
+				// + "summary "+summary);
+				// prefScreen.setSummary(summary);
 			}
-			
-//			else if(key.equals(getString(R.string.target_step)))
-//			{
-//				
-//				pref.setSummary(sharedPreferences.getInt(
-//						getString(R.string.target_step),
-//						10000));
-//				
-//			}
+
+			// else if(key.equals(getString(R.string.target_step)))
+			// {
+			//
+			// pref.setSummary(sharedPreferences.getInt(
+			// getString(R.string.target_step),
+			// 10000));
+			//
+			// }
 
 		}
 	}
