@@ -41,8 +41,8 @@ public class StatisticFragment extends Fragment implements
 	private Button prevEntryButton;
 	View mRootView = null;
 	String message = null;
-	GraphView mGraphView = null;
-	GraphViewSeries series = null;
+//	GraphView mGraphView = null;
+//	GraphViewSeries series = null;
 
 	public static final StatisticFragment newInstance(String message) {
 		StatisticFragment f = new StatisticFragment();
@@ -66,7 +66,7 @@ public class StatisticFragment extends Fragment implements
 				@Override
 				public void onClick(View arg0) {
 					// TODO Auto-generated method stub
-					publishGraph(message);
+					publishGraph(((ViewGroup) mRootView.findViewById(R.id.graph1)),message);
 				}
 
 			});
@@ -77,7 +77,7 @@ public class StatisticFragment extends Fragment implements
 				@Override
 				public void onClick(View arg0) {
 					// TODO Auto-generated method stub
-					publishGraph(message);
+					publishGraph(((ViewGroup) mRootView.findViewById(R.id.graph1)),message);
 				}
 
 			});
@@ -86,19 +86,25 @@ public class StatisticFragment extends Fragment implements
 		}
 		// TextView messageTextView = (TextView) mRootView
 		// .findViewById(R.id.activity_indicator);
-		publishGraph(message);
+		publishGraph(((ViewGroup) mRootView.findViewById(R.id.graph1)),message);
 		// test value
 		return mRootView;
 	}
 
-	private void publishGraph(String message) {
+	public void publishGraph(ViewGroup graph, String message) {
+		//TO-DO
+		//retrive db data 
+		//port to graph
+		
+		graph.removeAllViews();
 		// TODO Auto-generated method stub
 		Random random = new Random();
 		int numBars = random.nextInt(50) + 50;
 		Log.v(TAG, "message : " + message);
-
+		String hStr[] = null; 
 		if (message.equals(SleepStatisticTabFragment.TAB_WEEK)) {
 			numBars = 7;
+			
 		} else if (message.equals(SleepStatisticTabFragment.TAB_MONTH)) {
 			numBars = 31;
 		} else if (message.equals(SleepStatisticTabFragment.TAB_YEAR)) {
@@ -119,20 +125,25 @@ public class StatisticFragment extends Fragment implements
 
 		// graph with dynamically genereated horizontal and vertical labels
 
-		mGraphView = new RoundBarGraphView(getActivity(), "");
-		mGraphView.setHorizontalLabels(new String[] {
-				getString(R.string.start), getString(R.string.end) });
-		mGraphView.setVerticalLabels(new String[] { getString(R.string.high),
-				getString(R.string.middle), getString(R.string.low) });
+		RoundBarGraphView mGraphView = new RoundBarGraphView(getActivity(), "");
+		hStr = new String[numBars];
+		
+		for(int i = 0; i < numBars ; i++)
+		{
+			hStr[i] = String.valueOf(i+1);
+		}
+		
+		mGraphView.setHorizontalLabels(hStr);
+		mGraphView.setVerticalLabels(new String[] { "120" , "90" , "60", "30" , "0"});
 
 		GraphViewData data[] = new GraphViewData[numBars];
 		for (int i = 0; i < numBars; i++) {
 			data[i] = new GraphViewData(i, random.nextInt(9) + 1);
 		}
-		series = new GraphViewSeries(data);
+		GraphViewSeries series = new GraphViewSeries(data);
 
 		mGraphView.addSeries(series); // data
-		ViewGroup graph = ((ViewGroup) mRootView.findViewById(R.id.graph1));
+
 		graph.addView(mGraphView);
 		
 
