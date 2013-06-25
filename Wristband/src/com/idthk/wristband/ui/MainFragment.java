@@ -115,7 +115,7 @@ public class MainFragment extends Fragment implements
 	private TextView goalStepsTv = null;
 	private TextView goalCaloriesTv = null;
 	private TextView goalDistancesTv = null;
-	private TextView userNameTv = null;
+//	private TextView userNameTv = null;
 	private GraphView mGraphView = null;
 
 	private TextView target_steps_indicated_textview = null;
@@ -125,7 +125,7 @@ public class MainFragment extends Fragment implements
 	private TextView steps_indicated_textview = null;
 	private TextView calories_indicated_textview = null;
 	private TextView distances_indicated_textview = null;
-	private ImageView battery_indicated_imageview = null;
+//	private ImageView battery_indicated_imageview = null;
 
 	public interface OnShareButtonClickedListener {
 		public void onShareButtonClicked(String s);
@@ -138,7 +138,7 @@ public class MainFragment extends Fragment implements
 	 * {@link #ARG_PAGE}.
 	 */
 	private int mPageNumber;
-	private TextView lastSyncTimeTv;
+//	private TextView lastSyncTimeTv;
 	static private int targetSteps = 1;
 	static private int targetCalories = 1;
 	static private int targetDistances = 1;
@@ -214,9 +214,9 @@ public class MainFragment extends Fragment implements
 		if (mPageNumber == 0) {
 			mRootView = (ViewGroup) inflater.inflate(
 					R.layout.main_scrollview_activity, container, false);
-			userNameTv = ((TextView) mRootView.findViewById(R.id.userNameTv));
-			lastSyncTimeTv = ((TextView) mRootView
-					.findViewById(R.id.last_sync_time_textview));
+//			userNameTv = ((TextView) mRootView.findViewById(R.id.userNameTv));
+//			lastSyncTimeTv = ((TextView) mRootView
+//					.findViewById(R.id.last_sync_time_textview));
 
 			m_activityTimeProgressBar = (CustomProgressBar) mRootView
 					.findViewById(R.id.target_progress_bar_large);
@@ -255,15 +255,15 @@ public class MainFragment extends Fragment implements
 
 			publishSettings(sharedPreferences);
 
-			String path = sharedPreferences.getString(
-					getString(R.string.pref_profile_pic), "");
-			// Log.v(TAG, "profile path : " + path);
-			if (path != "") {
-				Bitmap myBitmap = Utilities.decodeFile(new File(path),
-						this.getActivity());
-				((ImageView) mRootView.findViewById(R.id.profile_pic))
-						.setImageBitmap(myBitmap);
-			}
+//			String path = sharedPreferences.getString(
+//					getString(R.string.pref_profile_pic), "");
+//			// Log.v(TAG, "profile path : " + path);
+//			if (path != "") {
+//				Bitmap myBitmap = Utilities.decodeFile(new File(path),
+//						this.getActivity());
+//				((ImageView) mRootView.findViewById(R.id.profile_pic))
+//						.setImageBitmap(myBitmap);
+//			}
 			if (mRootView.findViewById(R.id.button_facebook_share) != null) {
 				((Button) mRootView.findViewById(R.id.button_facebook_share))
 						.setOnClickListener(new OnClickListener() {
@@ -282,10 +282,10 @@ public class MainFragment extends Fragment implements
 							}
 						});
 			}
-			if (mRootView.findViewById(R.id.battery_image) != null) {
-				battery_indicated_imageview = ((ImageView) mRootView
-						.findViewById(R.id.battery_image));
-			}
+//			if (mRootView.findViewById(R.id.battery_image) != null) {
+//				battery_indicated_imageview = ((ImageView) mRootView
+//						.findViewById(R.id.battery_image));
+//			}
 			final ScrollView scrollView = (ScrollView) mRootView
 					.findViewById(R.id.main_activity_scroll_view);
 
@@ -295,12 +295,12 @@ public class MainFragment extends Fragment implements
 				}
 			});
 
-			String s = "2012-05-08";
-			Calendar cal = Calendar.getInstance();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//			String s = "2012-05-08";
+//			Calendar cal = Calendar.getInstance();
+//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-			((TextView) mRootView.findViewById(R.id.today_text_view))
-					.setText(sdf.format(cal.getTime()));
+//			((TextView) mRootView.findViewById(R.id.today_text_view))
+//					.setText(sdf.format(cal.getTime()));
 
 			// new UpdateBarTask().execute();//currentActivityTime,
 			// currentDistanceProgress, currentCalories,
@@ -309,9 +309,9 @@ public class MainFragment extends Fragment implements
 		} else {
 			mRootView = (ViewGroup) inflater.inflate(
 					R.layout.main_scrollview_sleep, container, false);
-			userNameTv = ((TextView) mRootView.findViewById(R.id.userNameTv));
-			lastSyncTimeTv = ((TextView) mRootView
-					.findViewById(R.id.last_sync_time_textview));
+//			userNameTv = ((TextView) mRootView.findViewById(R.id.userNameTv));
+//			lastSyncTimeTv = ((TextView) mRootView
+//					.findViewById(R.id.last_sync_time_textview));
 			((Button) mRootView.findViewById(R.id.button_facebook_share))
 					.setOnClickListener(new OnClickListener() {
 						public void onClick(View m) {
@@ -326,19 +326,19 @@ public class MainFragment extends Fragment implements
 							mCallback.onShareButtonClicked(TWITTER);
 						}
 					});
-			if (mRootView.findViewById(R.id.battery_image) != null) {
-				battery_indicated_imageview = ((ImageView) mRootView
-						.findViewById(R.id.battery_image));
-			}
-			String path = sharedPreferences.getString(
-					getString(R.string.pref_profile_pic), "");
-			// Log.v(TAG, "profile path : " + path);
-			if (path != "") {
-				Bitmap myBitmap = Utilities.decodeFile(new File(path),
-						this.getActivity());
-				((ImageView) mRootView.findViewById(R.id.profile_pic))
-						.setImageBitmap(myBitmap);
-			}
+//			if (mRootView.findViewById(R.id.battery_image) != null) {
+//				battery_indicated_imageview = ((ImageView) mRootView
+//						.findViewById(R.id.battery_image));
+//			}
+//			String path = sharedPreferences.getString(
+//					getString(R.string.pref_profile_pic), "");
+//			// Log.v(TAG, "profile path : " + path);
+//			if (path != "") {
+//				Bitmap myBitmap = Utilities.decodeFile(new File(path),
+//						this.getActivity());
+//				((ImageView) mRootView.findViewById(R.id.profile_pic))
+//						.setImageBitmap(myBitmap);
+//			}
 
 			publishSettings(sharedPreferences);
 			populateGraph(mRootView);
@@ -452,11 +452,11 @@ public class MainFragment extends Fragment implements
 
 		}
 
-		if(lastSyncTimeTv!=null)lastSyncTimeTv.setText(prefs.getString(
-				getString(R.string.pref_last_sync_time),
-				getString(R.string.default_last_sync_time)));
-		if(userNameTv!=null)userNameTv.setText(prefs.getString(getString(R.string.pref_user_name),
-				getString(R.string.default_user_name)));
+//		if(lastSyncTimeTv!=null)lastSyncTimeTv.setText(prefs.getString(
+//				getString(R.string.pref_last_sync_time),
+//				getString(R.string.default_last_sync_time)));
+//		if(userNameTv!=null)userNameTv.setText(prefs.getString(getString(R.string.pref_user_name),
+//				getString(R.string.default_user_name)));
 	}
 
 	private void populateGraph(View mRootView) {
@@ -545,9 +545,9 @@ public class MainFragment extends Fragment implements
 					Log.e(TAG, "On error " + errr.getMessage());
 				}
 			} else if (key.equals(getString(R.string.pref_user_name))) {
-				userNameTv.setText(sharedPreferences.getString(
-						getString(R.string.pref_user_name),
-						getString(R.string.default_user_name)));
+//				userNameTv.setText(sharedPreferences.getString(
+//						getString(R.string.pref_user_name),
+//						getString(R.string.default_user_name)));
 			} else {
 				// Log.v(TAG, "key :" + key);
 			}
@@ -561,9 +561,9 @@ public class MainFragment extends Fragment implements
 
 		}
 		if (key.equals(getString(R.string.pref_last_sync_time))) {
-			lastSyncTimeTv.setText(sharedPreferences.getString(
-					getString(R.string.pref_last_sync_time),
-					getString(R.string.default_last_sync_time)));
+//			lastSyncTimeTv.setText(sharedPreferences.getString(
+//					getString(R.string.pref_last_sync_time),
+//					getString(R.string.default_last_sync_time)));
 		}
 	}
 
@@ -632,18 +632,18 @@ public class MainFragment extends Fragment implements
 				distances_indicated_textview.setText(String
 						.valueOf(currentDistanceProgress));
 		}
-		if (battery_indicated_imageview != null) {
-			if (currentBatteryLevel < 33) {
-				battery_indicated_imageview
-						.setImageResource(R.drawable.battery_0);
-			} else if (currentBatteryLevel > 33 && currentBatteryLevel < 66) {
-				battery_indicated_imageview
-						.setImageResource(R.drawable.battery_1);
-			} else if (currentBatteryLevel > 66) {
-				battery_indicated_imageview
-						.setImageResource(R.drawable.battery_2);
-			}
-		}
+//		if (battery_indicated_imageview != null) {
+//			if (currentBatteryLevel < 33) {
+//				battery_indicated_imageview
+//						.setImageResource(R.drawable.battery_0);
+//			} else if (currentBatteryLevel > 33 && currentBatteryLevel < 66) {
+//				battery_indicated_imageview
+//						.setImageResource(R.drawable.battery_1);
+//			} else if (currentBatteryLevel > 66) {
+//				battery_indicated_imageview
+//						.setImageResource(R.drawable.battery_2);
+//			}
+//		}
 	}
 	// }
 	// UpdateBarTask myTask = new UpdateBarTask();
