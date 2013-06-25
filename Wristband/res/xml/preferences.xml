@@ -18,25 +18,27 @@
 
 <!-- This is a primitive example showing the different types of preferences available. -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory android:title="@string/pref_user_profile" >
-        <PreferenceScreen android:title="@string/pref_user_profile" >
+        <PreferenceScreen
+            android:key="prefUserProfile" 
+            android:title="@string/pref_user_profile" >
             <intent
                 android:action="android.intent.action.VIEW"
                 android:targetClass="com.idthk.wristband.ui.UserPreferencesActivity"
                 android:targetPackage="com.idthk.wristband.ui" />
         </PreferenceScreen>
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pairing">
-    <com.idthk.wristband.ui.preference.MyDialogPreference
-         android:title="@string/unpair_wrist_band"
-         android:summary="@string/default_serial_summary"
-        android:dialogMessage="@string/are_you_sure" 
-        android:dialogTitle="@string/unpair_wrist_band" 
-        android:negativeButtonText="@string/no" 
-        android:positiveButtonText="@string/yes" 
-        android:key="@string/pref_unpair"/>
+    <PreferenceCategory android:title="@string/pairing" >
+        <com.idthk.wristband.ui.preference.MyDialogPreference
+            android:dialogMessage="@string/are_you_sure"
+            android:dialogTitle="@string/unpair_wrist_band"
+            android:key="@string/pref_unpair"
+            android:negativeButtonText="@string/no"
+            android:positiveButtonText="@string/yes"
+            android:summary="@string/default_serial_summary"
+            android:title="@string/unpair_wrist_band" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/activity" >
         <ListPreference
@@ -46,12 +48,12 @@
             android:entryValues="@array/pref_user_activity_entryvalues"
             android:key="@string/pref_targetActivity"
             android:title="@string/Daily_Activity_Target_mins" />
+
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pref_enable_rotation_view"
             android:title="@string/enable_rotation_view" >
         </CheckBoxPreference>
-
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pref_toggle_target"
@@ -60,18 +62,18 @@
 
         <com.idthk.wristband.ui.preference.NumberPickerPreference
             android:defaultValue="10000"
-            android:max="99999"
             android:key="@string/pref_targetSteps"
+            android:max="99999"
             android:title="@string/steps" />
         <com.idthk.wristband.ui.preference.NumberPickerPreference
             android:defaultValue="7"
-            android:max="99"
             android:key="@string/pref_targetDistances"
+            android:max="99"
             android:title="@string/distances" />
         <com.idthk.wristband.ui.preference.NumberPickerPreference
             android:defaultValue="1000"
-            android:max="99999"
             android:key="@string/pref_targetCalories"
+            android:max="99999"
             android:title="@string/calories" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/sleep" >
@@ -123,24 +125,29 @@
                 android:targetClass="com.idthk.wristband.ui.InstructionActivity"
                 android:targetPackage="com.idthk.wristband.ui" />
         </PreferenceScreen>
-        <PreferenceScreen android:title="@string/user_manual"
-            android:key ="@string/pref_user_manual" >
-             	<intent
+        <PreferenceScreen
+            android:key="@string/pref_user_manual"
+            android:title="@string/user_manual" >
+            <intent
                 android:action="android.intent.action.VIEW"
-                android:mimeType="application/pdf"
                 android:data="file://com.idthk.wristband.ui/assets/manual.pdf"
-                /> 
-            <!-- <intent
+                android:mimeType="application/pdf" />
+            <!--
+                 <intent
                 android:action="android.intent.action.VIEW"
                 android:targetClass="com.idthk.wristband.ui.MyPdfViewActivity"
-                android:targetPackage="com.idthk.wristband.ui" /> -->    
+                android:targetPackage="com.idthk.wristband.ui" />
+            -->
         </PreferenceScreen>
     </PreferenceCategory>
- <PreferenceScreen android:title="@string/App_Version" 
-     android:key="@string/App_Version" 
-     android:summary="@string/unknown" />
- <PreferenceScreen android:title="@string/Wristband_Version" 
-     android:key="@string/Wristband_Version" 
-     android:summary="@string/unknown" />
-     
+
+    <PreferenceScreen
+        android:key="@string/App_Version"
+        android:summary="@string/unknown"
+        android:title="@string/App_Version" />
+    <PreferenceScreen
+        android:key="@string/Wristband_Version"
+        android:summary="@string/unknown"
+        android:title="@string/Wristband_Version" />
+
 </PreferenceScreen>

@@ -12,11 +12,13 @@
 
     <include
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1.24"
         layout="@layout/graphs" />
 
     <include
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         layout="@layout/activity_indicator_landscape" />
-    
+
 </LinearLayout>
