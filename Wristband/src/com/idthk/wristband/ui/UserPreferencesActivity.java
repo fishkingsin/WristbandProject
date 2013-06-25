@@ -44,7 +44,7 @@ public class UserPreferencesActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,  R.layout.title_bar);
-		setContentView(R.layout.user_profile);
+		
 		mContext = this;
 		int targetPreferenceResource = R.xml.userprofile_preferences;
 		UserPrefsFragment fragment = UserPrefsFragment
@@ -53,7 +53,12 @@ public class UserPreferencesActivity extends Activity {
 				.replace(android.R.id.content, fragment).commit();
 		
 	}
-
+	@Override
+	public void onBackPressed()
+	{
+		super.onBackPressed();
+		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+	}
 
 
 	public static class UserPrefsFragment extends PreferenceFragment implements
