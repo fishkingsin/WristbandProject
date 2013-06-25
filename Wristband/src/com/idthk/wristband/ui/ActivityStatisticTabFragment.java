@@ -1,6 +1,7 @@
 package com.idthk.wristband.ui;
 
 import com.idthk.wristband.ui.R;
+import com.idthk.wristband.ui.TabsFragment.OnFragmentTabbedListener;
 
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
@@ -17,7 +18,9 @@ import android.widget.TextView;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 import android.widget.LinearLayout;
-public class ActivityStatisticTabFragment extends Fragment implements OnTabChangeListener {
+
+public class ActivityStatisticTabFragment extends Fragment implements
+		OnTabChangeListener {
 
 	private static final String TAG = "TabFragmentTab";
 	public static final String TAB_DAY = "tab_day";
@@ -30,23 +33,36 @@ public class ActivityStatisticTabFragment extends Fragment implements OnTabChang
 	private int mCurrentTab;
 	public static final String ARG_PAGE = "page";
 
-//	public static ActivityStatisticTabFragment create(int pageNumber) {
-//		ActivityStatisticTabFragment fragment = new ActivityStatisticTabFragment();
-//        Bundle args = new Bundle();
-//        args.putInt(ARG_PAGE, pageNumber);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
-//
-//	@Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        int mPageNumber = getArguments().getInt(ARG_PAGE);
-//        Log.v(TAG,"mPageNumber "+mPageNumber);
-//    }
+	public interface OnFragmentTabbedListener {
+		public void onActivityStatisticTabbed(String s);
+
+	}
+	OnFragmentTabbedListener mCallback;
+
+	// public static ActivityStatisticTabFragment create(int pageNumber) {
+	// ActivityStatisticTabFragment fragment = new
+	// ActivityStatisticTabFragment();
+	// Bundle args = new Bundle();
+	// args.putInt(ARG_PAGE, pageNumber);
+	// fragment.setArguments(args);
+	// return fragment;
+	// }
+	//
+	// @Override
+	// public void onCreate(Bundle savedInstanceState) {
+	// super.onCreate(savedInstanceState);
+	// int mPageNumber = getArguments().getInt(ARG_PAGE);
+	// Log.v(TAG,"mPageNumber "+mPageNumber);
+	// }
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
+		try {
+            mCallback = (OnFragmentTabbedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
 	}
 
 	@Override
@@ -54,7 +70,7 @@ public class ActivityStatisticTabFragment extends Fragment implements OnTabChang
 			Bundle savedInstanceState) {
 		mRoot = inflater.inflate(R.layout.tabs_fragment_tabs_activity, null);
 		mTabHost = (TabHost) mRoot.findViewById(android.R.id.tabhost);
-		
+
 		setupTabs();
 		return mRoot;
 	}
@@ -76,7 +92,7 @@ public class ActivityStatisticTabFragment extends Fragment implements OnTabChang
 		mTabHost.addTab(newTab(TAB_WEEK, R.string.tab_week, R.id.tab_week2));
 		mTabHost.addTab(newTab(TAB_MONTH, R.string.tab_month, R.id.tab_month3));
 		mTabHost.addTab(newTab(TAB_YEAR, R.string.tab_year, R.id.tab_year4));
-		
+		mCallback.onActivityStatisticTabbed(TAB_DAY);
 	}
 
 	private TabSpec newTab(String tag, int labelId, int tabContentId) {
@@ -86,24 +102,18 @@ public class ActivityStatisticTabFragment extends Fragment implements OnTabChang
 				R.layout.tab_tab,
 				(ViewGroup) mRoot.findViewById(android.R.id.tabs), false);
 		((TextView) indicator.findViewById(R.id.text)).setText(labelId);
-		LinearLayout ll = ((LinearLayout) indicator.findViewById(R.id.tab_layout));
-		if(tabContentId == R.id.tab_day1)
-		{
+		LinearLayout ll = ((LinearLayout) indicator
+				.findViewById(R.id.tab_layout));
+		if (tabContentId == R.id.tab_day1) {
 			ll.setBackgroundResource(R.drawable.tab_selector_day);
-		}
-		else if(tabContentId == R.id.tab_week2)
-		{
+		} else if (tabContentId == R.id.tab_week2) {
 			ll.setBackgroundResource(R.drawable.tab_selector_week);
-		}
-		else if(tabContentId == R.id.tab_month3)
-		{
+		} else if (tabContentId == R.id.tab_month3) {
 			ll.setBackgroundResource(R.drawable.tab_selector_month);
-		}
-		else
-		{
+		} else {
 			ll.setBackgroundResource(R.drawable.tab_selector_year);
 		}
-		
+
 		TabSpec tabSpec = mTabHost.newTabSpec(tag);
 		tabSpec.setIndicator(indicator);
 		tabSpec.setContent(tabContentId);
@@ -113,7 +123,7 @@ public class ActivityStatisticTabFragment extends Fragment implements OnTabChang
 	@Override
 	public void onTabChanged(String tabId) {
 		Log.d(TAG, "onTabChanged(): tabId=" + tabId);
-
+		mCallback.onActivityStatisticTabbed(tabId);
 		if (TAB_DAY.equals(tabId)) {
 			updateTab(tabId, R.id.tab_day1);
 			mCurrentTab = 0;
@@ -139,17 +149,16 @@ public class ActivityStatisticTabFragment extends Fragment implements OnTabChang
 
 	private void updateTab(String tabId, int placeholder) {
 		FragmentManager fm = getFragmentManager();
-		Log.v(TAG,"tabId : " + tabId);
+		Log.v(TAG, "tabId : " + tabId);
 		if (fm.findFragmentByTag(tabId) == null) {
-			//gonna to manage actvitiy here
-		
-			fm.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-					.replace(placeholder, StatisticFragment.newInstance(tabId), tabId)
-					.commit();
-		}
-		else
-		{
-			Log.e(TAG,"Fragent not fount");
+			// gonna to manage actvitiy here
+
+			fm.beginTransaction()
+					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+					.replace(placeholder, StatisticFragment.newInstance(tabId),
+							tabId).commit();
+		} else {
+			Log.e(TAG, "Fragent not fount");
 		}
 	}
 
