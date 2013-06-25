@@ -33,7 +33,7 @@ import java.util.UUID;
 
 public class WristbandBLEService extends Service {
 	// set true to print debug message;
-	static final boolean bDebug = true;
+	static final boolean bDebug = false;
 
 	static final String TAG = "WristbandBLEService";
 
@@ -184,7 +184,7 @@ public class WristbandBLEService extends Service {
 	public static final int DEVICE_RETURN_STOPSTREAM = 35;
 	public static final int DEVICE_RETURN_VERSION = 36;
 	public static final int DEVICE_RETURN_SERIAL = 37;
-
+	public static final int DEVICE_RETURN_HISTORY = 38;
 	/**
 	 * Source of device entries in the device list
 	 */
@@ -207,6 +207,8 @@ public class WristbandBLEService extends Service {
 	public static final byte NO_ALERT = 0;
 	public static final byte LOW_ALERT = 1;
 	public static final byte HIGH_ALERT = 2;
+
+	
 
 	private BluetoothAdapter mBtAdapter = null;
 	public BluetoothGatt mBluetoothGatt = null;

@@ -307,6 +307,10 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 								onReadSerial(serial);
 
 							}
+							else if (ret == WristbandBLEService.DEVICE_RETURN_HISTORY)
+							{
+								onReadHistoryData(value);
+							}
 
 							else {
 								onReadUnknownProtocol(value);
