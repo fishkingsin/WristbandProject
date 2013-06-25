@@ -45,11 +45,12 @@
         <activity
             android:name=".InstructionActivity"
             android:label="@string/app_name"
+            android:theme="@style/DarkTheme"
             />
         <activity
             android:name=".PreferencesActivity"
             android:label="@string/preferences"
-            
+            android:theme="@style/DarkTheme"
              >
             <!-- android:parentActivityName=".Main" -->
             <!-- <meta-data
@@ -59,36 +60,54 @@
         <activity
             android:name=".UserPreferencesActivity"
             android:label="@string/pref_user_profile"
-            
+            android:theme="@style/DarkTheme"
              >
             <!-- android:parentActivityName=".PreferencesActivity" -->
             <!-- <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".PreferencesActivity" /> -->
         </activity>
-        <activity
+        <!-- <activity
             android:name=".MyPreference"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
+            /> -->
+        <activity
+            android:name="com.idthk.wristband.ui.landscape.SleepLandscapeActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             />
         <activity
-            android:name=".LandscapeActivity"
+            android:name="com.idthk.wristband.ui.landscape.ActivityLandscapeActivity"
             android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            />
+        <activity
+            android:name="com.idthk.wristband.ui.landscape.StatisticLandscapeActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            />
+        <activity
+            android:name="com.idthk.wristband.ui.landscape.LandscapeActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             />
         <activity
             android:name="com.idthk.wristband.socialnetwork.FacebookShareActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/facebook_activity_name"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             />
         <activity
             android:name="com.idthk.wristband.socialnetwork.TwitterShareActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/twitter_activity_name"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             />
-        <activity
+        <!-- <activity
             android:name=".SimpleGraph"
             android:configChanges="orientation|screenSize"
-            />
+            /> -->
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
