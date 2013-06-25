@@ -25,8 +25,10 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.OrientationEventListener;
+import android.view.View;
 //import android.widget.Toast;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 public class SleepLandscapeActivity extends LandscapeActivity {
 	static final String TAG = "SleepLandscapeActivity";
@@ -35,7 +37,11 @@ public class SleepLandscapeActivity extends LandscapeActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.landsape_main_sleep);
-
+		nextEntryButton = (View) findViewById(R.id.btn_next_entry);
+		prevEntryButton = (View) findViewById(R.id.btn_prev_entry);
+		nextEntryButton.setOnClickListener(this);
+		prevEntryButton.setOnClickListener(this);
+		
 		Random random = new Random();
 		int numBars = 100;
 		RoundBarGraphView mGraphView = new RoundBarGraphView(this, "");
@@ -55,5 +61,14 @@ public class SleepLandscapeActivity extends LandscapeActivity {
 		graph.addView(mGraphView);
 
 	}
-
+	@Override
+	public void loadPrevEntry() {
+		// TODO Auto-generated method stub
+		Log.v(TAG, "loadPrevEntry" );
+	}
+	@Override
+	public void loadNextEntry() {
+		// TODO Auto-generated method stub
+		Log.v(TAG, "loadNextEntry" );
+	}
 }

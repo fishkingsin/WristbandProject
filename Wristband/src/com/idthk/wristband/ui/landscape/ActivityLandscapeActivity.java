@@ -25,8 +25,10 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.OrientationEventListener;
+import android.view.View;
 //import android.widget.Toast;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 public class ActivityLandscapeActivity extends LandscapeActivity {
 	static final String TAG = "ActivityLandscapeActivity";
@@ -35,7 +37,10 @@ public class ActivityLandscapeActivity extends LandscapeActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.landsape_main_activity);
-
+		nextEntryButton = (View) findViewById(R.id.btn_next_entry);
+		prevEntryButton = (View) findViewById(R.id.btn_prev_entry);
+		nextEntryButton.setOnClickListener(this);
+		prevEntryButton.setOnClickListener(this);
 		Random random = new Random();
 		int numBars = 100;
 		LineGraphView mGraphView = new LineGraphView(this, "");
@@ -54,6 +59,16 @@ public class ActivityLandscapeActivity extends LandscapeActivity {
 		ViewGroup graph = ((ViewGroup) findViewById(R.id.graph1));
 		graph.addView(mGraphView);
 
+	}
+	@Override
+	public void loadPrevEntry() {
+		// TODO Auto-generated method stub
+		Log.v(TAG, "loadPrevEntry" );
+	}
+	@Override
+	public void loadNextEntry() {
+		// TODO Auto-generated method stub
+		Log.v(TAG, "loadNextEntry" );
 	}
 
 }
