@@ -155,7 +155,15 @@ public class PreferencesActivity extends Activity {
 						getString(R.string.pref_targetActivity), "0"));
 
 			}
-			if (key.equals(getString(R.string.pref_week_up_weekday))
+			if (key.equals(getString(R.string.pref_unpair))) {
+				Log.v(TAG,
+						key
+								+ " "
+								+ String.valueOf(sharedPreferences
+										.getBoolean(
+												getString(R.string.pref_week_up_weekend),
+												false)));
+			} else if (key.equals(getString(R.string.pref_week_up_weekday))
 					|| key.equals(getString(R.string.pref_week_up_weekend))) {
 				boolean isWeekday = sharedPreferences.getBoolean(
 						getString(R.string.pref_week_up_weekday), false);
