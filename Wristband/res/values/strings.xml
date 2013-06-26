@@ -103,7 +103,7 @@
     <string name="pref_unit_title">Unit</string>
     <string name="default_unit">Metric</string>
     <string name="pref_serial">prefSerial</string>
-    <string name="default_serial_summary">Serial#:0000000000</string>
+    <string name="default_serial_summary">0000000000</string>
     <string name="pref_unit_dialogtitle">Metric/Imperial</string>
     <string name="pref_unit_title">Unit</string>
     <string name="pref_user_name">User</string>
