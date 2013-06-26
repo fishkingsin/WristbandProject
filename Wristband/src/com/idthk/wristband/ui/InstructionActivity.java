@@ -3,6 +3,8 @@ package com.idthk.wristband.ui;
 //import java.util.ArrayList;
 
 import com.idthk.wristband.ui.R;
+import com.viewpagerindicator.CirclePageIndicator;
+import com.viewpagerindicator.PageIndicator;
 
 //import android.app.ActionBar;
 //import android.app.ActionBar.Tab;
@@ -32,6 +34,8 @@ public class InstructionActivity extends FragmentActivity implements ScreenSlide
 	MyFragmentPagerAdapter myFragmentPagerAdapter;
 	    String text = "test";
 	static boolean bFirstTime = false;
+	
+	PageIndicator mIndicator;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -43,7 +47,8 @@ public class InstructionActivity extends FragmentActivity implements ScreenSlide
 	    myViewPager.setAdapter(myFragmentPagerAdapter);
 //	    ScreenSlidePageFragment page1 = myFragmentPagerAdapter.getItem(0);
 	    
-	    
+	    mIndicator = (CirclePageIndicator)findViewById(R.id.indicator);
+        mIndicator.setViewPager(myViewPager);
 	    
 	    if(myViewPager.findViewById(R.id.slide3_skip_textview)!=null)
 	    {
