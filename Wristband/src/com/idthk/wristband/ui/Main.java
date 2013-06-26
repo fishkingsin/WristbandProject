@@ -77,8 +77,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		MainFragment.OnShareButtonClickedListener,
 		TabsFragment.OnFragmentTabbedListener,
 		ActivityStatisticTabFragment.OnFragmentTabbedListener,
-		SleepStatisticTabFragment.OnFragmentTabbedListener
-		{
+		SleepStatisticTabFragment.OnFragmentTabbedListener {
 	class WristbandStartupConstant {
 		static final int DISCONNECT = 0x210;
 		static final int CONNECT = 0x211;
@@ -140,7 +139,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	// alarm
 	final static private long ONE_SECOND = 1000;
 	final static private long TWENTY_SECONDS = ONE_SECOND * 20;
-	
+
 	AlarmManager am;
 	PendingIntent pi;
 	BroadcastReceiver br;
@@ -293,16 +292,15 @@ public class Main extends BLEBaseFragmentActivity implements
 
 		} else if (requestCode == LANSCAPE_REQUEST) {
 			isInLandscapeActivity = false;
-			 if(data!=null)
-			 {
-			   Bundle conData = data.getExtras();
-			   if(conData.get(LandscapeActivity.LANDSCAPE_ACTIVITY_TAG).equals(LandscapeActivity.FINISH_APP))
-			   {
-				   finish();
-			   
-			   }
-			 }
-			   
+			if (data != null) {
+				Bundle conData = data.getExtras();
+				if (conData.get(LandscapeActivity.LANDSCAPE_ACTIVITY_TAG)
+						.equals(LandscapeActivity.FINISH_APP)) {
+					finish();
+
+				}
+			}
+
 		}
 	}
 
@@ -317,7 +315,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			intent = new Intent(this, SleepLandscapeActivity.class);
 		} else if (currentView.equals("Activity Level")
 				|| currentView.equals("Sleep Level")) {
-//			bundle.putString(KEY_RANGE, value)
+			// bundle.putString(KEY_RANGE, value)
 			intent = new Intent(this, StatisticLandscapeActivity.class);
 		}
 		if (intent != null) {
@@ -328,7 +326,7 @@ public class Main extends BLEBaseFragmentActivity implements
 				intent.putExtra(Main.TARGET_ORIENTTION,
 						ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
 			}
-			
+
 			intent.putExtra(LandscapeActivity.LANDSCAPE_BUNDLE, bundle);
 			startActivityForResult(intent, LANSCAPE_REQUEST);
 		}
@@ -387,10 +385,8 @@ public class Main extends BLEBaseFragmentActivity implements
 		((TextView) findViewById(R.id.titlebar_textview)).setText(s);
 		if (TabsFragment.TAB_SETTINGS.equals(s)) {
 			showSetting();
-			
-		}
-		else 
-		{
+
+		} else {
 			currentView = s;
 		}
 
@@ -408,8 +404,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		intent.putExtra(MainFragment.FACEBOOK, "I'm going for my daily goal");
 		isInPreferenceActivity = true;
 		startActivityForResult(intent, Main.USER_PREFERENCES_REQUEST);
-		overridePendingTransition(R.anim.slide_in_right,
-				R.anim.slide_out_left);
+		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 	}
 
 	@Override
@@ -853,7 +848,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putString(getString(R.string.pref_serial), "0000000000");
+		editor.putString(getString(R.string.pref_serial), String.valueOf(seq2));
 		// Commit the edits!
 		editor.commit();
 
@@ -1178,13 +1173,13 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onActivityStatisticTabbed(String s) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onSleepStatisticTabbed(String s) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	// @Override
