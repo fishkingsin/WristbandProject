@@ -18,6 +18,7 @@ import com.jjoe64.graphview.BarGraphView;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphView.GraphViewData;
+import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 import com.jjoe64.graphview.LineGraphView;
 //import com.idthk.wristband.ui.ScrollPagerMain.ScrollPagerMainCallback;
 
@@ -105,6 +106,9 @@ public class StatisticFragment extends Fragment implements
 
 		graph.removeAllViews();
 		String hStr[] = null;
+		GraphViewSeriesStyle style = new GraphViewSeriesStyle();
+		style.thickness = 5;
+		style.color = 0xFF73CBfD;
 //		DatabaseHandler db = null;
 //		GraphViewData data[] = null;
 //		GraphViewSeries series = null;
@@ -123,20 +127,19 @@ public class StatisticFragment extends Fragment implements
 			List<Record> records = db.getSumOfRecordsByDay(_calendar);
 			GraphViewData [] data = new GraphViewData[records.size()];
 			int j = 0;
-
-			String SQL_DATE_ONLY_FORMAT = "yyyy-MM-dd";
-			SimpleDateFormat dateOnlyFormat = new SimpleDateFormat(
-					SQL_DATE_ONLY_FORMAT);
-
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+			
 			hStr = new String[records.size()];
 			for (Record cn : records) {
-
-				data[j] = new GraphViewData(cn.getCalendar()
-						.get(Calendar.MONTH), cn.getMinutes());
-				hStr[j] = String.valueOf(cn.getCalendar().get(Calendar.HOUR));
+				//cn.getCalendar().get(Calendar.HOUR_OF_DAY)
+				data[j] = new GraphViewData(j, cn.getMinutes());
+				hStr[j] = sdf.format(cn.getCalendar().getTime());
 				j++;
 			}
-			GraphViewSeries series = new GraphViewSeries(data);
+			
+			GraphViewSeries series = new GraphViewSeries("Day" , style , data);
+			
+			
 			mGraphView.setManualYAxisBounds(60, 0);
 			mGraphView.setHorizontalLabels(hStr);
 			mGraphView.addSeries(series);
@@ -172,7 +175,7 @@ public class StatisticFragment extends Fragment implements
 				hStr[j] = dayOfTheWeek;
 				j++;
 			}
-			GraphViewSeries series = new GraphViewSeries(data);
+			GraphViewSeries series = new GraphViewSeries("Week" , style , data);
 			mGraphView.setManualYAxisBounds(1440, 0);
 			mGraphView.setHorizontalLabels(hStr);
 			mGraphView.addSeries(series);
@@ -199,7 +202,7 @@ public class StatisticFragment extends Fragment implements
 						Calendar.DAY_OF_MONTH));
 				j++;
 			}
-			GraphViewSeries series = new GraphViewSeries(data);
+			GraphViewSeries series = new GraphViewSeries("Month" , style ,data);
 
 			mGraphView.setManualYAxisBounds(1440, 0);
 
@@ -230,7 +233,7 @@ public class StatisticFragment extends Fragment implements
 						Calendar.SHORT, Locale.US);
 				j++;
 			}
-			GraphViewSeries series = new GraphViewSeries(data);
+			GraphViewSeries series = new GraphViewSeries("Year" , style ,data);
 
 			mGraphView.setManualYAxisBounds(44640, 0);
 

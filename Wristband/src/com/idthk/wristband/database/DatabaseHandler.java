@@ -273,7 +273,44 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		return recordList;
 	}
+	public List<Record> getSumOfRecordsByRange(Calendar start , Calendar end) {
+		List<Record> recordList = new ArrayList<Record>();
+		String selectQuery = "SELECT SUM(" + KEY_MINUTES + ")"
+				+ " , "+ KEY_DATE
+				+ " , strftime('%H'," + KEY_DATE + ") as hour"
+				+ " , strftime('HH:MM'," + KEY_DATE + ") as time"
+				+ " FROM " + TABLE_RECORDS 
+				+ " WHERE " +KEY_DATE+ " >='" + simpleFormat.format(start.getTime()) + "'"
+				+ " WHERE " +KEY_DATE+ " <='" + simpleFormat.format(end.getTime()) + "'"
+				+ " GROUP BY strftime('%H', " + KEY_DATE + ")";
+		SQLiteDatabase db = this.getWritableDatabase();
 
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		if (cursor.moveToFirst()) {
+			do {
+				Record record = new Record();
+				Calendar _calendar = Calendar.getInstance();
+
+				try {
+					_calendar.setTime(simpleFormat.parse(cursor.getString(1)));
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				record.setDate(_calendar);
+				record.setMinutes(cursor.getInt(0));
+				Log.v(TAG,
+						"getSumOfRecordsByMonth sum minute" + cursor.getInt(0));
+				Log.v(TAG, "getSumOfRecordsByMonth  date" + cursor.getString(1));
+				Log.v(TAG, "getSumOfRecordsByMonth  hour" + cursor.getInt(2));
+
+				recordList.add(record);
+			} while (cursor.moveToNext());
+		}
+		return recordList;
+	}
 	public List<Record> getSumOfRecordsByDay(Calendar whichdate) {
 		List<Record> recordList = new ArrayList<Record>();
 		String SQL_DATE_ONLY_FORMAT = "yyyy-MM-dd";

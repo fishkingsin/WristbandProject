@@ -116,7 +116,7 @@ public class MainFragment extends Fragment implements
 	private TextView goalCaloriesTv = null;
 	private TextView goalDistancesTv = null;
 //	private TextView userNameTv = null;
-	private GraphView mGraphView = null;
+//	private GraphView mGraphView = null;
 
 	private TextView target_steps_indicated_textview = null;
 	private TextView target_calories_indicated_textview = null;
@@ -463,7 +463,7 @@ public class MainFragment extends Fragment implements
 		// TODO Auto-generated method stub
 		// init example series data
 		Random random = new Random();
-		int numBars = 20;
+		int numBars = 50;
 		GraphViewData data[] = new GraphViewData[numBars];
 
 		for (int i = 0; i < numBars; i++) {
@@ -480,23 +480,18 @@ public class MainFragment extends Fragment implements
 		// new GraphViewData(7, random.nextInt(10)),
 		// new GraphViewData(8, random.nextInt(10)),
 		// new GraphViewData(9, random.nextInt(10))};
-
 		GraphViewSeries exampleSeries = new GraphViewSeries(data);
 
-		// graph with dynamically genereated horizontal and vertical labels
-		if (mGraphView != null) {
-			mGraphView = null;
-		}
 
-		mGraphView = new RoundBarGraphView(getActivity(), "");
+
+		BarGraphView mGraphView = new BarGraphView(getActivity(), "");
 
 		mGraphView.setHorizontalLabels(new String[] {
 				getString(R.string.start), getString(R.string.end) });
-		mGraphView.setVerticalLabels(new String[] { getString(R.string.high),
-				getString(R.string.middle), getString(R.string.low) });
+		mGraphView.setVerticalLabels(new String[] { "120","90",   "60",  "30",  "0"  });
 		mGraphView.addSeries(exampleSeries); // data
 
-		mGraphView.setViewPort(10, 5);
+//		mGraphView.setViewPort(10, 5);
 		// mGraphView.setScrollable(true);
 		// optional - activate scaling / zooming
 		// mGraphView.setScalable(true);
