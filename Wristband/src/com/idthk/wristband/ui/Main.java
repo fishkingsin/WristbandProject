@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -77,7 +78,8 @@ public class Main extends BLEBaseFragmentActivity implements
 		MainFragment.OnShareButtonClickedListener,
 		TabsFragment.OnFragmentTabbedListener,
 		ActivityStatisticTabFragment.OnFragmentTabbedListener,
-		SleepStatisticTabFragment.OnFragmentTabbedListener {
+		SleepStatisticTabFragment.OnFragmentTabbedListener,
+		SharedPreferences.OnSharedPreferenceChangeListener {
 	class WristbandStartupConstant {
 		static final int DISCONNECT = 0x210;
 		static final int CONNECT = 0x211;
@@ -107,6 +109,8 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	public static final String TITLE = "title";
 	public static final String TARGET_ORIENTTION = "target_orientation";
+	public static final String TABLE_CONTENT_SLEEP = "sleep_table";
+	public static final String TABLE_CONTENT_ACTIVITY = "activity_table";
 
 	int mStartUpState = WristbandStartupConstant.DISCONNECT;
 
@@ -116,6 +120,8 @@ public class Main extends BLEBaseFragmentActivity implements
 	OnShareButtonClickedListener myShareButtonClickedListener;
 
 	String currentView = "Activity";
+	String statisticType="";
+	
 
 	Context mContext;
 	Integer connectivity_images[] = { R.drawable.wireless_connection_icon_0,
@@ -134,7 +140,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	private boolean isInLandscapeActivity;
 	private boolean inBackground;
 	private boolean isInPreferenceActivity;
-	private boolean bRoateionView;
+	private boolean canRotateView;
 
 	// alarm
 	final static private long ONE_SECOND = 1000;
@@ -147,7 +153,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		br = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context c, Intent i) {
@@ -168,8 +174,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		/* Hide title bar. This has to be placed before setContentView. */
 		// requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-		// createDBTable("activity_table");
-		// createDBTable("sleep_table");
+		
 		mContext = this;
 
 		pd = new ProgressDialog(mContext);
@@ -178,17 +183,46 @@ public class Main extends BLEBaseFragmentActivity implements
 		pd.setCancelable(false);
 		pd.setIndeterminate(true);
 
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		
 		setContentView(R.layout.main);
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
+		prefs.registerOnSharedPreferenceChangeListener(this);
 		firstTime = prefs.getBoolean(FIRST_TIME, true);
-		bRoateionView = prefs.getBoolean(
+		canRotateView = prefs.getBoolean(
 				getString(R.string.pref_enable_rotation_view), false);
 		((ImageView) findViewById(R.id.connectivity))
 				.setImageResource(R.drawable.wireless_connection_icon_0);
 		if (firstTime) {
+			
+			 class CreateDBTask extends AsyncTask<Void, Integer, Void> {
 
+					@Override
+					protected void onPreExecute() {
+						
+						pd.setTitle("Create Sample DB...");
+						pd.setMessage("Please wait.");
+						 pd.show();
+					}
+
+					@Override
+					protected Void doInBackground(Void... params) {
+							createDBTable(TABLE_CONTENT_ACTIVITY);
+							createDBTable(TABLE_CONTENT_SLEEP);
+							
+							
+							return null;
+					}
+					
+
+					@Override
+					protected void onPostExecute(Void result) {
+						 pd.dismiss();	
+					}
+					
+			
+			 };
+			 new CreateDBTask().execute();
 			Intent intent = new Intent(this, InstructionActivity.class);
 			intent.putExtra(ScreenSlidePageFragment.ARG_FIRSTTIME, firstTime);
 			startActivityForResult(intent, TO_INSTRUCTION_REQUEST);
@@ -199,14 +233,14 @@ public class Main extends BLEBaseFragmentActivity implements
 			// Commit the edits!
 			editor.commit();
 		} else {
-
+//			testDB("activity_table");
 			orientationListener = new OrientationEventListener(this,
 					SensorManager.SENSOR_DELAY_UI) {
 
 				@Override
 				public void onOrientationChanged(int orientation) {
 					// TODO Auto-generated method stub
-					if (canShow(orientation) && bRoateionView) {
+					if (canShow(orientation) && canRotateView) {
 						startLandscapeActivity(orientation);
 
 					}
@@ -217,24 +251,19 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 
 	}
-
-	private void createDBTable(String string) {
+	/*private void testDB(String string) {
 		DatabaseHandler db = new DatabaseHandler(this, string, null, 1);
-
-		/**
-		 * CRUD Operations
-		 * */
-		// Inserting Contacts
-		Log.d("Insert: ", "Inserting ..");
-		db.addRecord(new Record(Calendar.getInstance().getTimeInMillis(), 30));
-		db.addRecord(new Record(Calendar.getInstance().getTimeInMillis(), 60));
-		db.addRecord(new Record(Calendar.getInstance().getTimeInMillis(), 120));
-		db.addRecord(new Record(Calendar.getInstance().getTimeInMillis(), 90));
-
+		// TODO Auto-generated method stub
 		// Reading all contacts
 		Log.d("Reading: ", "Reading all Record from " + string + " ...");
-		List<Record> records = db.getAllRecords();
-
+//		List<Record> records = db.getAllRecords();
+//		db.getSumOfRecordsByMonth(2012);
+		List<Record> records = db.getRecordsByDay(1,1,2012);
+		if(records==null){
+			Log.v(TAG,"Failed to get the record");
+			return;
+		
+		}
 		for (Record cn : records) {
 			String log = "Id: "
 					+ cn.getID()
@@ -251,6 +280,56 @@ public class Main extends BLEBaseFragmentActivity implements
 			// Writing Contacts to log
 			Log.d("Name: ", log);
 		}
+	}*/
+	private void createDBTable(String string) {
+		DatabaseHandler db = new DatabaseHandler(this, string, null, 1);
+//create sample data
+		/**
+		 * CRUD Operations
+		 * */
+		// Inserting Contacts
+		Log.d("Insert: ", "Inserting ..");
+		Calendar cal = Calendar.getInstance();
+		Random random = new Random();
+		for(int month = 0; month < 12 ; month++)
+		{
+			int targetDay = 31;
+			switch(targetDay)
+			{
+			case 2:
+				targetDay = 28;
+				break;
+			case 4:
+			case 6:
+			case 9:
+			case 11:
+				targetDay = 30;
+				break;
+			}
+			 
+			for(int day = 0; day < targetDay ; day++)
+			{
+				int startHour = 8;
+				int endHour = 20;
+				if(string.equals("sleep_table"))
+				{
+					startHour = 20;
+					endHour = 32;
+				}
+				for(int hour = startHour; hour < endHour ; hour++)
+				{
+					int _hour = hour%24;
+					cal.set(Calendar.YEAR, 2012);
+					cal.set(Calendar.MONTH, month);
+					cal.set(Calendar.DAY_OF_MONTH , day);
+					cal.set(Calendar.HOUR_OF_DAY, _hour);
+					db.addRecord(new Record(cal.getTimeInMillis(), random.nextInt(60)));
+				}
+			}
+			
+		}
+
+		
 
 	}
 
@@ -311,12 +390,19 @@ public class Main extends BLEBaseFragmentActivity implements
 		Bundle bundle = new Bundle();
 		if (currentView.equals("Activity")) {
 			intent = new Intent(this, ActivityLandscapeActivity.class);
+			
 		} else if (currentView.equals("Sleep")) {
 			intent = new Intent(this, SleepLandscapeActivity.class);
+			
 		} else if (currentView.equals("Activity Level")
 				|| currentView.equals("Sleep Level")) {
 			// bundle.putString(KEY_RANGE, value)
 			intent = new Intent(this, StatisticLandscapeActivity.class);
+			if(!statisticType.equals(""))
+			{
+				bundle.putString(StatisticLandscapeActivity.TYPE, statisticType);
+			}
+
 		}
 		if (intent != null) {
 			if (isLandscapeLeft(orientation)) {
@@ -429,6 +515,9 @@ public class Main extends BLEBaseFragmentActivity implements
 	public void onDestroy() {
 		am.cancel(pi);
 		unregisterReceiver(br);
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
 		super.onDestroy();
 	}
 
@@ -1173,34 +1262,27 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onActivityStatisticTabbed(String s) {
 		// TODO Auto-generated method stub
-
+		Log.v(TAG,"onActivityStatisticTabbed "+s);
+		statisticType = s;
 	}
 
 	@Override
 	public void onSleepStatisticTabbed(String s) {
 		// TODO Auto-generated method stub
-
+		Log.v(TAG,"onSleepStatisticTabbed "+s);
+		statisticType = s;
 	}
 
-	// @Override
-	// public void onPagerChangedCallback(int position, Fragment fragment) {
-	// // TODO Auto-generated method stub
-	// if (position == MainFragmentPager.ACTIVITY) {
-	// ((TextView) findViewById(R.id.titlebar_textview))
-	// .setText("Activity");
-	// ((Button) findViewById(R.id.btn_settings_done))
-	// .setVisibility(View.GONE);
-	// } else if (position == MainFragmentPager.SLEEP) {
-	// ((TextView) findViewById(R.id.titlebar_textview)).setText("Sleep");
-	// ((Button) findViewById(R.id.btn_settings_done))
-	// .setVisibility(View.GONE);
-	// }
-	// try {
-	//
-	// frag = (MainFragment) fragment;
-	// } catch (Exception e) {
-	// Log.e(TAG, e.getMessage());
-	// }
-	// }
-
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		Log.v(TAG,"onSharedPreferenceChanged " + key);
+		// TODO Auto-generated method stub
+		if(key.equals(getString(R.string.pref_enable_rotation_view)))
+		{
+			canRotateView = sharedPreferences.getBoolean(
+					key, false);
+		}
+		
+	}
 }
