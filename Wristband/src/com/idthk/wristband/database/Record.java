@@ -78,6 +78,16 @@ public class Record {
         calendar.setTimeInMillis(millis);
         return calendar;
     }
+    public void setDate(Calendar _clendar){
+//    	Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(millis);
+        millis = _clendar.getTimeInMillis();
+        this.year =  _clendar.get(Calendar.YEAR);
+        this.month =  _clendar.get(Calendar.MONTH);
+        this.day =  _clendar.get(Calendar.DAY_OF_MONTH);
+        this.weekofyear =  _clendar.get(Calendar.WEEK_OF_YEAR);
+        this.hour =  _clendar.get(Calendar.HOUR_OF_DAY);
+    }
     public long getTimeStamp(){
         return millis;
     }
