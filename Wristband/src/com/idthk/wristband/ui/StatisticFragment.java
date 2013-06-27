@@ -3,14 +3,22 @@ package com.idthk.wristband.ui;
 //import java.util.ArrayList;
 //import java.util.List;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
+import com.idthk.wristband.database.DatabaseHandler;
+import com.idthk.wristband.database.Record;
 import com.idthk.wristband.graphview.RoundBarGraphView;
 import com.idthk.wristband.ui.R;
 import com.jjoe64.graphview.BarGraphView;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphView.GraphViewData;
+import com.jjoe64.graphview.LineGraphView;
 //import com.idthk.wristband.ui.ScrollPagerMain.ScrollPagerMainCallback;
 
 //import android.annotation.SuppressLint;
@@ -41,8 +49,6 @@ public class StatisticFragment extends Fragment implements
 	private Button prevEntryButton;
 	View mRootView = null;
 	String message = null;
-//	GraphView mGraphView = null;
-//	GraphViewSeries series = null;
 
 	public static final StatisticFragment newInstance(String message) {
 		StatisticFragment f = new StatisticFragment();
@@ -66,7 +72,9 @@ public class StatisticFragment extends Fragment implements
 				@Override
 				public void onClick(View arg0) {
 					// TODO Auto-generated method stub
-					publishGraph(((ViewGroup) mRootView.findViewById(R.id.graph1)),message);
+					publishGraph(
+							((ViewGroup) mRootView.findViewById(R.id.graph1)),
+							message);
 				}
 
 			});
@@ -77,7 +85,9 @@ public class StatisticFragment extends Fragment implements
 				@Override
 				public void onClick(View arg0) {
 					// TODO Auto-generated method stub
-					publishGraph(((ViewGroup) mRootView.findViewById(R.id.graph1)),message);
+					publishGraph(
+							((ViewGroup) mRootView.findViewById(R.id.graph1)),
+							message);
 				}
 
 			});
@@ -86,66 +96,149 @@ public class StatisticFragment extends Fragment implements
 		}
 		// TextView messageTextView = (TextView) mRootView
 		// .findViewById(R.id.activity_indicator);
-		publishGraph(((ViewGroup) mRootView.findViewById(R.id.graph1)),message);
+		publishGraph(((ViewGroup) mRootView.findViewById(R.id.graph1)), message);
 		// test value
 		return mRootView;
 	}
 
 	public void publishGraph(ViewGroup graph, String message) {
-		//TO-DO
-		//retrive db data 
-		//port to graph
-		
+
 		graph.removeAllViews();
-		// TODO Auto-generated method stub
-		Random random = new Random();
-		int numBars = random.nextInt(50) + 50;
-		Log.v(TAG, "message : " + message);
-		String hStr[] = null; 
+		String hStr[] = null;
+//		DatabaseHandler db = null;
+//		GraphViewData data[] = null;
+//		GraphViewSeries series = null;
+
 		if (message.equals(SleepStatisticTabFragment.TAB_WEEK)) {
-			numBars = 7;
-			
 		} else if (message.equals(SleepStatisticTabFragment.TAB_MONTH)) {
-			numBars = 31;
 		} else if (message.equals(SleepStatisticTabFragment.TAB_YEAR)) {
-			numBars = 12;
+			DatabaseHandler db = new DatabaseHandler(getActivity(), Main.TABLE_CONTENT_SLEEP,
+					null, 1);
 		} else if (message.equals(ActivityStatisticTabFragment.TAB_DAY)) {
-			numBars = 24;
+			LineGraphView mGraphView = new LineGraphView(getActivity(), "");
+			DatabaseHandler db = new DatabaseHandler(getActivity(),
+					Main.TABLE_CONTENT_ACTIVITY, null, 1);
+			Calendar _calendar = Calendar.getInstance();
+			_calendar.set(2012, 1, 1);
+			List<Record> records = db.getSumOfRecordsByDay(_calendar);
+			GraphViewData [] data = new GraphViewData[records.size()];
+			int j = 0;
+
+			String SQL_DATE_ONLY_FORMAT = "yyyy-MM-dd";
+			SimpleDateFormat dateOnlyFormat = new SimpleDateFormat(
+					SQL_DATE_ONLY_FORMAT);
+
+			hStr = new String[records.size()];
+			for (Record cn : records) {
+
+				data[j] = new GraphViewData(cn.getCalendar()
+						.get(Calendar.MONTH), cn.getMinutes());
+				hStr[j] = String.valueOf(cn.getCalendar().get(Calendar.HOUR));
+				j++;
+			}
+			GraphViewSeries series = new GraphViewSeries(data);
+			mGraphView.setManualYAxisBounds(60, 0);
+			mGraphView.setHorizontalLabels(hStr);
+			mGraphView.addSeries(series);
+
+			graph.addView(mGraphView);
+
 		} else if (message.equals(ActivityStatisticTabFragment.TAB_WEEK)) {
-			numBars = 7;
+			RoundBarGraphView mGraphView = new RoundBarGraphView(getActivity(),
+					"");
+			DatabaseHandler db = new DatabaseHandler(getActivity(),
+					Main.TABLE_CONTENT_ACTIVITY, null, 1);
+			List<Record> records = db.getSumOfRecordsByWeek(1, 2012);
+
+			GraphViewData [] data = new GraphViewData[records.size()];
+			int j = 0;
+			TextView tv = (TextView) getActivity().findViewById(
+					R.id.graph_view_title_indicator);
+			tv.setText(String.valueOf(records.get(0).getCalendar()
+					.get(Calendar.WEEK_OF_MONTH))
+					+ " "
+					+ String.valueOf(records.get(0).getCalendar()
+							.get(Calendar.WEEK_OF_MONTH)));
+			hStr = new String[records.size()];
+			for (Record cn : records) {
+
+				data[j] = new GraphViewData(cn.getCalendar()
+						.get(Calendar.MONTH), cn.getMinutes());
+
+				SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
+				Date d = cn.getCalendar().getTime();
+				String dayOfTheWeek = sdf.format(d);
+
+				hStr[j] = dayOfTheWeek;
+				j++;
+			}
+			GraphViewSeries series = new GraphViewSeries(data);
+			mGraphView.setManualYAxisBounds(1440, 0);
+			mGraphView.setHorizontalLabels(hStr);
+			mGraphView.addSeries(series);
+			graph.addView(mGraphView);
+
 		} else if (message.equals(ActivityStatisticTabFragment.TAB_MONTH)) {
-			numBars = 31;
+			RoundBarGraphView mGraphView = new RoundBarGraphView(getActivity(),
+					"");
+			DatabaseHandler db = new DatabaseHandler(getActivity(),
+					Main.TABLE_CONTENT_ACTIVITY, null, 1);
+			List<Record> records = db.getSumOfRecordsByMonth(1, 2012);
+			GraphViewData [] data = new GraphViewData[records.size()];
+			int j = 0;
+			// TextView tv = (TextView) getActivity().findViewById(
+			// R.id.graph_view_title_indicator);
+			// tv.setText(String.valueOf(records.get(0).getCalendar()
+			// .get(Calendar.MONTH)));
+			hStr = new String[records.size()];
+			for (Record cn : records) {
+
+				data[j] = new GraphViewData(cn.getCalendar()
+						.get(Calendar.MONTH), cn.getMinutes());
+				hStr[j] = String.valueOf(cn.getCalendar().get(
+						Calendar.DAY_OF_MONTH));
+				j++;
+			}
+			GraphViewSeries series = new GraphViewSeries(data);
+
+			mGraphView.setManualYAxisBounds(1440, 0);
+
+			mGraphView.setHorizontalLabels(hStr);
+
+			mGraphView.addSeries(series);
+			graph.addView(mGraphView);
+
 		} else if (message.equals(ActivityStatisticTabFragment.TAB_YEAR)) {
-			numBars = 12;
+			RoundBarGraphView mGraphView = new RoundBarGraphView(getActivity(),
+					"");
+
+			DatabaseHandler db = new DatabaseHandler(getActivity(), "activity_table", null, 1);
+
+			List<Record> records = db.getSumOfRecordsByYear(2012);
+			GraphViewData []data = new GraphViewData[records.size()];
+			int j = 0;
+			TextView tv = (TextView) getActivity().findViewById(
+					R.id.graph_view_title_indicator);
+			tv.setText(String.valueOf(records.get(0).getCalendar()
+					.get(Calendar.YEAR)));
+			hStr = new String[records.size()];
+			for (Record cn : records) {
+
+				data[j] = new GraphViewData(cn.getCalendar()
+						.get(Calendar.MONTH), cn.getMinutes());
+				hStr[j] = cn.getCalendar().getDisplayName(Calendar.MONTH,
+						Calendar.SHORT, Locale.US);
+				j++;
+			}
+			GraphViewSeries series = new GraphViewSeries(data);
+
+			mGraphView.setManualYAxisBounds(44640, 0);
+
+			mGraphView.setHorizontalLabels(hStr);
+
+			mGraphView.addSeries(series);
+			graph.addView(mGraphView);
 		}
-
-		// messageTextView.setText(message);
-
-		// test value
-
-		// graph with dynamically genereated horizontal and vertical labels
-
-		RoundBarGraphView mGraphView = new RoundBarGraphView(getActivity(), "");
-		hStr = new String[numBars];
-		
-		for(int i = 0; i < numBars ; i++)
-		{
-			hStr[i] = String.valueOf(i+1);
-		}
-		
-		mGraphView.setHorizontalLabels(hStr);
-		mGraphView.setVerticalLabels(new String[] { "120" , "90" , "60", "30" , "0"});
-
-		GraphViewData data[] = new GraphViewData[numBars];
-		for (int i = 0; i < numBars; i++) {
-			data[i] = new GraphViewData(i, random.nextInt(9) + 1);
-		}
-		GraphViewSeries series = new GraphViewSeries(data);
-
-		mGraphView.addSeries(series); // data
-
-		graph.addView(mGraphView);
-		
 
 	}
 
