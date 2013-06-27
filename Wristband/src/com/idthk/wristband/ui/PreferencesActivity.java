@@ -40,7 +40,7 @@ public class PreferencesActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,
 				R.layout.title_bar);
-
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		int targetPreferenceResource = R.xml.preferences;
 
 		getFragmentManager()

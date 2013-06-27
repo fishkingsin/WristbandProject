@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -44,7 +45,7 @@ public class UserPreferencesActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,  R.layout.title_bar);
-		
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		mContext = this;
 		int targetPreferenceResource = R.xml.userprofile_preferences;
 		UserPrefsFragment fragment = UserPrefsFragment
