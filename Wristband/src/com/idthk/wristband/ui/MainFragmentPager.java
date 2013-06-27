@@ -86,30 +86,23 @@ public class MainFragmentPager extends Fragment implements
 				getFragmentManager());
 		mViewPager.setAdapter(mMyFragmentPagerAdapter);
 		mCallback.onPagerChangedCallback(ACTIVITY);
-		mViewPager
-				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-					@Override
-					public void onPageSelected(int position) {
-						mCurrentPage = position;
-
-						mCallback.onPagerChangedCallback(mCurrentPage);
-						// When changing pages, reset the action bar actions
-						// since they are dependent
-						// on which page is currently active. An alternative
-						// approach is to have each
-						// fragment expose actions itself (rather than the
-						// activity exposing actions),
-						// but for simplicity, the activity provides the actions
-						// in this sample.
-
-					}
-				});
+		
 		
 		
 		
 		mIndicator = (CirclePageIndicator)v.findViewById(R.id.indicator);
         mIndicator.setViewPager(mViewPager);
-		
+        mIndicator
+		.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				mCurrentPage = position;
+
+				mCallback.onPagerChangedCallback(mCurrentPage);
+
+
+			}
+		});
 		return v;
 	}
 
