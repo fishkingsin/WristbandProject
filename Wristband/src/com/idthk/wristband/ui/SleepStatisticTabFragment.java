@@ -20,7 +20,7 @@ import android.widget.TabHost.TabSpec;
 import android.widget.LinearLayout;
 public class SleepStatisticTabFragment extends Fragment implements OnTabChangeListener {
 
-	private static final String TAG = "TabFragmentTab";
+//	private static final String TAG = "TabFragmentTab";
 	
 	public static final String TAB_WEEK = "tab_sleep_week";
 	public static final String TAB_MONTH = "tab_sleep_month";
@@ -71,11 +71,11 @@ public class SleepStatisticTabFragment extends Fragment implements OnTabChangeLi
 		mTabHost.addTab(newTab(TAB_WEEK, R.string.tab_week, R.id.tab_week1));
 		mTabHost.addTab(newTab(TAB_MONTH, R.string.tab_month, R.id.tab_month2));
 		mTabHost.addTab(newTab(TAB_YEAR, R.string.tab_year, R.id.tab_year3));
-		mCallback.onSleepStatisticTabbed(TAB_WEEK);
+		
 	}
 
 	private TabSpec newTab(String tag, int labelId, int tabContentId) {
-		Log.d(TAG, "buildTab(): tag=" + tag);
+//		Log.d(TAG, "buildTab(): tag=" + tag);
 
 		View indicator = LayoutInflater.from(getActivity()).inflate(
 				R.layout.tab_tab,
@@ -108,7 +108,7 @@ public class SleepStatisticTabFragment extends Fragment implements OnTabChangeLi
 
 	@Override
 	public void onTabChanged(String tabId) {
-		Log.d(TAG, "onTabChanged(): tabId=" + tabId);
+//		Log.d(TAG, "onTabChanged(): tabId=" + tabId);
 		mCallback.onSleepStatisticTabbed(tabId);
 //		if (TAB_DAY.equals(tabId)) {
 //			updateTab(tabId, R.id.tab_day1);
@@ -135,7 +135,7 @@ public class SleepStatisticTabFragment extends Fragment implements OnTabChangeLi
 
 	private void updateTab(String tabId, int placeholder) {
 		FragmentManager fm = getFragmentManager();
-		Log.v(TAG,"tabId : " + tabId);
+//		Log.v(TAG,"tabId : " + tabId);
 		if (fm.findFragmentByTag(tabId) == null) {
 			//gonna to manage actvitiy here
 		
@@ -145,7 +145,7 @@ public class SleepStatisticTabFragment extends Fragment implements OnTabChangeLi
 		}
 		else
 		{
-			Log.e(TAG,"Fragent not fount");
+//			Log.e(TAG,"Fragent not fount");
 		}
 	}
 

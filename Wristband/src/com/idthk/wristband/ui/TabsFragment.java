@@ -116,7 +116,7 @@ public class TabsFragment extends Fragment implements OnTabChangeListener {
 	@Override
 	public void onTabChanged(String tabId) {
 		
-		Log.d(TAG, "onTabChanged(): tabId=" + tabId);
+//		Log.d(TAG, "onTabChanged(): tabId=" + tabId);
 
 		if (TAB_MAIN.equals(tabId)) {
 
