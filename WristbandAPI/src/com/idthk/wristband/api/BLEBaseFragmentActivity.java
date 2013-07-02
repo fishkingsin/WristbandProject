@@ -45,6 +45,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	protected static final int BLE_PROFILE_CONNECTED = 20;
 	protected static final int BLE_PROFILE_DISCONNECTED = 21;
 	protected static final int BLE_SERVICE_DISCOVERED = 22;
+	protected static final int BLE_HISTORY_MODE = 24;
 
 	protected static final int STATE_OFF = 10;
 	// protected static final int BLE_STREAM_MODE_ON = 23;
@@ -313,7 +314,27 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 							}
 
 							else {
-								onReadUnknownProtocol(value);
+								
+								if(mState == BLE_HISTORY_MODE)
+								{
+									if(value.length>WristbandBLEService.HISTORY_RETURN_HEADER.length)
+									{	if(checkPrefix(WristbandBLEService.HISTORY_RETURN_HEADER , value))
+										{
+											Log.v(TAG,"Header !!!!");
+										}
+									}
+									if(value.length>WristbandBLEService.HISTORY_RETURN_FOOTER.length)
+									{	
+										if(checkPrefix(WristbandBLEService.HISTORY_RETURN_FOOTER , value))
+										{
+											Log.v(TAG,"FOOTER !!!!");
+										}
+									}
+								}
+								else
+								{
+									onReadUnknownProtocol(value);
+								}
 
 							}
 						} catch (Exception e) {
@@ -405,6 +426,24 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 			}
 		}
 	};
+	boolean checkPrefix(byte prefix[] ,byte input[] ) 
+	{
+		boolean ret = false;
+		for(int i = 0 ; i<prefix.length ;i++ )
+		{
+			if(prefix[i]!=input[i])
+			{
+				ret = false;
+				break;
+			}
+			else
+			{
+				ret = true;
+			}
+				
+		}
+		return ret;
+	}
 	private final BroadcastReceiver bleStatusChangeReceiver = new BroadcastReceiver() {
 
 		public void onReceive(Context context, Intent intent) {
@@ -612,56 +651,22 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	}
 
-	public void setDemand() {
+	public void getHistory() {
 
 		mService.WriteDevice(WristbandBLEService.PE128_SERVICE,
 				WristbandBLEService.PE128_CHAR_XFER,
-				WristbandBLEService.SET_DEMAND_PREFIX);
+				WristbandBLEService.HISTORY_PREFIX);
+		mState = BLE_HISTORY_MODE;
 	}
+
+
 
 	// public callback function
 	public void connect() {
 
-		// if (mState == BLE_PROFILE_DISCONNECTED) {
-		// Log.v(TAG, "Connecting to BLE Device");
-		// Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
-		// for (BluetoothDevice pairedDevice : pairedDevices) {
-		// boolean result = false;
-		// result = mService.isBLEDevice(pairedDevice);
-		// if (result == true) {
-		//
-		// if (pairedDevice.getName().charAt(0) == 'A') {
-		// = pairedDevice;
-		// mService.connect( false);
-		//
-		// Log.v(TAG, "Device Name : "
-		// + .getName().toString());
-		// }
-		// onDeviceFound();
-		// }
-		// }
 		if (mService != null) {
 			mService.scan(true);
-			// mConnectionTimeout = new CountDownTimer(1000 * 30 , 1000) {
-			//
-			// public void onFinish() {
-			// Log.v(TAG, "30 pass finish app");
-			// disconnect();
-			// onConnectionTimeout();
-			// }
-			//
-			// @Override
-			// public void onTick(long millisUntilFinished) {
-			// // TODO Auto-generated method stub
-			//
-			// }
-			// }.start();
 		}
-
-		// else {
-		// mService.connect( false);
-		// }
-		// }
 	}
 
 	public int getState() {

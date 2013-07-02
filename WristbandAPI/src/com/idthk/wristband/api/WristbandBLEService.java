@@ -83,9 +83,9 @@ public class WristbandBLEService extends Service {
 			.fromString("00002a38-0000-1000-8000-00805f9b34fb");
 
 	// protocol
-	final static byte[] SET_DEMAND_PREFIX = { (byte) 0xAA, (byte) 0x50,
-			(byte) 0xF1, (byte) 0x00, (byte) 0x04, (byte) 0x02, (byte) 0x01,
-			(byte) 0x06, (byte) 0x01, (byte) 0x55 };
+//	final static byte[] SET_DEMAND_PREFIX = { (byte) 0xAA, (byte) 0x50,
+//			(byte) 0xF1, (byte) 0x00, (byte) 0x04, (byte) 0x02, (byte) 0x01,
+//			(byte) 0x06, (byte) 0x01, (byte) 0x55 };
 
 	final static byte[] STREAM_MODE_START = { (byte) 0xAA, (byte) 0x50,
 			(byte) 0xF1, (byte) 0x00, (byte) 0x04, (byte) 0x02, (byte) 0x01,
@@ -156,6 +156,13 @@ public class WristbandBLEService extends Service {
 			(byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 			(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 			(byte) 0x00, (byte) 0x55 };
+	
+	//AA-50-F1-00-04-02-01-06- 01-55
+	final static byte[] HISTORY_PREFIX = { (byte) 0xAA, (byte) 0x50,
+		(byte) 0xF1, (byte) 0x00, (byte) 0x04, (byte) 0x02, (byte) 0x01,
+		(byte) 0x06, (byte) 0x01, (byte) 0x55 };
+	final static byte[] HISTORY_RETURN_HEADER = { (byte)0x6D,(byte)0x6D,(byte)0x6D,(byte)0x6D,(byte)0x6D,(byte)0x6D };
+	final static byte[] HISTORY_RETURN_FOOTER = { (byte)0x7E,(byte)0x7E,(byte)0x7E,(byte)0x7E,(byte)0x7E,(byte)0x7E };
 
 	public static final int BLE_STREAM_MSG = 20;
 	public static final int BLE_CONNECT_MSG = 21;

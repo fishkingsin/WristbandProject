@@ -18,7 +18,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 //Only UI handling
-public class Main extends BLEBaseActivity {
+public class Main extends BLEBaseFragmentActivity {
 	static final String TAG = "Main";
 	private String currentText = null;
 
@@ -79,7 +79,7 @@ public class Main extends BLEBaseActivity {
 				.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						setDemand();
+						getHistory();
 					}
 				});
 
@@ -182,7 +182,7 @@ public class Main extends BLEBaseActivity {
 
 	private void setUiState() {
 
-		switch (mState) {
+		switch (getState()) {
 		case BLE_PROFILE_CONNECTED:
 			showMessage("STATE_CONNECTED::device name" + mService.mDevice.getName());
 
