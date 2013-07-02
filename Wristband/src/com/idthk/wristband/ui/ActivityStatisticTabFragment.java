@@ -22,7 +22,7 @@ import android.widget.LinearLayout;
 public class ActivityStatisticTabFragment extends Fragment implements
 		OnTabChangeListener {
 
-//	private static final String TAG = "TabFragmentTab";
+	// private static final String TAG = "TabFragmentTab";
 	public static final String TAB_DAY = "tab_day";
 	public static final String TAB_WEEK = "tab_week";
 	public static final String TAB_MONTH = "tab_month";
@@ -37,32 +37,18 @@ public class ActivityStatisticTabFragment extends Fragment implements
 		public void onActivityStatisticTabbed(String s);
 
 	}
+
 	OnFragmentTabbedListener mCallback;
 
-	// public static ActivityStatisticTabFragment create(int pageNumber) {
-	// ActivityStatisticTabFragment fragment = new
-	// ActivityStatisticTabFragment();
-	// Bundle args = new Bundle();
-	// args.putInt(ARG_PAGE, pageNumber);
-	// fragment.setArguments(args);
-	// return fragment;
-	// }
-	//
-	// @Override
-	// public void onCreate(Bundle savedInstanceState) {
-	// super.onCreate(savedInstanceState);
-	// int mPageNumber = getArguments().getInt(ARG_PAGE);
-	// Log.v(TAG,"mPageNumber "+mPageNumber);
-	// }
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		try {
-            mCallback = (OnFragmentTabbedListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnHeadlineSelectedListener");
-        }
+			mCallback = (OnFragmentTabbedListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnHeadlineSelectedListener");
+		}
 	}
 
 	@Override
@@ -96,7 +82,7 @@ public class ActivityStatisticTabFragment extends Fragment implements
 	}
 
 	private TabSpec newTab(String tag, int labelId, int tabContentId) {
-//		Log.d(TAG, "buildTab(): tag=" + tag);
+		// Log.d(TAG, "buildTab(): tag=" + tag);
 
 		View indicator = LayoutInflater.from(getActivity()).inflate(
 				R.layout.tab_tab,
@@ -122,7 +108,7 @@ public class ActivityStatisticTabFragment extends Fragment implements
 
 	@Override
 	public void onTabChanged(String tabId) {
-//		Log.d(TAG, "onTabChanged(): tabId=" + tabId);
+		// Log.d(TAG, "onTabChanged(): tabId=" + tabId);
 		mCallback.onActivityStatisticTabbed(tabId);
 		if (TAB_DAY.equals(tabId)) {
 			updateTab(tabId, R.id.tab_day1);
@@ -149,7 +135,7 @@ public class ActivityStatisticTabFragment extends Fragment implements
 
 	private void updateTab(String tabId, int placeholder) {
 		FragmentManager fm = getFragmentManager();
-//		Log.v(TAG, "tabId : " + tabId);
+		// Log.v(TAG, "tabId : " + tabId);
 		if (fm.findFragmentByTag(tabId) == null) {
 			// gonna to manage actvitiy here
 
@@ -158,7 +144,10 @@ public class ActivityStatisticTabFragment extends Fragment implements
 					.replace(placeholder, StatisticFragment.newInstance(tabId),
 							tabId).commit();
 		} else {
-//			Log.e(TAG, "Fragent not fount");
+			StatisticFragment frag = (StatisticFragment) fm
+					.findFragmentByTag(tabId);
+			frag.onRefresh();
+			// Log.e(TAG,"Fragent not fount");
 		}
 	}
 
