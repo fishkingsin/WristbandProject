@@ -7,11 +7,11 @@ public class Record {
     int _id;
 	int minutes;
 
-	int year;
-	int month;
-	int day;
-	int weekofyear;
-	int hour;
+//	int year;
+//	int month;
+//	int day;
+//	int weekofyear;
+//	int hour;
 	long millis;
 	// Empty constructor
     public Record(){
@@ -20,13 +20,13 @@ public class Record {
     // constructor
     public Record(int id, long _millis, int _minutes){
         this._id = id;
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(_millis);
-        this.year =  calendar.get(Calendar.YEAR);
-        this.month =  calendar.get(Calendar.MONTH);
-        this.day =  calendar.get(Calendar.DAY_OF_MONTH);
-        this.weekofyear =  calendar.get(Calendar.WEEK_OF_YEAR);
-        this.hour =  calendar.get(Calendar.HOUR_OF_DAY);
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(_millis);
+//        this.year =  calendar.get(Calendar.YEAR);
+//        this.month =  calendar.get(Calendar.MONTH);
+//        this.day =  calendar.get(Calendar.DAY_OF_MONTH);
+//        this.weekofyear =  calendar.get(Calendar.WEEK_OF_YEAR);
+//        this.hour =  calendar.get(Calendar.HOUR_OF_DAY);
         
         this.millis = _millis;
         
@@ -35,13 +35,13 @@ public class Record {
      
     // constructor
     public Record(long _millis, int _minutes){
-    	Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(_millis);
-        this.year =  calendar.get(Calendar.YEAR);
-        this.month =  calendar.get(Calendar.MONTH);
-        this.day =  calendar.get(Calendar.DAY_OF_MONTH);
-        this.weekofyear =  calendar.get(Calendar.WEEK_OF_YEAR);
-        this.hour =  calendar.get(Calendar.HOUR_OF_DAY);
+//    	Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(_millis);
+//        this.year =  calendar.get(Calendar.YEAR);
+//        this.month =  calendar.get(Calendar.MONTH);
+//        this.day =  calendar.get(Calendar.DAY_OF_MONTH);
+//        this.weekofyear =  calendar.get(Calendar.WEEK_OF_YEAR);
+//        this.hour =  calendar.get(Calendar.HOUR_OF_DAY);
         
         this.millis = _millis;
         
@@ -63,13 +63,13 @@ public class Record {
         return this.minutes;
     }
     public void setDate(long _millis){
-    	Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(_millis);
-        this.year =  calendar.get(Calendar.YEAR);
-        this.month =  calendar.get(Calendar.MONTH);
-        this.day =  calendar.get(Calendar.DAY_OF_MONTH);
-        this.weekofyear =  calendar.get(Calendar.WEEK_OF_YEAR);
-        this.hour =  calendar.get(Calendar.HOUR_OF_DAY);
+//    	Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(_millis);
+//        this.year =  calendar.get(Calendar.YEAR);
+//        this.month =  calendar.get(Calendar.MONTH);
+//        this.day =  calendar.get(Calendar.DAY_OF_MONTH);
+//        this.weekofyear =  calendar.get(Calendar.WEEK_OF_YEAR);
+//        this.hour =  calendar.get(Calendar.HOUR_OF_DAY);
         
         this.millis = _millis;
     }
@@ -82,29 +82,39 @@ public class Record {
 //    	Calendar calendar = Calendar.getInstance();
 //        calendar.setTimeInMillis(millis);
         millis = _clendar.getTimeInMillis();
-        this.year =  _clendar.get(Calendar.YEAR);
-        this.month =  _clendar.get(Calendar.MONTH);
-        this.day =  _clendar.get(Calendar.DAY_OF_MONTH);
-        this.weekofyear =  _clendar.get(Calendar.WEEK_OF_YEAR);
-        this.hour =  _clendar.get(Calendar.HOUR_OF_DAY);
+//        this.year =  _clendar.get(Calendar.YEAR);
+//        this.month =  _clendar.get(Calendar.MONTH);
+//        this.day =  _clendar.get(Calendar.DAY_OF_MONTH);
+//        this.weekofyear =  _clendar.get(Calendar.WEEK_OF_YEAR);
+//        this.hour =  _clendar.get(Calendar.HOUR_OF_DAY);
     }
     public long getTimeStamp(){
         return millis;
     }
     public int getYear(){
-        return year;
+    	Calendar calendar = Calendar.getInstance();
+      calendar.setTimeInMillis(millis);
+        return calendar.get(Calendar.YEAR);
     }
     public int getWeekofYear(){
-        return weekofyear;
+    	Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+          return calendar.get(Calendar.WEEK_OF_YEAR);
     }
     public int getMonth(){
-        return month;
+    	Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+          return calendar.get(Calendar.MONTH);
     }
     public int getDay(){
-        return day;
+    	Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+          return calendar.get(Calendar.DAY_OF_MONTH);
     }
     public long getHour(){
-        return hour;
+    	Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+          return calendar.get(Calendar.HOUR_OF_DAY);
     }
 }
 
