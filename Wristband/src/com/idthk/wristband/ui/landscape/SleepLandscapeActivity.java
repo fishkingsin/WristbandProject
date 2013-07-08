@@ -6,10 +6,12 @@ import java.util.Random;
 
 import org.bostonandroid.datepreference.DatePreference;
 
+import com.idthk.wristband.ui.Utilities;
 import com.idthk.wristband.database.DatabaseHandler;
 import com.idthk.wristband.database.Record;
 import com.idthk.wristband.graphview.RoundBarGraphView;
 import com.idthk.wristband.ui.R;
+import com.idthk.wristband.ui.SleepStatisticTabFragment;
 import com.jjoe64.graphview.BarGraphView;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
@@ -17,6 +19,7 @@ import com.jjoe64.graphview.GraphView.GraphViewData;
 import com.jjoe64.graphview.LineGraphView;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 //import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -50,25 +53,13 @@ public class SleepLandscapeActivity extends LandscapeActivity {
 		mGraphView.setVerticalLabels(new String[] { getString(R.string.high),
 				getString(R.string.middle), getString(R.string.low) });
 
-		GraphViewData data[] = new GraphViewData[numBars];
-		for (int i = 0; i < numBars; i++) {
-			data[i] = new GraphViewData(i, random.nextInt(9) + 1);
-		}
-		GraphViewSeries series = new GraphViewSeries(data);
-
-		mGraphView.addSeries(series); // data
-		ViewGroup graph = ((ViewGroup) findViewById(R.id.graph1));
-		graph.addView(mGraphView);
-
+		
+		displayType = SleepStatisticTabFragment.TAB_DAY;
+		
+		Utilities.publishGraph((Context)this , getWindow().getDecorView().getRootView(),
+				((ViewGroup) findViewById(R.id.graph1)),
+				displayType);
+		checkButtonVisible();
 	}
-	@Override
-	public void loadPrevEntry() {
-		// TODO Auto-generated method stub
-		Log.v(TAG, "loadPrevEntry" );
-	}
-	@Override
-	public void loadNextEntry() {
-		// TODO Auto-generated method stub
-		Log.v(TAG, "loadNextEntry" );
-	}
+	
 }

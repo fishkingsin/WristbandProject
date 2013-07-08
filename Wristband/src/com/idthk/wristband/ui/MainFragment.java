@@ -31,6 +31,7 @@ import java.util.prefs.Preferences;
 
 //import org.xmlpull.v1.XmlPullParser;
 
+import com.idthk.wristband.ui.Utilities;
 import com.idthk.wristband.graphview.RoundBarGraphView;
 import com.idthk.wristband.ui.R;
 import com.idthk.wristband.ui.preference.TimePreference;
@@ -460,6 +461,7 @@ public class MainFragment extends Fragment implements
 	}
 
 	private void populateGraph(View mRootView) {
+		/*
 		// TODO Auto-generated method stub
 		// init example series data
 		Random random = new Random();
@@ -497,6 +499,12 @@ public class MainFragment extends Fragment implements
 		// mGraphView.setScalable(true);
 
 		((ViewGroup) mRootView.findViewById(R.id.graph1)).addView(mGraphView);
+*/
+		
+		Utilities.publishGraph(getActivity() , mRootView,
+				((ViewGroup) mRootView.findViewById(R.id.graph1)),
+				 SleepStatisticTabFragment.TAB_DAY);
+		
 
 	}
 

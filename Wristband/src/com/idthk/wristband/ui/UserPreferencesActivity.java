@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 
+import com.idthk.wristband.ui.Utilities;
 import com.idthk.wristband.ui.R;
 
 import android.app.Activity;

@@ -18,10 +18,12 @@ import android.widget.TextView;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 import android.widget.LinearLayout;
-public class SleepStatisticTabFragment extends Fragment implements OnTabChangeListener {
+public class SleepStatisticTabFragment extends Fragment implements OnTabChangeListener
+
+{
 
 //	private static final String TAG = "TabFragmentTab";
-	
+	public static final String TAB_DAY = "tab_sleep_day";
 	public static final String TAB_WEEK = "tab_sleep_week";
 	public static final String TAB_MONTH = "tab_sleep_month";
 	public static final String TAB_YEAR = "tab_sleep_year";
@@ -145,6 +147,8 @@ public class SleepStatisticTabFragment extends Fragment implements OnTabChangeLi
 		}
 		else
 		{
+			StatisticFragment frag = (StatisticFragment)fm.findFragmentByTag(tabId);
+			frag.onRefresh();
 //			Log.e(TAG,"Fragent not fount");
 		}
 	}

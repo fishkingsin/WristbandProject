@@ -1,28 +1,14 @@
 package com.idthk.wristband.ui;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.nio.charset.Charset;
-import java.util.Arrays;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 import org.bostonandroid.datepreference.DatePreference;
-
-import com.idthk.wristband.socialnetwork.FacebookShareActivity;
-import com.idthk.wristband.socialnetwork.TwitterShareActivity;
-import com.idthk.wristband.ui.R;
-import com.idthk.wristband.ui.MainFragment.OnShareButtonClickedListener;
-import com.idthk.wristband.ui.landscape.ActivityLandscapeActivity;
-import com.idthk.wristband.ui.landscape.LandscapeActivity;
-import com.idthk.wristband.ui.landscape.SleepLandscapeActivity;
-import com.idthk.wristband.ui.landscape.StatisticLandscapeActivity;
-import com.idthk.wristband.ui.preference.TimePreference;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -30,7 +16,6 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -43,34 +28,35 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
-//import android.content.res.Configuration;
-//import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.OrientationEventListener;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
-import android.widget.Toast;
 
-//import android.widget.Toast;
-import com.idthk.wristband.api.*;
+import com.idthk.wristband.api.BLEBaseFragmentActivity;
+import com.idthk.wristband.ui.Utilities;
 import com.idthk.wristband.database.DatabaseHandler;
 import com.idthk.wristband.database.Record;
+import com.idthk.wristband.database.SleepPattern;
+import com.idthk.wristband.database.SleepRecord;
+import com.idthk.wristband.socialnetwork.FacebookShareActivity;
+import com.idthk.wristband.socialnetwork.TwitterShareActivity;
+import com.idthk.wristband.ui.MainFragment.OnShareButtonClickedListener;
+import com.idthk.wristband.ui.landscape.ActivityLandscapeActivity;
+import com.idthk.wristband.ui.landscape.LandscapeActivity;
+import com.idthk.wristband.ui.landscape.SleepLandscapeActivity;
+import com.idthk.wristband.ui.landscape.StatisticLandscapeActivity;
+import com.idthk.wristband.ui.preference.TimePreference;
+//import android.content.res.Configuration;
+//import android.hardware.SensorManager;
+//import android.widget.Toast;
 
 public class Main extends BLEBaseFragmentActivity implements
 		MainFragmentPager.PagerChangedCallback,
@@ -109,8 +95,8 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	public static final String TITLE = "title";
 	public static final String TARGET_ORIENTTION = "target_orientation";
-	public static final String TABLE_CONTENT_SLEEP = "sleep_table";
-	public static final String TABLE_CONTENT_ACTIVITY = "activity_table";
+	//public static final String TABLE_CONTENT = "sleep_table";
+	
 
 	int mStartUpState = WristbandStartupConstant.DISCONNECT;
 
@@ -120,8 +106,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	OnShareButtonClickedListener myShareButtonClickedListener;
 
 	String currentView = "Activity";
-	String statisticType="";
-	
+	String statisticType = "";
 
 	Context mContext;
 	Integer connectivity_images[] = { R.drawable.wireless_connection_icon_0,
@@ -142,31 +127,33 @@ public class Main extends BLEBaseFragmentActivity implements
 	private boolean isInPreferenceActivity;
 	private boolean canRotateView;
 
+	
+	private SleepRecord sleepRecord = null;
 	// alarm
 	final static private long ONE_SECOND = 1000;
 	final static private long TWENTY_SECONDS = ONE_SECOND * 20;
 
-	AlarmManager am;
-	PendingIntent pi;
-	BroadcastReceiver br;
+//	AlarmManager am;
+//	PendingIntent pi;
+//	BroadcastReceiver br;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		br = new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context c, Intent i) {
-
-			}
-		};
-		registerReceiver(br, new IntentFilter("com.authorwjf.wakeywakey"));
+//		br = new BroadcastReceiver() {
+//			@Override
+//			public void onReceive(Context c, Intent i) {
+//
+//			}
+//		};
+//		registerReceiver(br, new IntentFilter("com.authorwjf.wakeywakey"));
 		// pi = PendingIntent.getBroadcast( this, 0, new
 		// Intent("com.authorwjf.wakeywakey"),
 
-		am = (AlarmManager) (this.getSystemService(Context.ALARM_SERVICE));
-		am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-				SystemClock.elapsedRealtime() + TWENTY_SECONDS, pi);
+//		am = (AlarmManager) (this.getSystemService(Context.ALARM_SERVICE));
+//		am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+//				SystemClock.elapsedRealtime() + TWENTY_SECONDS, pi);
 
 		/* Set Fullscreen, hide statusbar */
 		// getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -174,7 +161,6 @@ public class Main extends BLEBaseFragmentActivity implements
 		/* Hide title bar. This has to be placed before setContentView. */
 		// requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-		
 		mContext = this;
 
 		pd = new ProgressDialog(mContext);
@@ -183,7 +169,6 @@ public class Main extends BLEBaseFragmentActivity implements
 		pd.setCancelable(false);
 		pd.setIndeterminate(true);
 
-		
 		setContentView(R.layout.main);
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
@@ -194,35 +179,33 @@ public class Main extends BLEBaseFragmentActivity implements
 		((ImageView) findViewById(R.id.connectivity))
 				.setImageResource(R.drawable.wireless_connection_icon_0);
 		if (firstTime) {
-			
-			 class CreateDBTask extends AsyncTask<Void, Integer, Void> {
 
-					@Override
-					protected void onPreExecute() {
-						
-						pd.setTitle("Create Sample DB...");
-						pd.setMessage("Please wait.");
-						 pd.show();
-					}
+			class CreateDBTask extends AsyncTask<Void, Integer, Void> {
 
-					@Override
-					protected Void doInBackground(Void... params) {
-							createDBTable(TABLE_CONTENT_ACTIVITY);
-							createDBTable(TABLE_CONTENT_SLEEP);
-							
-							
-							return null;
-					}
+				@Override
+				protected void onPreExecute() {
+
+					pd.setTitle("Create Sample DB...");
+					pd.setMessage("Please wait.");
+					pd.show();
+				}
+
+				@Override
+				protected Void doInBackground(Void... params) {
 					
+					createDBTable(TABLE_CONTENT);
 
-					@Override
-					protected void onPostExecute(Void result) {
-						 pd.dismiss();	
-					}
-					
-			
-			 };
-			 new CreateDBTask().execute();
+					return null;
+				}
+
+				@Override
+				protected void onPostExecute(Void result) {
+					pd.dismiss();
+				}
+
+			}
+			;
+			new CreateDBTask().execute();
 			Intent intent = new Intent(this, InstructionActivity.class);
 			intent.putExtra(ScreenSlidePageFragment.ARG_FIRSTTIME, firstTime);
 			startActivityForResult(intent, TO_INSTRUCTION_REQUEST);
@@ -233,7 +216,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			// Commit the edits!
 			editor.commit();
 		} else {
-//			testDB("activity_table");
+			// testDB("activity_table");
 			orientationListener = new OrientationEventListener(this,
 					SensorManager.SENSOR_DELAY_UI) {
 
@@ -249,41 +232,67 @@ public class Main extends BLEBaseFragmentActivity implements
 
 			};
 		}
+		DatabaseHandler db = new DatabaseHandler(this,
+				Main.TABLE_CONTENT, null, 1);
 
+		List<String> cal = db.getRecordRange();
+		if (cal.size() > 0) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			try {
+				Utilities.getLog(TAG,
+						"First Date "+sdf.parse(cal.get(0))
+						+"\nLastDate"+sdf.parse(cal.get(1)));
+				Calendar _cal = Calendar.getInstance(); 
+				_cal.setTime(sdf.parse(cal.get(0)));
+				Utilities.setFirstdate(_cal);
+				_cal.setTime(sdf.parse(cal.get(1)));
+				Utilities.setLastdate(_cal);
+				Utilities.setTargetdate(Utilities.lastDate());
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+//			Utilities.setFirstdate(cal.get(0));
+//			Utilities.setLastdate(cal.get(1));
+//			Utilities.setTargetdate(Utilities.lastDate());
+			
+//			Utilities.getLog(TAG,
+//					"First Date "+sdf.format(Utilities.firstDate().getTime())
+//					+"\nLastDate"+sdf.format(Utilities.lastDate().getTime()));
+//			Log.v(TAG,"TargetDate " + Utilities.targetDate().toString());
+		} 
+//		else {
+//			Calendar now = Calendar.getInstance();
+//			Utilities.setFirstdate(now);
+//			Utilities.setLastdate(now);
+//			Utilities.setTargetdate(now);
+//		}
 	}
-	/*private void testDB(String string) {
-		DatabaseHandler db = new DatabaseHandler(this, string, null, 1);
-		// TODO Auto-generated method stub
-		// Reading all contacts
-		Log.d("Reading: ", "Reading all Record from " + string + " ...");
-//		List<Record> records = db.getAllRecords();
-//		db.getSumOfRecordsByMonth(2012);
-		List<Record> records = db.getRecordsByDay(1,1,2012);
-		if(records==null){
-			Log.v(TAG,"Failed to get the record");
-			return;
-		
-		}
-		for (Record cn : records) {
-			String log = "Id: "
-					+ cn.getID()
-					+ " ,Timestamp: "
-					+ cn.getTimeStamp()
-					+ " ,Date: "
-					+ DatePreference.summaryFormatter().format(
-							cn.getCalendar().getTime()) + " ,Year: "
-					+ cn.getYear() + " ,Month: " + cn.getMonth()
-					+ " ,Week of Year: " + cn.getWeekofYear() + " ,Day: "
-					+ cn.getDay() + " ,Hour: " + cn.getHour()
 
-					+ " ,Minutes: " + cn.getMinutes();
-			// Writing Contacts to log
-			Log.d("Name: ", log);
-		}
-	}*/
+	// private void testDB(String string) { DatabaseHandler db = new
+	// DatabaseHandler(this, string, null, 1); // TODO Auto-generated methodstub
+	// // Reading all contacts Log.d("Reading: ",
+	// "Reading all Record from " + string + " ..."); // List<Record> records =
+	// db.getAllRecords(); // db.getSumOfRecordsByMonth(2012); List<Record>
+	// records = db.getRecordsByDay(1,1,2012); if(records==null){
+	// Log.v(TAG,"Failed to get the record"); return;
+	//
+	// } for (Record cn : records) { String log = "Id: " + cn.getID() +
+	// " ,Timestamp: " + cn.getTimeStamp() + " ,Date: " +
+	// DatePreference.summaryFormatter().format( cn.getCalendar().getTime()) +
+	// " ,Year: " + cn.getYear() + " ,Month: " + cn.getMonth() +
+	// " ,Week of Year: " + cn.getWeekofYear() + " ,Day: " + cn.getDay() +
+	// " ,Hour: " + cn.getHour()
+	//
+	// + " ,Minutes: " + cn.getMinutes(); // Writing Contacts to log
+	// Log.d("Name: ", log); }
+	// }
+
 	private void createDBTable(String string) {
 		DatabaseHandler db = new DatabaseHandler(this, string, null, 1);
-//create sample data
+		// create sample data
 		/**
 		 * CRUD Operations
 		 * */
@@ -291,48 +300,82 @@ public class Main extends BLEBaseFragmentActivity implements
 		Log.d("Insert: ", "Inserting ..");
 		Calendar cal = Calendar.getInstance();
 		Random random = new Random();
-		for(int month = 0; month < 12 ; month++)
-		{
-			int targetDay = 31;
-			switch(targetDay)
-			{
-			case 2:
-				targetDay = 28;
-				break;
-			case 4:
-			case 6:
-			case 9:
-			case 11:
-				targetDay = 30;
-				break;
-			}
-			 
-			for(int day = 0; day < targetDay ; day++)
-			{
-				int startHour = 8;
-				int endHour = 20;
-				if(string.equals("sleep_table"))
-				{
-					startHour = 20;
-					endHour = 32;
-				}
-				for(int hour = startHour; hour < endHour ; hour++)
-				{
-					int _hour = hour%24;
-					cal.set(Calendar.YEAR, 2012);
-					cal.set(Calendar.MONTH, month);
-					cal.set(Calendar.DAY_OF_MONTH , day);
-					cal.set(Calendar.HOUR_OF_DAY, _hour);
-					db.addRecord(new Record(cal.getTimeInMillis(), random.nextInt(60)));
-				}
-			}
-			
-		}
-
 		
+		
+		int startYear = 2011;
+		int endYear = 2012;
+		int _startMonth = 7;
+		int _endMonth = 6;
+		Utilities.firstDate().set(startYear,_startMonth,1);
+		cal.setTime(Utilities.firstDate().getTime());
+		
+		SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		//SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		for (int year = startYear; year <= endYear; year++) {
+			int startMonth = (year==2011)?10:1;
+			int endMonth = (year==2011)?12:3;
+			cal.set(Calendar.YEAR, year);
+			for (int month = startMonth; month <= endMonth; month++) {
+				int targetDay = 31;
+				switch (targetDay) {
+				case 2:
+					targetDay = (leapyear(year)!=-1)?29:28;
+					break;
+				case 4:
+				case 6:
+				case 9:
+				case 11:
+					targetDay = 30;
+					break;
+				}
+				cal.set(Calendar.MONTH, month);
+				for (int day = 0; day < targetDay; day++) {
+					int startHour = random.nextInt(4) + 8;
+					int endHour = 20 - random.nextInt(4);
+					if (string.equals("sleep_table")) {
+						startHour = endHour;
+						endHour = startHour + 24;
+					}
+					cal.set(Calendar.DAY_OF_MONTH, day);
+					
+					
+//					Log.d("Insert: ", "Inserting .."+simpleFormat.format(cal.getTime()));
+					for (int hour = startHour; hour < endHour; hour++) {
+						int _hour = hour%24 ;
+						
+						
+						cal.set(Calendar.HOUR_OF_DAY, _hour);
+						db.addRecord(new Record(cal.getTimeInMillis(), random
+								.nextInt(60)));
+						
+					}
+				}
+
+			}
+
+		}
+		Utilities.lastDate().setTime(cal.getTime());
+		Utilities.targetDate().setTime(Utilities.lastDate().getTime());
 
 	}
+	int leapyear (int yr)
+	{
+		int leap = 0;
+		int notLeap = -1;
 
+		
+		
+			if ((yr % 4 == 0) && !(yr % 100 == 0)|| (yr % 400 == 0))
+				leap = yr;
+			else
+				leap = notLeap;
+
+		
+		return leap;
+
+	}
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 
@@ -390,16 +433,15 @@ public class Main extends BLEBaseFragmentActivity implements
 		Bundle bundle = new Bundle();
 		if (currentView.equals("Activity")) {
 			intent = new Intent(this, ActivityLandscapeActivity.class);
-			
+
 		} else if (currentView.equals("Sleep")) {
 			intent = new Intent(this, SleepLandscapeActivity.class);
-			
+
 		} else if (currentView.equals("Activity Level")
 				|| currentView.equals("Sleep Level")) {
 			// bundle.putString(KEY_RANGE, value)
 			intent = new Intent(this, StatisticLandscapeActivity.class);
-			if(!statisticType.equals(""))
-			{
+			if (!statisticType.equals("")) {
 				bundle.putString(StatisticLandscapeActivity.TYPE, statisticType);
 			}
 
@@ -513,8 +555,8 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	public void onDestroy() {
-		am.cancel(pi);
-		unregisterReceiver(br);
+//		am.cancel(pi);
+//		unregisterReceiver(br);
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
@@ -528,8 +570,8 @@ public class Main extends BLEBaseFragmentActivity implements
 			orientationListener.disable();
 
 		if (inBackground) {
-			if (mConnectionTimeout != null)
-				mConnectionTimeout.cancel();
+//			if (mConnectionTimeout != null)
+//				mConnectionTimeout.cancel();
 			mCountDownTimer = new CountDownTimer(1000 * 60 * 5, 1000) {
 
 				public void onFinish() {
@@ -948,11 +990,54 @@ public class Main extends BLEBaseFragmentActivity implements
 	}
 
 	@Override
-	public void onReadHistoryData(byte[] value) {
+	public void onReadActivityHistoryData(List<Record> pedometerData) {
 
 		mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
 		checkState(mStartUpState);
-		super.onReadHistoryData(value);
+//		super.onReadActivityHistoryData(value);
+		DatabaseHandler db = new DatabaseHandler(this,
+				Main.TABLE_CONTENT, null, 1);
+		for (Record record : pedometerData) {
+			if(db.updateRecord(record)==0)
+			{
+				db.addRecord(record);
+			}
+			
+		}
+	}
+	@Override
+	public void onReadSleepHistoryData(SleepRecord data) {
+		super.onReadSleepHistoryData(data);
+		mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
+		checkState(mStartUpState);
+		boolean newRecordFound = false;
+		DatabaseHandler db = new DatabaseHandler(this, TABLE_CONTENT, null, 1);
+		List<SleepRecord>record =  db.getSleepRecord(data.getGoToBedTime().getTime());
+		if(record.size()>=1)
+		{
+			 // Update
+			SleepRecord sleepData = record.get(0);
+			if (data.getActualSleepTime() > sleepData.getActualSleepTime()) {
+	            sleepData.setActualSleepTime(data.getActualSleepTime());
+	            sleepData.setActualWakeupTime(data.getActualWakeupTime());
+	            sleepData.setFallingAsleepDuration(data.getFallingAsleepDuration());
+	            sleepData.setGoToBedTime(data.getGoToBedTime());
+	            sleepData.setInBedTime(data.getInBedTime());
+	            sleepData.setNumberOfTimesWaken(data.getNumberOfTimesWaken());
+	            sleepData.setPresetWakeupTime(data.getPresetWakeupTime());
+	            sleepData.setSleepEfficiency(data.getSleepEfficiency());
+	            sleepData.setPatterns(data.getPatterns());
+	            newRecordFound = true;
+	        }
+		}else
+		{
+			db.addSleepRecord(data);
+		}
+		
+		if (newRecordFound) {
+			
+		}
+
 	}
 
 	public static boolean isApplicationBroughtToBackground(
@@ -1161,7 +1246,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			getVersion();
 			break;
 		case WristbandStartupConstant.GET_SOFTWARE_VERSION:
-			onReadHistoryData(null);
+			getHistory();
 			break;
 		case WristbandStartupConstant.GET_HISTORY_DATA:
 			try {
@@ -1262,27 +1347,25 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onActivityStatisticTabbed(String s) {
 		// TODO Auto-generated method stub
-		Log.v(TAG,"onActivityStatisticTabbed "+s);
+		Log.v(TAG, "onActivityStatisticTabbed " + s);
 		statisticType = s;
 	}
 
 	@Override
 	public void onSleepStatisticTabbed(String s) {
 		// TODO Auto-generated method stub
-		Log.v(TAG,"onSleepStatisticTabbed "+s);
+		Log.v(TAG, "onSleepStatisticTabbed " + s);
 		statisticType = s;
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		Log.v(TAG,"onSharedPreferenceChanged " + key);
+		Log.v(TAG, "onSharedPreferenceChanged " + key);
 		// TODO Auto-generated method stub
-		if(key.equals(getString(R.string.pref_enable_rotation_view)))
-		{
-			canRotateView = sharedPreferences.getBoolean(
-					key, false);
+		if (key.equals(getString(R.string.pref_enable_rotation_view))) {
+			canRotateView = sharedPreferences.getBoolean(key, false);
 		}
-		
+
 	}
 }

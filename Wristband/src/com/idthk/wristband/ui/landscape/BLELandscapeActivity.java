@@ -141,8 +141,7 @@ public class BLELandscapeActivity extends LandscapeActivity implements OnClickLi
 		List<Record> records = db.getAllRecords();
 
 		for (Record cn : records) {
-			String log = "Id: " + cn.getID()
-					+ " ,Timestamp: " +cn.getTimeStamp()
+			String log = "Timestamp: " +cn.getTimeStamp()
 					+ " ,Date: " + DatePreference.summaryFormatter().format(cn.getCalendar().getTime())
 					+ " ,Year: " + cn.getYear()
 					+ " ,Month: " + cn.getMonth()
@@ -150,7 +149,7 @@ public class BLELandscapeActivity extends LandscapeActivity implements OnClickLi
 					+ " ,Day: " + cn.getDay()
 					+ " ,Hour: " + cn.getHour()
 					
-					+ " ,Minutes: " + cn.getMinutes();
+					+ " ,Minutes: " + cn.getActivityTime();
 			// Writing Contacts to log
 			Log.d("Name: ", log);
 		}
