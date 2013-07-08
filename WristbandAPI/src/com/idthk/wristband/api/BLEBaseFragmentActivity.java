@@ -1,11 +1,22 @@
 package com.idthk.wristband.api;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
+import com.idthk.wristband.database.DatabaseHandler;
+import com.idthk.wristband.database.Record;
+import com.idthk.wristband.database.SleepPattern;
+import com.idthk.wristband.database.SleepRecord;
 import com.samsung.android.sdk.bt.gatt.BluetoothGattCharacteristic;
 import com.samsung.android.sdk.bt.gatt.BluetoothGattService;
 
@@ -56,12 +67,43 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	// protected BluetoothDevice = null;
 	protected BluetoothAdapter mBtAdapter = null;
 	protected ServiceConnection onService = null;
-	public CountDownTimer mConnectionTimeout;
+
+	public static final String TABLE_CONTENT = "activity_table";
+
+	class BLEErrorType {
+		static final public int READ_HISTORY_ERROR = 0x401;
+		static final public int CONNTECT_ERROR = 0x402;
+		static final public int DISCONNECT_ERROR = 0x403;
+		static final public int SEND_ERROR = 0x404;
+		static final public int READ_ERROR = 0x405;
+	}
+
+	private CountDownTimer mCountDownTimer;
+
+	byte[] rawDataBuffer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mCountDownTimer = new CountDownTimer(1000 * 2, 1000) {
 
+			public void onFinish() {
+
+				// onError(BLEErrorType.READ_HISTORY_ERROR);
+				parseHistoryData();
+				if (rawDataBuffer != null)
+					printByteArray(rawDataBuffer, 0, rawDataBuffer.length);
+				onHistoryReadFinish();
+				mState = BLE_PROFILE_CONNECTED;
+			}
+
+			@Override
+			public void onTick(long millisUntilFinished) {
+				// TODO Auto-generated method stub
+				Log.v(TAG, "connect count down trick");
+
+			}
+		};
 		mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 
 		if (mBtAdapter == null) {
@@ -79,6 +121,257 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 		filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
 		this.registerReceiver(bleStatusChangeReceiver, filter);
 
+	}
+
+	protected void onHistoryReadFinish() {
+		// TODO Auto-generated method stub
+
+	}
+
+	protected void parseHistoryData() {
+
+		int p = 0;
+		List<byte[]> pedometerValues = new ArrayList<byte[]>();
+		List<byte[]> sleepValues = new ArrayList<byte[]>();
+		List<Byte> inData = null;
+		String dataType = "";
+		if (rawDataBuffer == null)
+			return;
+		while (p < rawDataBuffer.length) {
+			if (inData == null) {
+				if (matchData(rawDataBuffer, p,
+						WristbandBLEService.ACTIVITY_HISTORY_RETURN_HEADER)) {
+					// header of pedometer
+					Log.v(TAG, "ACTIVITY_HISTORY_RETURN_HEADER " + p);
+					dataType = "PEDOMETER";
+					inData = new ArrayList<Byte>();
+					// printByteArray(rawDataBuffer,p,p+6);
+					p += 6;
+					continue;
+				} else if (matchData(rawDataBuffer, p,
+						WristbandBLEService.SLEEP_HISTORY_RETURN_HEADER)) {
+					Log.v(TAG, "SLEEP_HISTORY_RETURN_HEADER " + p);
+					// header of sleep
+					inData = new ArrayList<Byte>();
+					dataType = "SLEEP";
+					// printByteArray(rawDataBuffer,p,p+6);
+					p += 6;
+					continue;
+				}
+				p += 1;
+
+			} else {
+				if (matchData(rawDataBuffer, p,
+						WristbandBLEService.HISTORY_RETURN_FOOTER)) {
+					// end of data footer
+					Log.v(TAG, "Match Fotter " + p);
+					// printByteArray(rawDataBuffer,p,p+6);
+					if (dataType.equals("PEDOMETER")) {
+						byte newData[] = new byte[inData.size()];
+						for (int i = 0; i < inData.size(); i++) {
+							newData[i] = inData.get(i);
+						}
+						pedometerValues.add(newData);
+					} else if (dataType.equals("SLEEP")) {
+
+						byte newData[] = new byte[inData.size()];
+						for (int i = 0; i < inData.size(); i++) {
+							newData[i] = inData.get(i);
+						}
+						sleepValues.add(newData);
+					}
+					dataType = "";
+					inData = null;
+					p += 6;
+				} else {
+					// data
+					inData.add(rawDataBuffer[p]);
+					// printByteArray(rawDataBuffer,p,p+1);
+					p += 1;
+
+				}
+			}
+
+		}
+		List<Record> pedometerData = new ArrayList<Record>();
+		for (byte[] data : pedometerValues) {
+			// byte[]b = new byte[data.size()];
+			// byte[]b = data.toArray();
+			// System.arraycopy( ,0,b,0,data.size());
+			Log.v(TAG, "pedometerValues ");
+			if (data.length == 9) {
+				p = 0;
+				// Current hour pedometer data
+				Record record = new Record();
+				Calendar calendar = Calendar.getInstance();
+
+				calendar.set(Calendar.HOUR, (int) (data[p]));
+				calendar.set(Calendar.MINUTE, 0);
+				calendar.set(Calendar.SECOND, 0);
+				record.setDate(calendar);
+
+				record.setSteps((data[p + 1] * 100) + data[p + 2]);
+				record.setDistance((float) (data[p + 3] + (data[p + 4] * 0.01)));
+				record.setCalories((data[p + 5] * 100) + data[p + 6]);
+				record.setActivityTime((data[p + 7] * 60) + data[p + 8]);
+
+				pedometerData.add(record);
+
+				Log.v(TAG, "Current hour pedometer data: " + record.toString());
+			} else {
+
+				Map<Long, Record> map = new HashMap<Long, Record>();
+
+				p = 0;
+				Calendar calendar = Calendar.getInstance();
+				calendar.set(2000 + data[p], data[p + 1], data[p + 2]);
+				calendar.set(Calendar.MINUTE, 0);
+				calendar.set(Calendar.SECOND, 0);
+				p = 3;
+				while ((p + 8) <= (data.length)) {
+
+					calendar.set(Calendar.HOUR, (int) (data[p]));
+
+					int steps = (data[p + 1] * 100) + data[p + 2];
+					float distance = (float) (data[p + 3] + (data[p + 4] * 0.01));
+					int calories = (data[p + 5] * 100) + data[p + 6];
+					int activityTime = (data[p + 7] * 60) + data[p + 8];
+					Record record = map.get(calendar.getTimeInMillis());
+					if (record == null) {
+
+						record = new Record(calendar.getTimeInMillis(), 0);
+						map.put(calendar.getTimeInMillis(), record);
+					}
+					record.setSteps(record.getSteps() + steps);
+					record.setDistance(record.getDistance() + distance);
+					record.setCalories(record.getCalories() + calories);
+					record.setActivityTime(record.getActivityTime()
+							+ activityTime);
+
+					p += 9;
+					pedometerData.add(record);
+				}
+
+			}
+		}
+		onReadActivityHistoryData(pedometerData);
+
+		// Decode sleep data
+		for (byte[] data : sleepValues) {
+			// uint8_t b[data.length];
+			// [data getBytes:b];
+
+			SleepRecord sleepRecord = new SleepRecord();
+
+			p = 0;
+			// NSDateComponents *dc = [[NSDateComponents alloc] init];
+			//
+			// dc.timeZone = [NSTimeZone localTimeZone];
+			// dc.year = 2000 + b[p];
+			// dc.month = b[p+1];
+			// dc.day = b[p+2];
+			// dc.hour = b[p+3];
+			// dc.minute = b[p+4];
+			sleepRecord.setGoToBedTime(Calendar.getInstance());
+			sleepRecord.getGoToBedTime().set(2000 + data[p], data[p + 1],
+					data[p + 2]);
+			sleepRecord.getGoToBedTime().set(Calendar.HOUR_OF_DAY, data[p + 3]);
+			sleepRecord.getGoToBedTime().set(Calendar.MINUTE, data[p + 4]);
+			sleepRecord.getGoToBedTime().set(Calendar.SECOND, 0);
+
+			p += 5;
+			sleepRecord
+					.setFallingAsleepDuration(((data[p] * 60) + data[p + 1]));
+
+			p += 2;
+			sleepRecord.setNumberOfTimesWaken((data[p]));
+
+			p += 1;
+			sleepRecord.setInBedTime(((data[p] * 60) + data[p + 1]));
+
+			p += 2;
+			sleepRecord.setActualSleepTime(((data[p] * 60) + data[p + 1]));
+
+			p += 2;
+			// dc = [[NSDateComponents alloc] init];
+			// dc.year = 2013;
+			// dc.month = 1;
+			// dc.day = 1;
+			// dc.hour = data[p];
+			// dc.minute = data[p+1];
+			// dc.second = 0;
+			// dc.timeZone = [NSTimeZone localTimeZone];
+
+			sleepRecord.setActualWakeupTime(Calendar.getInstance());
+			sleepRecord.getActualWakeupTime().set(2013, 1, 1);
+			sleepRecord.getActualWakeupTime()
+					.set(Calendar.HOUR_OF_DAY, data[p]);
+			sleepRecord.getActualWakeupTime().set(Calendar.MINUTE, data[p + 1]);
+			sleepRecord.getActualWakeupTime().set(Calendar.SECOND, 0);
+			sleepRecord.getActualWakeupTime()
+					.setTimeZone(TimeZone.getDefault());
+			//
+			p += 2;
+			// dc = [[NSDateComponents alloc] init];
+			// dc.year = 2013;
+			// dc.month = 1;
+			// dc.day = 1;
+			// dc.hour = data[p];
+			// dc.minute = data[p+1];
+			// dc.second = 0;
+			// dc.timeZone = [NSTimeZone localTimeZone];
+			sleepRecord.setPresetWakeupTime(Calendar.getInstance());
+			sleepRecord.getPresetWakeupTime().set(2013, 1, 1);
+			sleepRecord.getPresetWakeupTime()
+					.set(Calendar.HOUR_OF_DAY, data[p]);
+			sleepRecord.getPresetWakeupTime().set(Calendar.MINUTE, data[p + 1]);
+			sleepRecord.getPresetWakeupTime().set(Calendar.SECOND, 0);
+			sleepRecord.getPresetWakeupTime()
+					.setTimeZone(TimeZone.getDefault());
+
+			p += 2;
+			sleepRecord.setSleepEfficiency((data[p]));
+
+			p += 1;
+			// NSMutableArray *pattern = [[NSMutableArray alloc] init];
+			while ((p + 5) <= data.length) {
+				SleepPattern slppePattern = new SleepPattern();
+				// NSMutableDictionary *dict = [[NSMutableDictionary alloc]
+				// init];
+				//
+				// dict["time"] = ((data[p+3] * 60) + data[p+4]);
+				// dict["duration"] = ((data[p+1] * 60) + data[p+2]);
+				// dict["amplitude"] = (data[p]);
+
+				slppePattern.setTime(((data[p + 3] * 60) + data[p + 4]));
+				slppePattern.setDuration(((data[p + 1] * 60) + data[p + 2]));
+				slppePattern.setAmplitude((data[p]));
+				//
+				// [pattern addObject:dict];
+				//
+				sleepRecord.getPatterns().add(slppePattern);
+				p += 5;
+			}
+			// sd.sleepPattern = [[NSArray alloc] initWithArray:pattern];
+			//
+			// if ([self.delegate
+			// respondsToSelector:selector(wristBand:didReceiveSleepData:)]) {
+			// [self.delegate wristBand:self didReceiveSleepData:sd];
+			// }
+			onReadSleepHistoryData(sleepRecord);
+		}
+		rawDataBuffer = null;
+
+	}
+
+	protected static void printByteArray(byte value[], int start, int end) {
+		String _msg = "";
+		if (start >= 0 && end <= value.length) {
+			for (int i = start; i < end; i++) {
+				_msg += Integer.toHexString(value[i]) + " , ";
+			}
+			Log.v(TAG, "printByteArray : " + _msg);
+		}
 	}
 
 	@Override
@@ -307,34 +600,21 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 								onReadSerial(serial);
 
-							}
-							else if (ret == WristbandBLEService.DEVICE_RETURN_HISTORY)
-							{
-								onReadHistoryData(value);
-							}
+							} else if (mState == BLE_HISTORY_MODE) {
+								mCountDownTimer.cancel();
+								if (rawDataBuffer == null) {
 
-							else {
-								
-								if(mState == BLE_HISTORY_MODE)
-								{
-									if(value.length>WristbandBLEService.HISTORY_RETURN_HEADER.length)
-									{	if(checkPrefix(WristbandBLEService.HISTORY_RETURN_HEADER , value))
-										{
-											Log.v(TAG,"Header !!!!");
-										}
-									}
-									if(value.length>WristbandBLEService.HISTORY_RETURN_FOOTER.length)
-									{	
-										if(checkPrefix(WristbandBLEService.HISTORY_RETURN_FOOTER , value))
-										{
-											Log.v(TAG,"FOOTER !!!!");
-										}
-									}
+									rawDataBuffer = new byte[value.length];
+									System.arraycopy(value, 0, rawDataBuffer,
+											0, value.length);
+
+								} else {
+									rawDataBuffer = concat(rawDataBuffer, value);
 								}
-								else
-								{
-									onReadUnknownProtocol(value);
-								}
+								mCountDownTimer.start();
+							} else {
+
+								onReadUnknownProtocol(value);
 
 							}
 						} catch (Exception e) {
@@ -377,19 +657,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 				Bundle _data = msg.getData();
 				final BluetoothDevice _device = _data
 						.getParcelable(BluetoothDevice.EXTRA_DEVICE);
-				//
-				// List<BluetoothGattService> services = mService.mBluetoothGatt
-				// .getServices(_device);
-				// for (BluetoothGattService service : services) {
-				// Log.v(TAG, "service " + service.getUuid().toString());
-				// List<BluetoothGattCharacteristic> characteristics = service
-				// .getCharacteristics();
-				// for (BluetoothGattCharacteristic characteristic :
-				// characteristics) {
-				// Log.v(TAG, "characteristic "
-				// + characteristic.getUuid().toString());
-				// }
-				// }
+
 				mService.scan(false);
 
 				runOnUiThread(new Runnable() {
@@ -426,24 +694,71 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 			}
 		}
 	};
-	boolean checkPrefix(byte prefix[] ,byte input[] ) 
-	{
-		boolean ret = false;
-		for(int i = 0 ; i<prefix.length ;i++ )
-		{
-			if(prefix[i]!=input[i])
-			{
-				ret = false;
+
+	static boolean matchData(byte[] srcData, byte[] dataToFind) {
+		int iDataLen = srcData.length;
+		int iDataToFindLen = dataToFind.length;
+		boolean bGotData = false;
+		int iMatchDataCntr = 0;
+		for (int i = 0; i < iDataLen; i++) {
+			if (srcData[i] == dataToFind[iMatchDataCntr]) {
+				iMatchDataCntr++;
+				bGotData = true;
+			} else {
+				if (srcData[i] == dataToFind[0]) {
+					iMatchDataCntr = 1;
+				} else {
+					iMatchDataCntr = 0;
+					bGotData = false;
+				}
+
+			}
+
+			if (iMatchDataCntr == iDataToFindLen) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	static boolean matchData(byte[] srcData, int startIndex, byte[] dataToFind) {
+		int iDataLen = srcData.length;
+		int iDataToFindLen = dataToFind.length;
+		boolean bGotData = false;
+		int iMatchDataCntr = 0;
+		printByteArray(srcData, startIndex, startIndex + dataToFind.length);
+		printByteArray(dataToFind, 0, dataToFind.length);
+		if (startIndex + iDataToFindLen > iDataLen)
+			return false;
+		for (int i = startIndex; i < startIndex + iDataToFindLen; i++) {
+
+			if (srcData[i] == dataToFind[iMatchDataCntr]) {
+
+				bGotData = true;
+			} else {
+				bGotData = false;
 				break;
 			}
-			else
-			{
-				ret = true;
-			}
-				
+			iMatchDataCntr++;
+			// else {
+			// if (srcData[i] == dataToFind[0]) {
+			// iMatchDataCntr = 1;
+			// } else {
+			// iMatchDataCntr = 0;
+			// bGotData = false;
+			// }
+			//
+			// }
+
+			// if (iMatchDataCntr == iDataToFindLen) {
+			// return true;
+			// }
 		}
-		return ret;
+
+		return bGotData;
 	}
+
 	private final BroadcastReceiver bleStatusChangeReceiver = new BroadcastReceiver() {
 
 		public void onReceive(Context context, Intent intent) {
@@ -652,14 +967,13 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	}
 
 	public void getHistory() {
-
+		rawDataBuffer = null;
 		mService.WriteDevice(WristbandBLEService.PE128_SERVICE,
 				WristbandBLEService.PE128_CHAR_XFER,
 				WristbandBLEService.HISTORY_PREFIX);
 		mState = BLE_HISTORY_MODE;
+		mCountDownTimer.start();
 	}
-
-
 
 	// public callback function
 	public void connect() {
@@ -700,13 +1014,15 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 		case WristbandBLEService.BLE_CONNECTTION_ERROR:
 			Log.v(TAG, "WristbandBLEService.BLE_CONNECTTION_ERROR");
 			break;
+		case BLEErrorType.READ_HISTORY_ERROR:
+			Log.v(TAG, "BLEErrorType.READ_HISTORY_ERROR");
+			break;
 		}
 	}
 
 	public void onConnected() {
 		mState = BLE_PROFILE_CONNECTED;
-		if (mConnectionTimeout != null)
-			mConnectionTimeout.cancel();
+
 	}
 
 	public void onDisconnected() {
@@ -840,7 +1156,26 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	}
 
-	public void onReadHistoryData(byte[] value) {
+	public void onReadActivityHistoryData(List<Record> pedometerData) {
+
+		DatabaseHandler db = new DatabaseHandler(this, TABLE_CONTENT, null, 1);
+
+		for (Record record : pedometerData) {
+
+			if (db.updateRecord(record) == 0) {
+				db.addRecord(record);
+			}
+
+		}
+
+	}
+
+	public void onReadSleepHistoryData(SleepRecord sleepRecord) {
+		DatabaseHandler db = new DatabaseHandler(this, TABLE_CONTENT, null, 1);
+
+		if (db.updateSleepRecord(sleepRecord) == 0) {
+			db.addSleepRecord(sleepRecord);
+		}
 
 	}
 
@@ -848,4 +1183,24 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	}
 
+	private byte[] concat(byte[]... arrays) {
+		// Determine the length of the result array
+		int totalLength = 0;
+		for (int i = 0; i < arrays.length; i++) {
+			totalLength += arrays[i].length;
+		}
+
+		// create the result array
+		byte[] result = new byte[totalLength];
+
+		// copy the source arrays into the result array
+		int currentIndex = 0;
+		for (int i = 0; i < arrays.length; i++) {
+			System.arraycopy(arrays[i], 0, result, currentIndex,
+					arrays[i].length);
+			currentIndex += arrays[i].length;
+		}
+
+		return result;
+	}
 }
