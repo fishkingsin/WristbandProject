@@ -1028,15 +1028,14 @@ public class Main extends BLEBaseFragmentActivity implements
 	            sleepData.setSleepEfficiency(data.getSleepEfficiency());
 	            sleepData.setPatterns(data.getPatterns());
 	            newRecordFound = true;
+	            db.updateSleepRecord(sleepData);
 	        }
 		}else
 		{
 			db.addSleepRecord(data);
 		}
 		
-		if (newRecordFound) {
-			
-		}
+		
 
 	}
 
