@@ -216,6 +216,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		
 		return getSleepRecordsByRawQuery(selectQuery);
 	}
+	public List<SleepRecord> getLastSleepRecord() {
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		String selectQuery = "SELECT * FROM " + TABLE_SLEEP 
+				+ " WHERE  " + KEY_GO_TO_BED_TIME +" = (SELECT LAST( "+KEY_GO_TO_BED_TIME+ " )  FROM "+TABLE_SLEEP+")";
+		
+		return getSleepRecordsByRawQuery(selectQuery);
+	}
 
 	public List<Record> getAllRecords() {
 		//Log.v(TAG, record.toString());
