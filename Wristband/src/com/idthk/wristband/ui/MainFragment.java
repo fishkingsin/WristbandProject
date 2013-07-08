@@ -20,6 +20,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 //import java.lang.reflect.Array;
 //import java.util.ArrayList;
 //import java.util.List;
@@ -32,6 +33,10 @@ import java.util.prefs.Preferences;
 //import org.xmlpull.v1.XmlPullParser;
 
 import com.idthk.wristband.ui.Utilities;
+import com.idthk.wristband.database.DatabaseHandler;
+import com.idthk.wristband.database.Record;
+import com.idthk.wristband.database.SleepPattern;
+import com.idthk.wristband.database.SleepRecord;
 import com.idthk.wristband.graphview.RoundBarGraphView;
 import com.idthk.wristband.ui.R;
 import com.idthk.wristband.ui.preference.TimePreference;
@@ -42,6 +47,7 @@ import com.idthk.wristband.ui.preference.TimePreference;
 import android.support.v4.app.Fragment;
 import android.text.format.DateFormat;
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -81,7 +87,9 @@ import android.widget.TimePicker;
 import com.jjoe64.graphview.BarGraphView;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphView.GraphViewData;
+import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 import com.jjoe64.graphview.GraphViewSeries;
+import com.jjoe64.graphview.LineGraphView;
 
 //import com.jjoe64.graphview.LineGraphView;
 
@@ -107,26 +115,23 @@ public class MainFragment extends Fragment implements
 	private OnShareButtonClickedListener mCallback;
 	private CustomProgressBar m_activityTimeProgressBar;
 
-	private ProgressBar m_stepsProgressBar = null;
-	private ProgressBar m_caloriesProgressBar = null;
-	private ProgressBar m_distancesProgressBar = null;
+	private ProgressBar mStepsProgressBar = null;
+	private ProgressBar mCaloriesProgressBar = null;
+	private ProgressBar mDistancesProgressBar = null;
 
-	private View targetView = null;
-	private View nonTargetView = null;
+	private View mTargetView = null;
+	private View mNonTargetView = null;
 	private TextView goalStepsTv = null;
 	private TextView goalCaloriesTv = null;
 	private TextView goalDistancesTv = null;
-//	private TextView userNameTv = null;
-//	private GraphView mGraphView = null;
 
-	private TextView target_steps_indicated_textview = null;
-	private TextView target_calories_indicated_textview = null;
-	private TextView target_distances_indicated_textview = null;
+	private TextView mTargetStepsIndicatedTV = null;
+	private TextView mTargetCaloriesIndicatedTV = null;
+	private TextView mTargetDistancesIndicatedTV = null;
 
-	private TextView steps_indicated_textview = null;
-	private TextView calories_indicated_textview = null;
-	private TextView distances_indicated_textview = null;
-//	private ImageView battery_indicated_imageview = null;
+	private TextView mStepIndicatedTV = null;
+	private TextView mCaloriesIndicatedTV = null;
+	private TextView mDistancesIndicatedTV = null;
 
 	public interface OnShareButtonClickedListener {
 		public void onShareButtonClicked(String s);
@@ -139,7 +144,7 @@ public class MainFragment extends Fragment implements
 	 * {@link #ARG_PAGE}.
 	 */
 	private int mPageNumber;
-//	private TextView lastSyncTimeTv;
+	// private TextView lastSyncTimeTv;
 	static private int targetSteps = 1;
 	static private int targetCalories = 1;
 	static private int targetDistances = 1;
@@ -182,17 +187,18 @@ public class MainFragment extends Fragment implements
 		Main mainActivity = (Main) activity;
 
 	}
+
 	@Override
-	public void onResume()
-	{
-		Log.v(TAG,"onResume");
+	public void onResume() {
+		Log.v(TAG, "onResume");
 		super.onResume();
 	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mPageNumber = getArguments().getInt(ARG_PAGE);
-		// Log.v(TAG, "ScreenSlidePageFragment : ID " + this.getId());
+
 	}
 
 	@Override
@@ -215,9 +221,6 @@ public class MainFragment extends Fragment implements
 		if (mPageNumber == 0) {
 			mRootView = (ViewGroup) inflater.inflate(
 					R.layout.main_scrollview_activity, container, false);
-//			userNameTv = ((TextView) mRootView.findViewById(R.id.userNameTv));
-//			lastSyncTimeTv = ((TextView) mRootView
-//					.findViewById(R.id.last_sync_time_textview));
 
 			m_activityTimeProgressBar = (CustomProgressBar) mRootView
 					.findViewById(R.id.target_progress_bar_large);
@@ -225,46 +228,37 @@ public class MainFragment extends Fragment implements
 			m_activityTimeProgressBar.setTarget(0);
 			m_activityTimeProgressBar.setProgressInMins(0);
 			if (mRootView.findViewById(R.id.steps_progressbar) != null) {
-				m_stepsProgressBar = (ProgressBar) mRootView
+				mStepsProgressBar = (ProgressBar) mRootView
 						.findViewById(R.id.steps_progressbar);
-				m_stepsProgressBar.setProgress(0);
+				mStepsProgressBar.setProgress(0);
 			}
 			if (mRootView.findViewById(R.id.calories_progressbar) != null) {
-				m_caloriesProgressBar = (ProgressBar) mRootView
+				mCaloriesProgressBar = (ProgressBar) mRootView
 						.findViewById(R.id.calories_progressbar);
-				m_caloriesProgressBar.setProgress(0);
+				mCaloriesProgressBar.setProgress(0);
 			}
 			if (mRootView.findViewById(R.id.distances_progressbar) != null) {
-				m_distancesProgressBar = (ProgressBar) mRootView
+				mDistancesProgressBar = (ProgressBar) mRootView
 						.findViewById(R.id.distances_progressbar);
-				m_distancesProgressBar.setProgress(0);
+				mDistancesProgressBar.setProgress(0);
 			}
 
-			target_steps_indicated_textview = ((TextView) mRootView
+			mTargetStepsIndicatedTV = ((TextView) mRootView
 					.findViewById(R.id.target_steps_indicated_textview));
-			target_calories_indicated_textview = ((TextView) mRootView
+			mTargetCaloriesIndicatedTV = ((TextView) mRootView
 					.findViewById(R.id.target_calories_indicated_textview));
-			target_distances_indicated_textview = ((TextView) mRootView
+			mTargetDistancesIndicatedTV = ((TextView) mRootView
 					.findViewById(R.id.target_distances_indicated_textview));
 
-			steps_indicated_textview = ((TextView) mRootView
+			mStepIndicatedTV = ((TextView) mRootView
 					.findViewById(R.id.steps_indicated_textview));
-			calories_indicated_textview = ((TextView) mRootView
+			mCaloriesIndicatedTV = ((TextView) mRootView
 					.findViewById(R.id.calories_indicated_textview));
-			distances_indicated_textview = ((TextView) mRootView
+			mDistancesIndicatedTV = ((TextView) mRootView
 					.findViewById(R.id.distances_indicated_textview));
 
 			publishSettings(sharedPreferences);
 
-//			String path = sharedPreferences.getString(
-//					getString(R.string.pref_profile_pic), "");
-//			// Log.v(TAG, "profile path : " + path);
-//			if (path != "") {
-//				Bitmap myBitmap = Utilities.decodeFile(new File(path),
-//						this.getActivity());
-//				((ImageView) mRootView.findViewById(R.id.profile_pic))
-//						.setImageBitmap(myBitmap);
-//			}
 			if (mRootView.findViewById(R.id.button_facebook_share) != null) {
 				((Button) mRootView.findViewById(R.id.button_facebook_share))
 						.setOnClickListener(new OnClickListener() {
@@ -283,10 +277,7 @@ public class MainFragment extends Fragment implements
 							}
 						});
 			}
-//			if (mRootView.findViewById(R.id.battery_image) != null) {
-//				battery_indicated_imageview = ((ImageView) mRootView
-//						.findViewById(R.id.battery_image));
-//			}
+
 			final ScrollView scrollView = (ScrollView) mRootView
 					.findViewById(R.id.main_activity_scroll_view);
 
@@ -296,23 +287,10 @@ public class MainFragment extends Fragment implements
 				}
 			});
 
-//			String s = "2012-05-08";
-//			Calendar cal = Calendar.getInstance();
-//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-//			((TextView) mRootView.findViewById(R.id.today_text_view))
-//					.setText(sdf.format(cal.getTime()));
-
-			// new UpdateBarTask().execute();//currentActivityTime,
-			// currentDistanceProgress, currentCalories,
-			// currentSteps,currentBatteryLevel);
-
 		} else {
 			mRootView = (ViewGroup) inflater.inflate(
 					R.layout.main_scrollview_sleep, container, false);
-//			userNameTv = ((TextView) mRootView.findViewById(R.id.userNameTv));
-//			lastSyncTimeTv = ((TextView) mRootView
-//					.findViewById(R.id.last_sync_time_textview));
+
 			((Button) mRootView.findViewById(R.id.button_facebook_share))
 					.setOnClickListener(new OnClickListener() {
 						public void onClick(View m) {
@@ -327,24 +305,9 @@ public class MainFragment extends Fragment implements
 							mCallback.onShareButtonClicked(TWITTER);
 						}
 					});
-//			if (mRootView.findViewById(R.id.battery_image) != null) {
-//				battery_indicated_imageview = ((ImageView) mRootView
-//						.findViewById(R.id.battery_image));
-//			}
-//			String path = sharedPreferences.getString(
-//					getString(R.string.pref_profile_pic), "");
-//			// Log.v(TAG, "profile path : " + path);
-//			if (path != "") {
-//				Bitmap myBitmap = Utilities.decodeFile(new File(path),
-//						this.getActivity());
-//				((ImageView) mRootView.findViewById(R.id.profile_pic))
-//						.setImageBitmap(myBitmap);
-//			}
 
 			publishSettings(sharedPreferences);
 			populateGraph(mRootView);
-			// mCallback.dispatchSelf(this);
-			// new UpdateBarTask().execute();
 		}
 
 		return mRootView;
@@ -354,8 +317,6 @@ public class MainFragment extends Fragment implements
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		super.setUserVisibleHint(isVisibleToUser);
 
-		// Log.v(TAG,"setUserVisibleHint " + isVisibleToUser + " " + mPageNumber
-		// );
 		if (isVisibleToUser) {
 			mCallback.dispatchSelf(this);
 		}
@@ -366,13 +327,13 @@ public class MainFragment extends Fragment implements
 		if (mPageNumber == 0) {
 			boolean target = prefs.getBoolean(
 					getString(R.string.pref_toggle_target), true);
-			targetView = ((View) mRootView.findViewById(R.id.target_layout_on));
-			nonTargetView = ((View) mRootView
+			mTargetView = ((View) mRootView.findViewById(R.id.target_layout_on));
+			mNonTargetView = ((View) mRootView
 					.findViewById(R.id.target_layout_off));
 
-			targetView.setVisibility((target) ? View.VISIBLE : View.GONE);
+			mTargetView.setVisibility((target) ? View.VISIBLE : View.GONE);
 
-			nonTargetView.setVisibility((target) ? View.GONE : View.VISIBLE);
+			mNonTargetView.setVisibility((target) ? View.GONE : View.VISIBLE);
 
 			int targetActivity = Integer.valueOf(prefs.getString(
 					getString(R.string.pref_targetActivity), "30"));
@@ -388,12 +349,12 @@ public class MainFragment extends Fragment implements
 
 			if (m_activityTimeProgressBar != null)
 				m_activityTimeProgressBar.setTarget(targetActivity);
-			if (m_stepsProgressBar != null)
-				m_stepsProgressBar.setMax(targetSteps);
-			if (m_caloriesProgressBar != null)
-				m_caloriesProgressBar.setMax(targetCalories);
-			if (m_distancesProgressBar != null)
-				m_distancesProgressBar.setMax(100);
+			if (mStepsProgressBar != null)
+				mStepsProgressBar.setMax(targetSteps);
+			if (mCaloriesProgressBar != null)
+				mCaloriesProgressBar.setMax(targetCalories);
+			if (mDistancesProgressBar != null)
+				mDistancesProgressBar.setMax(100);
 
 			goalStepsTv = ((TextView) mRootView
 					.findViewById(R.id.goal_steps_indicat_textview));
@@ -453,59 +414,57 @@ public class MainFragment extends Fragment implements
 
 		}
 
-//		if(lastSyncTimeTv!=null)lastSyncTimeTv.setText(prefs.getString(
-//				getString(R.string.pref_last_sync_time),
-//				getString(R.string.default_last_sync_time)));
-//		if(userNameTv!=null)userNameTv.setText(prefs.getString(getString(R.string.pref_user_name),
-//				getString(R.string.default_user_name)));
 	}
 
 	private void populateGraph(View mRootView) {
-		/*
-		// TODO Auto-generated method stub
-		// init example series data
-		Random random = new Random();
-		int numBars = 50;
-		GraphViewData data[] = new GraphViewData[numBars];
+		if (mPageNumber == 0) {
 
-		for (int i = 0; i < numBars; i++) {
-			data[i] = new GraphViewData(i, random.nextInt(10));
+			Utilities.publishGraph(getActivity(), mRootView,
+					((ViewGroup) mRootView.findViewById(R.id.graph1)),
+					SleepStatisticTabFragment.TAB_DAY);
+		} else {
+			// TODO implement sleep patter graph view
+			populateSleepPatternGraph(((ViewGroup) mRootView
+					.findViewById(R.id.graph1)));
 		}
-		// {
-		// new GraphViewData(1, 2.0d),
-		// new GraphViewData(2, 1.5d),
-		// new GraphViewData(2.5, 3.0d),
-		// new GraphViewData(3, 2.5d),
-		// new GraphViewData(4, 1.0d),
-		// new GraphViewData(5, random.nextInt(10)),
-		// new GraphViewData(6, random.nextInt(10)),
-		// new GraphViewData(7, random.nextInt(10)),
-		// new GraphViewData(8, random.nextInt(10)),
-		// new GraphViewData(9, random.nextInt(10))};
-		GraphViewSeries exampleSeries = new GraphViewSeries(data);
 
+	}
 
+	private void populateSleepPatternGraph(ViewGroup graph) {
+		graph.removeAllViews();
+		GraphViewSeriesStyle style = new GraphViewSeriesStyle();
+		style.thickness = 5;
+		style.color = 0xFF73CBfD;
 
-		BarGraphView mGraphView = new BarGraphView(getActivity(), "");
+		Context context = getActivity();
+		LineGraphView mGraphView = new LineGraphView(context, "");
+		DatabaseHandler db = new DatabaseHandler(context, Main.TABLE_CONTENT,
+				null, 1);
+		// Calendar _calendar = Calendar.getInstance();
+		// _calendar.set(2012, 1, 1);
+		List<SleepRecord> sleeprecord = db.getLastSleepRecord();
+		if (sleeprecord.size() == 1) {
+			List<SleepPattern> patterns = sleeprecord.get(0).getPatterns();
+			GraphViewData[] data = new GraphViewData[patterns.size()];
+			int j = 0;
 
-		mGraphView.setHorizontalLabels(new String[] {
-				getString(R.string.start), getString(R.string.end) });
-		mGraphView.setVerticalLabels(new String[] { "120","90",   "60",  "30",  "0"  });
-		mGraphView.addSeries(exampleSeries); // data
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+			String[] hStr = new String[patterns.size()];
+			for (SleepPattern pattern : patterns) {
 
-//		mGraphView.setViewPort(10, 5);
-		// mGraphView.setScrollable(true);
-		// optional - activate scaling / zooming
-		// mGraphView.setScalable(true);
+				data[j] = new GraphViewData(j, pattern.getAmplitude());
+				hStr[j] = sdf.format(pattern.getTime());
+				j++;
+			}
 
-		((ViewGroup) mRootView.findViewById(R.id.graph1)).addView(mGraphView);
-*/
-		
-		Utilities.publishGraph(getActivity() , mRootView,
-				((ViewGroup) mRootView.findViewById(R.id.graph1)),
-				 SleepStatisticTabFragment.TAB_DAY);
-		
+			GraphViewSeries series = new GraphViewSeries("Hour", style, data);
 
+			mGraphView.setManualYAxisBounds(60, 0);
+			mGraphView.setHorizontalLabels(hStr);
+			mGraphView.addSeries(series);
+
+			graph.addView(mGraphView);
+		}
 	}
 
 	/**
@@ -521,10 +480,10 @@ public class MainFragment extends Fragment implements
 		if (mPageNumber == 0) {
 			if (key.equals(getString(R.string.pref_toggle_target))) {
 				boolean target = sharedPreferences.getBoolean(key, false);
-				targetView.setVisibility((target) ? View.VISIBLE : View.GONE);
+				mTargetView.setVisibility((target) ? View.VISIBLE : View.GONE);
 
-				nonTargetView
-						.setVisibility((target) ? View.GONE : View.VISIBLE);
+				mNonTargetView.setVisibility((target) ? View.GONE
+						: View.VISIBLE);
 			} else if (key.equals(getString(R.string.pref_targetSteps))) {
 				targetSteps = sharedPreferences.getInt(
 						getString(R.string.pref_targetSteps), 0);
@@ -548,11 +507,9 @@ public class MainFragment extends Fragment implements
 					Log.e(TAG, "On error " + errr.getMessage());
 				}
 			} else if (key.equals(getString(R.string.pref_user_name))) {
-//				userNameTv.setText(sharedPreferences.getString(
-//						getString(R.string.pref_user_name),
-//						getString(R.string.default_user_name)));
+
 			} else {
-				// Log.v(TAG, "key :" + key);
+
 			}
 		} else if (mPageNumber == 1) {
 
@@ -564,9 +521,7 @@ public class MainFragment extends Fragment implements
 
 		}
 		if (key.equals(getString(R.string.pref_last_sync_time))) {
-//			lastSyncTimeTv.setText(sharedPreferences.getString(
-//					getString(R.string.pref_last_sync_time),
-//					getString(R.string.default_last_sync_time)));
+			// moved to Main.java
 		}
 	}
 
@@ -580,77 +535,43 @@ public class MainFragment extends Fragment implements
 		s += "distance : " + distance + "\n";
 		s += "activityTime : " + activityTime + "\n";
 		s += "batteryLevel : " + batteryLevel + "\n";
-//		Log.v(TAG, s);
+
 		currentSteps = steps;
 		currentCalories = calories;
 		currentActivityTime = activityTime;
 		currentDistanceProgress = distance;
 		currentBatteryLevel = batteryLevel;
 
-		// new UpdateBarTask().execute();
-		// class UpdateBarTask extends AsyncTask<Void, Integer, Void> {
-		//
-		//
-		//
-		// @Override
-		// protected Void doInBackground(Void... params) {
-		// //***sometime wont do
-		// Log.v("UpdateBarTask", "doInBackground");
-		// publishProgress();
-		//
-		//
-		// return null;
-		// }
-		//
-		// @Override
-		// protected void onProgressUpdate(Integer... values) {
 		if (mPageNumber == 0) {
-			if (m_stepsProgressBar != null)
-				m_stepsProgressBar.setProgress(currentSteps);
-			if (m_caloriesProgressBar != null)
-				m_caloriesProgressBar.setProgress(currentCalories);
-			if (m_distancesProgressBar != null)
-				m_distancesProgressBar
+			if (mStepsProgressBar != null)
+				mStepsProgressBar.setProgress(currentSteps);
+			if (mCaloriesProgressBar != null)
+				mCaloriesProgressBar.setProgress(currentCalories);
+			if (mDistancesProgressBar != null)
+				mDistancesProgressBar
 						.setProgress((int) ((currentDistanceProgress / targetDistances) * 100));
 			if (m_activityTimeProgressBar != null)
 				m_activityTimeProgressBar
 						.setProgressInMins(currentActivityTime);
 
-			if (target_steps_indicated_textview != null)
-				target_steps_indicated_textview.setText(String
-						.valueOf(currentSteps));
-			if (target_calories_indicated_textview != null)
-				target_calories_indicated_textview.setText(String
+			if (mTargetStepsIndicatedTV != null)
+				mTargetStepsIndicatedTV.setText(String.valueOf(currentSteps));
+			if (mTargetCaloriesIndicatedTV != null)
+				mTargetCaloriesIndicatedTV.setText(String
 						.valueOf(currentCalories));
-			if (target_distances_indicated_textview != null)
-				target_distances_indicated_textview.setText(String
+			if (mTargetDistancesIndicatedTV != null)
+				mTargetDistancesIndicatedTV.setText(String
 						.valueOf(currentDistanceProgress));
 
-			if (target_distances_indicated_textview != null)
-				steps_indicated_textview.setText(String.valueOf(currentSteps));
-			if (calories_indicated_textview != null)
-				calories_indicated_textview.setText(String
-						.valueOf(currentCalories));
-			if (distances_indicated_textview != null)
-				distances_indicated_textview.setText(String
+			if (mTargetDistancesIndicatedTV != null)
+				mStepIndicatedTV.setText(String.valueOf(currentSteps));
+			if (mCaloriesIndicatedTV != null)
+				mCaloriesIndicatedTV.setText(String.valueOf(currentCalories));
+			if (mDistancesIndicatedTV != null)
+				mDistancesIndicatedTV.setText(String
 						.valueOf(currentDistanceProgress));
 		}
-//		if (battery_indicated_imageview != null) {
-//			if (currentBatteryLevel < 33) {
-//				battery_indicated_imageview
-//						.setImageResource(R.drawable.battery_0);
-//			} else if (currentBatteryLevel > 33 && currentBatteryLevel < 66) {
-//				battery_indicated_imageview
-//						.setImageResource(R.drawable.battery_1);
-//			} else if (currentBatteryLevel > 66) {
-//				battery_indicated_imageview
-//						.setImageResource(R.drawable.battery_2);
-//			}
-//		}
+
 	}
-	// }
-	// UpdateBarTask myTask = new UpdateBarTask();
-	// myTask.execute();
-	// }
 
 }
