@@ -1,7 +1,7 @@
 *.class
 *bin
 *.meta*
-GraphView
+
 
 Wristband/gen/com/idthk/wristband/ui/R.java
 R.java
@@ -13,6 +13,10 @@ Wristband/gen/com/jjoe64/graphview/R.java
 
 Wristband/gen/com/jjoe64/graphview/R.java
 
+R.java
+
 *ListSample*
 GraphViewDemos/
 DateBaseTest
+
+
