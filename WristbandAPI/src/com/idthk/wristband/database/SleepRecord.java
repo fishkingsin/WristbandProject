@@ -11,21 +11,21 @@ import android.util.Log;
 public class SleepRecord {
 	// private variables
 	
-	private long timestamp;
+	private long timestamp = 0;
 
-	private int fallingAsleepDuration;
+	private int fallingAsleepDuration = 0;
 
-	private int numberOfTimesWaken;
+	private int numberOfTimesWaken = 0;
 
-	private int inBedTime;
+	private int inBedTime = 0;
 
-	private int actualSleepTime;
+	private int actualSleepTime = 0;
 
 	private Calendar goToBedTime = Calendar.getInstance();
 	private Calendar actualWakeupTime = Calendar.getInstance();
 
 	private Calendar presetWakeupTime = Calendar.getInstance();
-	private int sleepEfficiency;
+	private int sleepEfficiency = 0;
 	private List<SleepPattern> patterns = null;//new ArrayList<SleepPattern>();
 
 	// Empty constructor
