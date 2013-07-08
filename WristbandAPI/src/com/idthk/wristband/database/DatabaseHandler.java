@@ -212,7 +212,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		String selectQuery = "SELECT  * FROM " + TABLE_SLEEP
-				+"WHERE " + simpleFormat.format(gotobadtime);
+				+" WHERE "+KEY_GO_TO_BED_TIME +"='"+ simpleFormat.format(gotobadtime)+"'";
 		
 		return getSleepRecordsByRawQuery(selectQuery);
 	}
@@ -506,7 +506,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				try {
 
 					SleepRecord sleepRecord = new SleepRecord(
-							cursor.getLong(cursor.getColumnIndex(KEY_TIMESTAMP)),
+							//cursor.getLong(cursor.getColumnIndex(KEY_TIMESTAMP)),
 							cursor.getInt(cursor
 									.getColumnIndex(KEY_FALL_AS_SLEEP_DURATION)),
 							cursor.getInt(cursor.getColumnIndex(KEY_TIME_WAKEN)),
