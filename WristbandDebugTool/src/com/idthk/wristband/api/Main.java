@@ -2,6 +2,10 @@ package com.idthk.wristband.api;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
+import java.util.List;
+
+import com.idthk.wristband.database.Record;
+import com.idthk.wristband.database.SleepRecord;
 
 
 import android.content.BroadcastReceiver;
@@ -9,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -23,7 +28,7 @@ public class Main extends BLEBaseFragmentActivity {
 	private String currentText = null;
 
 	TextView myTextView;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -56,13 +61,15 @@ public class Main extends BLEBaseFragmentActivity {
 
 			}
 		});
+		
+
 		((Button) findViewById(R.id.btn_connect))
 				.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						showMessage("Trying to connect BLE");
 						showMessage("Turn on Device now");
-//						connect();
+						connect();
 					}
 				});
 
@@ -71,7 +78,7 @@ public class Main extends BLEBaseFragmentActivity {
 					@Override
 					public void onClick(View v) {
 
-//						disconnect();
+						disconnect();
 
 					}
 				});
@@ -161,6 +168,11 @@ public class Main extends BLEBaseFragmentActivity {
 					}
 				});
 
+	}
+	
+	protected void onError(BLEErrorType type) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void showMessage(String msg) {
@@ -333,11 +345,24 @@ public class Main extends BLEBaseFragmentActivity {
 		showMessage(_msg);
 
 	}
+	@Override
+	public void onReadActivityHistoryData(List<Record> pedometerData) {
+
+		super.onReadActivityHistoryData(pedometerData);
+	}
+	@Override
+	public void onReadSleepHistoryData(SleepRecord sleepRecord) {
+
+		Log.v(TAG, "onReadSleepHistoryData");
+		
+		Log.v(TAG, sleepRecord.toString());
+		super.onReadSleepHistoryData(sleepRecord);
+	}
 
 	@Override
 	public void onReadVersion(int xx, int yy) {
-		String s = "ReadVersion " + Integer.valueOf(xx-30) + "-" + Integer.valueOf(yy-30);
-		showMessage(s);
+//		String s = "ReadVersion " + Integer.valueOf(xx-30) + "-" + Integer.valueOf(yy-30);
+//		showMessage(s);
 	}
 	@Override
     public void onBackPressed() {
