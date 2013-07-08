@@ -95,18 +95,18 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	public static final String TITLE = "title";
 	public static final String TARGET_ORIENTTION = "target_orientation";
-	//public static final String TABLE_CONTENT = "sleep_table";
+
 	
 
 	int mStartUpState = WristbandStartupConstant.DISCONNECT;
 
-	MainFragment frag = null;
+	MainFragment mFrag = null;
 	TabHost mTabHost = null;
 	OrientationEventListener orientationListener;
-	OnShareButtonClickedListener myShareButtonClickedListener;
+	OnShareButtonClickedListener mShareButtonClickedListener;
 
-	String currentView = "Activity";
-	String statisticType = "";
+	String mCurrentView = "Activity";
+	String mStatisticType = "";
 
 	Context mContext;
 	Integer connectivity_images[] = { R.drawable.wireless_connection_icon_0,
@@ -116,8 +116,6 @@ public class Main extends BLEBaseFragmentActivity implements
 			R.drawable.wireless_connection_icon_4 };
 
 	private CountDownTimer mCountDownTimer;
-	// private WristbandTask wristbandTask;
-	// private UpdateConnectivityTask connectivityTask;
 
 	private ProgressDialog pd;
 
@@ -129,37 +127,15 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	
 	private SleepRecord sleepRecord = null;
-	// alarm
+
 	final static private long ONE_SECOND = 1000;
 	final static private long TWENTY_SECONDS = ONE_SECOND * 20;
-
-//	AlarmManager am;
-//	PendingIntent pi;
-//	BroadcastReceiver br;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//		br = new BroadcastReceiver() {
-//			@Override
-//			public void onReceive(Context c, Intent i) {
-//
-//			}
-//		};
-//		registerReceiver(br, new IntentFilter("com.authorwjf.wakeywakey"));
-		// pi = PendingIntent.getBroadcast( this, 0, new
-		// Intent("com.authorwjf.wakeywakey"),
 
-//		am = (AlarmManager) (this.getSystemService(Context.ALARM_SERVICE));
-//		am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-//				SystemClock.elapsedRealtime() + TWENTY_SECONDS, pi);
-
-		/* Set Fullscreen, hide statusbar */
-		// getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-		// WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		/* Hide title bar. This has to be placed before setContentView. */
-		// requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		mContext = this;
 
@@ -216,7 +192,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			// Commit the edits!
 			editor.commit();
 		} else {
-			// testDB("activity_table");
+			
 			orientationListener = new OrientationEventListener(this,
 					SensorManager.SENSOR_DELAY_UI) {
 
@@ -253,42 +229,10 @@ public class Main extends BLEBaseFragmentActivity implements
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-//			Utilities.setFirstdate(cal.get(0));
-//			Utilities.setLastdate(cal.get(1));
-//			Utilities.setTargetdate(Utilities.lastDate());
-			
-//			Utilities.getLog(TAG,
-//					"First Date "+sdf.format(Utilities.firstDate().getTime())
-//					+"\nLastDate"+sdf.format(Utilities.lastDate().getTime()));
-//			Log.v(TAG,"TargetDate " + Utilities.targetDate().toString());
-		} 
-//		else {
-//			Calendar now = Calendar.getInstance();
-//			Utilities.setFirstdate(now);
-//			Utilities.setLastdate(now);
-//			Utilities.setTargetdate(now);
-//		}
+		}
 	}
 
-	// private void testDB(String string) { DatabaseHandler db = new
-	// DatabaseHandler(this, string, null, 1); // TODO Auto-generated methodstub
-	// // Reading all contacts Log.d("Reading: ",
-	// "Reading all Record from " + string + " ..."); // List<Record> records =
-	// db.getAllRecords(); // db.getSumOfRecordsByMonth(2012); List<Record>
-	// records = db.getRecordsByDay(1,1,2012); if(records==null){
-	// Log.v(TAG,"Failed to get the record"); return;
-	//
-	// } for (Record cn : records) { String log = "Id: " + cn.getID() +
-	// " ,Timestamp: " + cn.getTimeStamp() + " ,Date: " +
-	// DatePreference.summaryFormatter().format( cn.getCalendar().getTime()) +
-	// " ,Year: " + cn.getYear() + " ,Month: " + cn.getMonth() +
-	// " ,Week of Year: " + cn.getWeekofYear() + " ,Day: " + cn.getDay() +
-	// " ,Hour: " + cn.getHour()
-	//
-	// + " ,Minutes: " + cn.getMinutes(); // Writing Contacts to log
-	// Log.d("Name: ", log); }
-	// }
+	
 
 	private void createDBTable(String string) {
 		DatabaseHandler db = new DatabaseHandler(this, string, null, 1);
@@ -340,8 +284,6 @@ public class Main extends BLEBaseFragmentActivity implements
 					}
 					cal.set(Calendar.DAY_OF_MONTH, day);
 					
-					
-//					Log.d("Insert: ", "Inserting .."+simpleFormat.format(cal.getTime()));
 					for (int hour = startHour; hour < endHour; hour++) {
 						int _hour = hour%24 ;
 						
@@ -407,10 +349,8 @@ public class Main extends BLEBaseFragmentActivity implements
 				mTabHost.setCurrentTab(0);
 			}
 		} else if (requestCode == TO_INSTRUCTION_REQUEST) {
-			// if (mState == BLE_PROFILE_DISCONNECTED) {
-
 			connect();
-			// }
+
 
 		} else if (requestCode == LANSCAPE_REQUEST) {
 			isInLandscapeActivity = false;
@@ -431,18 +371,18 @@ public class Main extends BLEBaseFragmentActivity implements
 
 		Intent intent = null;
 		Bundle bundle = new Bundle();
-		if (currentView.equals("Activity")) {
+		if (mCurrentView.equals("Activity")) {
 			intent = new Intent(this, ActivityLandscapeActivity.class);
 
-		} else if (currentView.equals("Sleep")) {
+		} else if (mCurrentView.equals("Sleep")) {
 			intent = new Intent(this, SleepLandscapeActivity.class);
 
-		} else if (currentView.equals("Activity Level")
-				|| currentView.equals("Sleep Level")) {
-			// bundle.putString(KEY_RANGE, value)
+		} else if (mCurrentView.equals("Activity Level")
+				|| mCurrentView.equals("Sleep Level")) {
+			
 			intent = new Intent(this, StatisticLandscapeActivity.class);
-			if (!statisticType.equals("")) {
-				bundle.putString(StatisticLandscapeActivity.TYPE, statisticType);
+			if (!mStatisticType.equals("")) {
+				bundle.putString(StatisticLandscapeActivity.TYPE, mStatisticType);
 			}
 
 		}
@@ -515,7 +455,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			showSetting();
 
 		} else {
-			currentView = s;
+			mCurrentView = s;
 		}
 
 	}
@@ -555,8 +495,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	public void onDestroy() {
-//		am.cancel(pi);
-//		unregisterReceiver(br);
+
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
@@ -570,8 +509,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			orientationListener.disable();
 
 		if (inBackground) {
-//			if (mConnectionTimeout != null)
-//				mConnectionTimeout.cancel();
+
 			mCountDownTimer = new CountDownTimer(1000 * 60 * 5, 1000) {
 
 				public void onFinish() {
@@ -644,7 +582,7 @@ public class Main extends BLEBaseFragmentActivity implements
 						.setText("Activity Level");
 				((Button) findViewById(R.id.btn_settings_done))
 						.setVisibility(View.GONE);
-				currentView = "Activity Level";
+				mCurrentView = "Activity Level";
 			}
 
 			else if (page == 1) {
@@ -652,7 +590,7 @@ public class Main extends BLEBaseFragmentActivity implements
 						.setText("Sleep Level");
 				((Button) findViewById(R.id.btn_settings_done))
 						.setVisibility(View.GONE);
-				currentView = "Sleep Level";
+				mCurrentView = "Sleep Level";
 			}
 		}
 	}
@@ -703,40 +641,16 @@ public class Main extends BLEBaseFragmentActivity implements
 			finish();
 			return;
 		}
-		// if (!this.inBackground ) {
+		
 		showMessage("Disconnected");
 		setUiState();
 		((ImageView) findViewById(R.id.connectivity))
 				.setImageResource(connectivity_images[0]);
-		// if(wristbandTask!=null)
-		// {
-		// wristbandTask.cancel(true);
-		// wristbandTask.pd.dismiss();
-		// }
+		
 		if (!isInLandscapeActivity && !isInPreferenceActivity) {
 			connect();
 		}
-		//
-		// new AlertDialog.Builder(this)
-		// .setTitle(R.string.wristband_disconnected)
-		// .setMessage(R.string.do_you_want_to_reconnect)
-		// .setPositiveButton(R.string.popup_yes,
-		// new DialogInterface.OnClickListener() {
-		// public void onClick(DialogInterface dialog,
-		// int which) {
-		// // continue with delete
-		// connect();
-		// }
-		// })
-		// .setNegativeButton(R.string.popup_no,
-		// new DialogInterface.OnClickListener() {
-		// public void onClick(DialogInterface dialog,
-		// int which) {
-		// // do nothing
-		// // finish();
-		// }
-		// }).show();
-		// }
+		
 	}
 
 	@Override
@@ -749,8 +663,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		super.onReady();
 		setUiState();
 		showMessage("BLE Ready");
-		// prepareToConnect();
-		// new UpdateConnectivityTask().execute();
+		
 	}
 
 	@Override
@@ -773,13 +686,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		editor.commit();
 		mStartUpState = WristbandStartupConstant.CONNECT;
 
-		// if(wristbandTask!=null)
-		// {
-		// wristbandTask.cancel(true);
-		// wristbandTask = null;
-		// }
-		// wristbandTask =
-		// new WristbandTask().execute();
+		
 		try {
 			Thread.sleep(4000);
 		} catch (InterruptedException e) {
@@ -828,15 +735,14 @@ public class Main extends BLEBaseFragmentActivity implements
 		s += "distance : " + distance + "\n";
 		s += "activityTime : " + activityTime + "\n";
 		s += "batteryLevel : " + batteryLevel + "\n";
-		// new UpdateConnectivityTask().execute();
-		// Log.v(TAG, s);
+		
 		try {
 
-			frag.onStreamMessage(steps, calories, distance, activityTime,
+			mFrag.onStreamMessage(steps, calories, distance, activityTime,
 					batteryLevel);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			Log.e(TAG, "frag is null");
+			Log.e(TAG, "mFrag is null");
 			// e.printStackTrace();
 		}
 		super.onStreamMessage(steps, calories, distance, activityTime,
@@ -951,7 +857,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		showMessage("Unknown Message");
 		showMessage(s);
 		showMessage(_msg);
-		// super.onReadUnknownProtocol(value);
+		
 
 	}
 
@@ -992,9 +898,9 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onReadActivityHistoryData(List<Record> pedometerData) {
 
-		mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
-		checkState(mStartUpState);
-//		super.onReadActivityHistoryData(value);
+//		mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
+//		checkState(mStartUpState);
+		super.onReadActivityHistoryData(pedometerData);
 		DatabaseHandler db = new DatabaseHandler(this,
 				Main.TABLE_CONTENT, null, 1);
 		for (Record record : pedometerData) {
@@ -1008,9 +914,8 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onReadSleepHistoryData(SleepRecord data) {
 		super.onReadSleepHistoryData(data);
-		mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
-		checkState(mStartUpState);
-		boolean newRecordFound = false;
+		
+//		boolean newRecordFound = false;
 		DatabaseHandler db = new DatabaseHandler(this, TABLE_CONTENT, null, 1);
 		List<SleepRecord>record =  db.getSleepRecord(data.getGoToBedTime().getTime());
 		if(record.size()>=1)
@@ -1027,7 +932,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	            sleepData.setPresetWakeupTime(data.getPresetWakeupTime());
 	            sleepData.setSleepEfficiency(data.getSleepEfficiency());
 	            sleepData.setPatterns(data.getPatterns());
-	            newRecordFound = true;
+//	            newRecordFound = true;
 	            db.updateSleepRecord(sleepData);
 	        }
 		}else
@@ -1035,7 +940,8 @@ public class Main extends BLEBaseFragmentActivity implements
 			db.addSleepRecord(data);
 		}
 		
-		
+		mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
+		checkState(mStartUpState);
 
 	}
 
@@ -1102,8 +1008,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void dispatchSelf(MainFragment mainSlideFragment) {
 		// TODO Auto-generated method stub
-		frag = mainSlideFragment;
-		// Log.v(TAG, "MainSlideFragment " + frag.toString());
+		mFrag = mainSlideFragment;
 	}
 
 	private void checkState(int state) {
@@ -1147,7 +1052,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 			break;
 		case WristbandStartupConstant.SYNC_USER_PROFILE:
-		// setTarget(60, 1, 94184, 6, 1869);
+
 		{
 			try {
 				SharedPreferences sharedPreferences = PreferenceManager
@@ -1178,18 +1083,12 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 			break;
 		case WristbandStartupConstant.SYNC_DAILY_TARGET:
-		// setSleep(12, 0, 23, 0, 3);
-		{
+			//daily target set going to set wake up time
+			{
 			try {
 				SharedPreferences sharedPreferences = PreferenceManager
 						.getDefaultSharedPreferences(this);
-				// Map<String,?> keys = sharedPreferences.getAll();
-				//
-				// for(Map.Entry<String,?> entry : keys.entrySet()){
-				// Log.d("map values",entry.getKey() + ": " +
-				// entry.getValue().toString());
-				// }
-				//
+
 				String weekday = sharedPreferences.getString(
 						getString(R.string.pref_weekday), "7:00");
 				String weekend = sharedPreferences.getString(
@@ -1221,6 +1120,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 			break;
 		case WristbandStartupConstant.SYNC_WAKE_UP_TIME: {
+			//SYNC_WAKE_UP_TIME target was set going to set wake up systemtime
 			try {
 				Calendar c = Calendar.getInstance();
 				setTime(c.get(Calendar.YEAR) - 2000, c.get(Calendar.MONTH) + 1,
@@ -1295,32 +1195,13 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onUserLeaveHint() {
 		if (!isInLandscapeActivity && !isInPreferenceActivity) {
-			inBackground = true;// isApplicationBroughtToBackground(this);
+			inBackground = true;
 		} else {
 			inBackground = false;
 		}
 		super.onUserLeaveHint();
 	}
 
-	// @Override
-	// public boolean onCreateOptionsMenu(Menu menu) {
-	// // Inflate the menu; this adds items to the action bar if it is present.
-	// getMenuInflater().inflate(R.menu.main, menu);
-	// return true;
-	// }
-	// @Override
-	// public boolean onOptionsItemSelected(MenuItem item) {
-	// // Handle item selection
-	// switch (item.getItemId()) {
-	// case R.id.action_settings:
-	// disconnect();
-	// showSetting();
-	// return true;
-	//
-	// default:
-	// return super.onOptionsItemSelected(item);
-	// }
-	// }
 	@Override
 	public void onPagerChangedCallback(int position) {
 		Log.v(TAG, "onPagerChangedCallback " + position);
@@ -1331,13 +1212,13 @@ public class Main extends BLEBaseFragmentActivity implements
 						.setText("Activity");
 				((Button) findViewById(R.id.btn_settings_done))
 						.setVisibility(View.GONE);
-				currentView = "Activity";
+				mCurrentView = "Activity";
 			} else if (position == MainFragmentPager.SLEEP) {
 				((TextView) findViewById(R.id.titlebar_textview))
 						.setText("Sleep");
 				((Button) findViewById(R.id.btn_settings_done))
 						.setVisibility(View.GONE);
-				currentView = "Sleep";
+				mCurrentView = "Sleep";
 			}
 		}
 
@@ -1347,14 +1228,14 @@ public class Main extends BLEBaseFragmentActivity implements
 	public void onActivityStatisticTabbed(String s) {
 		// TODO Auto-generated method stub
 		Log.v(TAG, "onActivityStatisticTabbed " + s);
-		statisticType = s;
+		mStatisticType = s;
 	}
 
 	@Override
 	public void onSleepStatisticTabbed(String s) {
 		// TODO Auto-generated method stub
 		Log.v(TAG, "onSleepStatisticTabbed " + s);
-		statisticType = s;
+		mStatisticType = s;
 	}
 
 	@Override
