@@ -34,11 +34,11 @@ public class SleepRecord {
 
 	}
 
-	public SleepRecord(long _timestamp, int _fallingAsleepDuration,
+	public SleepRecord( int _fallingAsleepDuration,
 			int _numberOfTimesWaken, int _inBedTime, int _actualSleepTime,
 			Date _goToBedTime, Date _actualWakeupTime,
 			Date _presetWakeupTime, int _sleepEfficiency) {
-		timestamp = _timestamp;
+//		timestamp = _timestamp;
 
 		setPatterns(new ArrayList<SleepPattern>());
 
@@ -51,19 +51,20 @@ public class SleepRecord {
 		setActualSleepTime(_actualSleepTime);
 
 		getGoToBedTime().setTime(_goToBedTime);
+		
 		getActualWakeupTime().setTime(_actualWakeupTime);
 		getPresetWakeupTime().setTime(_presetWakeupTime);
 		
 		setSleepEfficiency(_sleepEfficiency);
 	}
 
-	public void setTimestamp(long _timestamp) {
-
-		this.timestamp = _timestamp;
-	}
+//	public void setTimestamp(long _timestamp) {
+//
+//		this.timestamp = _timestamp;
+//	}
 
 	public long getTimeStamp() {
-		return timestamp;
+		return getGoToBedTime().getTimeInMillis() ;
 	}
 
 
@@ -183,6 +184,10 @@ public class SleepRecord {
 	 * @return the patterns
 	 */
 	public List<SleepPattern> getPatterns() {
+		if(patterns==null)
+		{
+			patterns = new ArrayList<SleepPattern>();
+		}
 		return patterns;
 	}
 
