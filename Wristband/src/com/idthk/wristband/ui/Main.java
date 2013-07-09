@@ -940,6 +940,18 @@ public class Main extends BLEBaseFragmentActivity implements
 			db.addSleepRecord(data);
 		}
 		
+		List <SleepRecord> sleepRrecords = db.getLastSleepRecord();
+		if(sleepRrecords.size()==1)
+		{
+			SharedPreferences sharedPreferences = PreferenceManager
+					.getDefaultSharedPreferences(this);
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+			editor.putBoolean(FIRST_TIME, false);
+			
+			editor.putInt(getString(R.string.keyActualSleepTime),sleepRrecords.get(0).getActualSleepTime());
+			editor.putInt(getString(R.string.keyTimeFallAsSleep),sleepRrecords.get(0).getFallingAsleepDuration());
+			editor.commit();
+		}
 		mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
 		checkState(mStartUpState);
 

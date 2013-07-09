@@ -33,7 +33,7 @@ public class Main extends BLEBaseFragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.main); 
 		myTextView = (TextView) findViewById(R.id.textView);
 		myTextView.addTextChangedListener(new TextWatcher() {
 
