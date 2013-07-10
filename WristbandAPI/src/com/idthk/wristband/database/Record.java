@@ -14,7 +14,9 @@ public class Record {
 	private int calories;
 	private int activityTime;
 	private long timestamp;
-
+	private static final String SQL_DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
+	private static final SimpleDateFormat dateOnlyFormat = new SimpleDateFormat(
+			SQL_DATEFORMAT);
 	// Empty constructor
 	public Record() {
 
@@ -131,10 +133,8 @@ public class Record {
 	@Override
 	public String toString()
 	{
-		String SQL_DATE_ONLY_FORMAT = "yyyy-MM-dd HH:mm";
-		SimpleDateFormat dateOnlyFormat = new SimpleDateFormat(
-				SQL_DATE_ONLY_FORMAT);
-		return dateOnlyFormat.format(getCalendar().getTime()) + " - steps : " + getSteps()
+		
+		return "Timestamp: "+ String.valueOf(getTimeStamp())+ " Date : " +dateOnlyFormat.format(getCalendar().getTime()) + " - steps : " + getSteps()
 				+ " calories : " + getCalories()
 				+ " distance : " + getDistance()
 				+ " activity time : " + getActivityTime();

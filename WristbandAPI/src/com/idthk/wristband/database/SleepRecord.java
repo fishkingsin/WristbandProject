@@ -27,7 +27,11 @@ public class SleepRecord {
 	private Calendar presetWakeupTime = Calendar.getInstance();
 	private int sleepEfficiency = 0;
 	private List<SleepPattern> patterns = null;//new ArrayList<SleepPattern>();
-
+	private static final String SQL_DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
+	SimpleDateFormat mFullDateFormat = new SimpleDateFormat(
+			SQL_DATEFORMAT);
+	SimpleDateFormat mTimeFormat = new SimpleDateFormat(
+			"HH:mm");
 	// Empty constructor
 	public SleepRecord() {
 		
@@ -76,10 +80,15 @@ public class SleepRecord {
 	}
 
 	/**
-	 * @param goToBedTime the goToBedTime to set
+	 * @param ts the goToBedTime to set
 	 */
-	public void setGoToBedTime(Calendar goToBedTime) {
-		this.goToBedTime = goToBedTime;
+	public void setGoToBedTime(Date ts) {
+		this.goToBedTime.setTime( ts );
+	}
+	
+	public void setGoToBedTime(Calendar instance) {
+		// TODO Auto-generated method stub
+		this.goToBedTime.setTime(instance.getTime());
 	}
 
 	/**
@@ -196,29 +205,25 @@ public class SleepRecord {
 	 */
 	public void setPatterns(List<SleepPattern> patterns) {
 		this.patterns = new ArrayList<SleepPattern>(patterns);
-//		for (SleepPattern pattern : patterns) {
-//			pattern.setTimestamp( this.getGoToBedTime().getTimeInMillis());
-//		}
 	}
 
 
 
 	@Override
 	public String toString() {
-		SimpleDateFormat dateOnlyFormat = new SimpleDateFormat(
-				"yyyy-MM-dd HH:mm");
-		String _msg = dateOnlyFormat.format(this.getTimeStamp()) +" - ";
+		
+		String _msg = mFullDateFormat.format(this.getTimeStamp()) +" - ";
 		_msg += "fallingAsleepDuration "
 				+ Integer.toString(getFallingAsleepDuration()) + " , "
 				+ " numberOfTimesWaken " + Integer.toString(getNumberOfTimesWaken())
 				+ " , " + "inBedTime " + Integer.toString(getInBedTime()) + " , "
 				+ " actualSleepTime " + Integer.toString(getActualSleepTime())
 				+ " , " + "goToBedTime "
-				+ dateOnlyFormat.format(getGoToBedTime().getTime()) + " , "
+				+ mFullDateFormat.format(getGoToBedTime().getTime()) + " , "
 				+ " actualWakeupTime "
-				+ dateOnlyFormat.format(getActualWakeupTime().getTime()) + " , "
+				+ mTimeFormat.format(getActualWakeupTime().getTime()) + " , "
 				+ " presetWakeupTime "
-				+ dateOnlyFormat.format(getPresetWakeupTime().getTime()) + " , "
+				+ mTimeFormat.format(getPresetWakeupTime().getTime()) + " , "
 				+ " sleepEfficiency " + Integer.toString(getSleepEfficiency());
 
 		for (SleepPattern pattern : getPatterns()) {
@@ -226,5 +231,7 @@ public class SleepRecord {
 		}
 		return _msg;
 	}
+
+	
 
 }
