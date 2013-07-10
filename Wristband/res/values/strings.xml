@@ -173,6 +173,8 @@
     <string name="pref_in_bed_time">prefInBedTime</string>
     <string name="weekday_wakeup_time">Weekday wake up time</string>
     <string name="weekend_wakeup_time">Weekend wake up time</string>
+    <string name="keySleepStart">keySleepStart</string>
+    <string name="keySleepEnd">keySleepEnd</string>
     <string name="wristband_disconnected">Wristband Desconnected</string>
     <string name="do_you_want_to_reconnect">Do you want to reconnect?</string>
     <string name="connection_time_out">Connection time out</string>
