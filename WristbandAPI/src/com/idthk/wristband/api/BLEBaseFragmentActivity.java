@@ -7,7 +7,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,12 +61,9 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	protected static final int BLE_HISTORY_MODE = 24;
 
 	protected static final int STATE_OFF = 10;
-	// protected static final int BLE_STREAM_MODE_ON = 23;
-	// protected static final int BLE_STREAM_MODE_OFF = 24;
 	private int mState = BLE_PROFILE_DISCONNECTED;
 
 	protected WristbandBLEService mService = null;
-	// protected BluetoothDevice = null;
 	protected BluetoothAdapter mBtAdapter = null;
 	protected ServiceConnection onService = null;
 
@@ -79,9 +78,9 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	}
 
 	private CountDownTimer mCountDownTimer;
-
+	public boolean bTrace = false;
 	byte[] rawDataBuffer;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -90,9 +89,9 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 			public void onFinish() {
 
 				// onError(BLEErrorType.READ_HISTORY_ERROR);
-				parseHistoryData();
-				if (rawDataBuffer != null)
-					printByteArray(rawDataBuffer, 0, rawDataBuffer.length);
+
+				parseHistoryData(rawDataBuffer);
+
 				onHistoryReadFinish();
 				mState = BLE_PROFILE_CONNECTED;
 			}
@@ -128,50 +127,61 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	}
 
-	protected void parseHistoryData() {
+	public void parseHistoryData(byte[] _rawDataBuffer) {
 
 		int p = 0;
+
 		List<byte[]> pedometerValues = new ArrayList<byte[]>();
 		List<byte[]> sleepValues = new ArrayList<byte[]>();
 		List<Byte> inData = null;
 		String dataType = "";
-		if (rawDataBuffer == null)
+		boolean isPedometerStart = false, isPedometerEnd = false;
+		boolean isSleepDataStart = false, isSleepDataEnd = false;
+		if (_rawDataBuffer == null)
 			return;
-		while (p < rawDataBuffer.length) {
+
+		if (_rawDataBuffer != null) {
+			boolean bPrint = false;
+			if (bPrint) {
+				printByteArray(_rawDataBuffer);
+			}
+		}
+		while (p < _rawDataBuffer.length) {
 			if (inData == null) {
-				if (matchData(rawDataBuffer, p,
+				if (matchData(_rawDataBuffer, p,
 						WristbandBLEService.ACTIVITY_HISTORY_RETURN_HEADER)) {
 					// header of pedometer
-					Log.v(TAG, "ACTIVITY_HISTORY_RETURN_HEADER " + p);
+					//Log.v(TAG, "ACTIVITY_HISTORY_RETURN_HEADER " + p);
 					dataType = "PEDOMETER";
 					inData = new ArrayList<Byte>();
-					// printByteArray(rawDataBuffer,p,p+6);
+					isPedometerStart = true;
 					p += 6;
 					continue;
-				} else if (matchData(rawDataBuffer, p,
+				} else if (matchData(_rawDataBuffer, p,
 						WristbandBLEService.SLEEP_HISTORY_RETURN_HEADER)) {
-					Log.v(TAG, "SLEEP_HISTORY_RETURN_HEADER " + p);
+					//Log.v(TAG, "SLEEP_HISTORY_RETURN_HEADER " + p);
 					// header of sleep
 					inData = new ArrayList<Byte>();
 					dataType = "SLEEP";
-					// printByteArray(rawDataBuffer,p,p+6);
+					isSleepDataStart = true;
 					p += 6;
 					continue;
 				}
 				p += 1;
 
 			} else {
-				if (matchData(rawDataBuffer, p,
+				if (matchData(_rawDataBuffer, p,
 						WristbandBLEService.HISTORY_RETURN_FOOTER)) {
 					// end of data footer
-					Log.v(TAG, "Match Fotter " + p);
-					// printByteArray(rawDataBuffer,p,p+6);
+					//Log.v(TAG, "Match Fotter " + p);
+
 					if (dataType.equals("PEDOMETER")) {
 						byte newData[] = new byte[inData.size()];
 						for (int i = 0; i < inData.size(); i++) {
 							newData[i] = inData.get(i);
 						}
 						pedometerValues.add(newData);
+						isPedometerEnd = true;
 					} else if (dataType.equals("SLEEP")) {
 
 						byte newData[] = new byte[inData.size()];
@@ -179,188 +189,176 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 							newData[i] = inData.get(i);
 						}
 						sleepValues.add(newData);
+						isSleepDataEnd = true;
 					}
 					dataType = "";
 					inData = null;
 					p += 6;
 				} else {
 					// data
-					inData.add(rawDataBuffer[p]);
-					// printByteArray(rawDataBuffer,p,p+1);
+					inData.add(_rawDataBuffer[p]);
+
 					p += 1;
 
 				}
 			}
 
 		}
-		List<Record> pedometerData = new ArrayList<Record>();
-		for (byte[] data : pedometerValues) {
-			// byte[]b = new byte[data.size()];
-			// byte[]b = data.toArray();
-			// System.arraycopy( ,0,b,0,data.size());
-			Log.v(TAG, "pedometerValues ");
-			if (data.length == 9) {
-				p = 0;
-				// Current hour pedometer data
-				Record record = new Record();
-				Calendar calendar = Calendar.getInstance();
+		if (isSleepDataStart && isSleepDataEnd && isPedometerStart
+				&& isPedometerEnd) {
 
-				calendar.set(Calendar.HOUR, (int) (data[p]));
-				calendar.set(Calendar.MINUTE, 0);
-				calendar.set(Calendar.SECOND, 0);
-				record.setDate(calendar);
+			List<Record> pedometerData = new ArrayList<Record>();
+			for (byte[] data : pedometerValues) {
+				//Log.v(TAG, "found pedometerValues ");
+				if (data.length == 9) {
 
-				record.setSteps((data[p + 1] * 100) + data[p + 2]);
-				record.setDistance((float) (data[p + 3] + (data[p + 4] * 0.01)));
-				record.setCalories((data[p + 5] * 100) + data[p + 6]);
-				record.setActivityTime((data[p + 7] * 60) + data[p + 8]);
-
-				pedometerData.add(record);
-
-				Log.v(TAG, "Current hour pedometer data: " + record.toString());
-			} else {
-
-				Map<Long, Record> map = new HashMap<Long, Record>();
-
-				p = 0;
-				Calendar calendar = Calendar.getInstance();
-				calendar.set(2000 + data[p], data[p + 1], data[p + 2]);
-				calendar.set(Calendar.MINUTE, 0);
-				calendar.set(Calendar.SECOND, 0);
-				p = 3;
-				while ((p + 8) <= (data.length)) {
+					p = 0;
+					// Current hour pedometer data
+					Record record = new Record();
+					Calendar calendar = Calendar.getInstance();
 
 					calendar.set(Calendar.HOUR, (int) (data[p]));
+					calendar.set(Calendar.MINUTE, 0);
+					calendar.set(Calendar.SECOND, 0);
+					calendar.set(Calendar.MILLISECOND, 0);
+					record.setDate(calendar);
 
-					int steps = (data[p + 1] * 100) + data[p + 2];
-					float distance = (float) (data[p + 3] + (data[p + 4] * 0.01));
-					int calories = (data[p + 5] * 100) + data[p + 6];
-					int activityTime = (data[p + 7] * 60) + data[p + 8];
-					Record record = map.get(calendar.getTimeInMillis());
-					if (record == null) {
+					record.setSteps((data[p + 1] * 100) + data[p + 2]);
+					record.setDistance((float) (data[p + 3] + (data[p + 4] * 0.01)));
+					record.setCalories((data[p + 5] * 100) + data[p + 6]);
+					record.setActivityTime((data[p + 7] * 60) + data[p + 8]);
 
-						record = new Record(calendar.getTimeInMillis(), 0);
-						map.put(calendar.getTimeInMillis(), record);
-					}
-					record.setSteps(record.getSteps() + steps);
-					record.setDistance(record.getDistance() + distance);
-					record.setCalories(record.getCalories() + calories);
-					record.setActivityTime(record.getActivityTime()
-							+ activityTime);
-
-					p += 9;
 					pedometerData.add(record);
+					onReadCurrentRecord(record);
+
+				} else {
+					p = 0;
+					Calendar calendar = Calendar.getInstance();
+					calendar.set(2000 + data[p], data[p + 1], data[p + 2]);
+					calendar.set(Calendar.MINUTE, 0);
+					calendar.set(Calendar.SECOND, 0);
+					calendar.set(Calendar.MILLISECOND, 0);
+					p = 3;
+					while ((p + 8) <= (data.length)) {
+
+						calendar.set(Calendar.HOUR, (int) (data[p]));
+
+						int steps = (data[p + 1] * 100) + data[p + 2];
+						float distance = (float) (data[p + 3] + (data[p + 4] * 0.01));
+						int calories = (data[p + 5] * 100) + data[p + 6];
+						int activityTime = (data[p + 7] * 60) + data[p + 8];
+
+						Record record = new Record(calendar.getTimeInMillis(),
+								activityTime);
+
+						record.setSteps(record.getSteps() + steps);
+						record.setDistance(record.getDistance() + distance);
+						record.setCalories(record.getCalories() + calories);
+						record.setActivityTime(record.getActivityTime()
+								+ activityTime);
+
+						p += 9;
+						pedometerData.add(record);
+					}
+
 				}
-
 			}
-		}
-		onReadActivityHistoryData(pedometerData);
+			
+			onReadActivityHistoryData(pedometerData);
 
-		// Decode sleep data
-		for (byte[] data : sleepValues) {
-			// uint8_t b[data.length];
-			// [data getBytes:b];
+			// Decode sleep data
+			for (byte[] data : sleepValues) {
 
-			SleepRecord sleepRecord = new SleepRecord();
+				SleepRecord sleepRecord = new SleepRecord();
 
-			p = 0;
-			// NSDateComponents *dc = [[NSDateComponents alloc] init];
-			//
-			// dc.timeZone = [NSTimeZone localTimeZone];
-			// dc.year = 2000 + b[p];
-			// dc.month = b[p+1];
-			// dc.day = b[p+2];
-			// dc.hour = b[p+3];
-			// dc.minute = b[p+4];
-			sleepRecord.setGoToBedTime(Calendar.getInstance());
-			sleepRecord.getGoToBedTime().set(2000 + data[p], data[p + 1],
-					data[p + 2]);
-			sleepRecord.getGoToBedTime().set(Calendar.HOUR_OF_DAY, data[p + 3]);
-			sleepRecord.getGoToBedTime().set(Calendar.MINUTE, data[p + 4]);
-			sleepRecord.getGoToBedTime().set(Calendar.SECOND, 0);
+				p = 0;
 
-			p += 5;
-			sleepRecord
-					.setFallingAsleepDuration(((data[p] * 60) + data[p + 1]));
-
-			p += 2;
-			sleepRecord.setNumberOfTimesWaken((data[p]));
-
-			p += 1;
-			sleepRecord.setInBedTime(((data[p] * 60) + data[p + 1]));
-
-			p += 2;
-			sleepRecord.setActualSleepTime(((data[p] * 60) + data[p + 1]));
-
-			p += 2;
-			// dc = [[NSDateComponents alloc] init];
-			// dc.year = 2013;
-			// dc.month = 1;
-			// dc.day = 1;
-			// dc.hour = data[p];
-			// dc.minute = data[p+1];
-			// dc.second = 0;
-			// dc.timeZone = [NSTimeZone localTimeZone];
-
-			sleepRecord.setActualWakeupTime(Calendar.getInstance());
-			sleepRecord.getActualWakeupTime().set(2013, 1, 1);
-			sleepRecord.getActualWakeupTime()
-					.set(Calendar.HOUR_OF_DAY, data[p]);
-			sleepRecord.getActualWakeupTime().set(Calendar.MINUTE, data[p + 1]);
-			sleepRecord.getActualWakeupTime().set(Calendar.SECOND, 0);
-			sleepRecord.getActualWakeupTime()
-					.setTimeZone(TimeZone.getDefault());
-			//
-			p += 2;
-			// dc = [[NSDateComponents alloc] init];
-			// dc.year = 2013;
-			// dc.month = 1;
-			// dc.day = 1;
-			// dc.hour = data[p];
-			// dc.minute = data[p+1];
-			// dc.second = 0;
-			// dc.timeZone = [NSTimeZone localTimeZone];
-			sleepRecord.setPresetWakeupTime(Calendar.getInstance());
-			sleepRecord.getPresetWakeupTime().set(2013, 1, 1);
-			sleepRecord.getPresetWakeupTime()
-					.set(Calendar.HOUR_OF_DAY, data[p]);
-			sleepRecord.getPresetWakeupTime().set(Calendar.MINUTE, data[p + 1]);
-			sleepRecord.getPresetWakeupTime().set(Calendar.SECOND, 0);
-			sleepRecord.getPresetWakeupTime()
-					.setTimeZone(TimeZone.getDefault());
-
-			p += 2;
-			sleepRecord.setSleepEfficiency((data[p]));
-
-			p += 1;
-			// NSMutableArray *pattern = [[NSMutableArray alloc] init];
-			while ((p + 5) <= data.length) {
-				SleepPattern slppePattern = new SleepPattern();
-				// NSMutableDictionary *dict = [[NSMutableDictionary alloc]
-				// init];
-				//
-				// dict["time"] = ((data[p+3] * 60) + data[p+4]);
-				// dict["duration"] = ((data[p+1] * 60) + data[p+2]);
-				// dict["amplitude"] = (data[p]);
-
-				slppePattern.setTime(((data[p + 3] * 60) + data[p + 4]));
-				slppePattern.setDuration(((data[p + 1] * 60) + data[p + 2]));
-				slppePattern.setAmplitude((data[p]));
-				//
-				// [pattern addObject:dict];
-				//
-				sleepRecord.getPatterns().add(slppePattern);
+				sleepRecord.setGoToBedTime(Calendar.getInstance());
+				sleepRecord.getGoToBedTime().set(2000 + data[p], data[p + 1],
+						data[p + 2]);
+				sleepRecord.getGoToBedTime().set(Calendar.HOUR_OF_DAY,
+						data[p + 3]);
+				sleepRecord.getGoToBedTime().set(Calendar.MINUTE, data[p + 4]);
+				sleepRecord.getGoToBedTime().set(Calendar.SECOND, 0);
+				sleepRecord.getGoToBedTime().set(Calendar.MILLISECOND, 0);
 				p += 5;
+				sleepRecord
+						.setFallingAsleepDuration(((data[p] * 60) + data[p + 1]));
+
+				p += 2;
+				sleepRecord.setNumberOfTimesWaken((data[p]));
+
+				p += 1;
+				sleepRecord.setInBedTime(((data[p] * 60) + data[p + 1]));
+
+				p += 2;
+				sleepRecord.setActualSleepTime(((data[p] * 60) + data[p + 1]));
+
+				p += 2;
+				sleepRecord.setActualWakeupTime(Calendar.getInstance());
+				sleepRecord.getActualWakeupTime().set(2013, 1, 1);
+				sleepRecord.getActualWakeupTime().set(Calendar.HOUR_OF_DAY,
+						data[p]);
+				sleepRecord.getActualWakeupTime().set(Calendar.MINUTE,
+						data[p + 1]);
+				sleepRecord.getActualWakeupTime().set(Calendar.SECOND, 0);
+				sleepRecord.getGoToBedTime().set(Calendar.MILLISECOND, 0);
+				sleepRecord.getActualWakeupTime().setTimeZone(
+						TimeZone.getDefault());
+
+				p += 2;
+				sleepRecord.setPresetWakeupTime(Calendar.getInstance());
+				sleepRecord.getPresetWakeupTime().set(2013, 1, 1);
+				sleepRecord.getPresetWakeupTime().set(Calendar.HOUR_OF_DAY,
+						data[p]);
+				sleepRecord.getPresetWakeupTime().set(Calendar.MINUTE,
+						data[p + 1]);
+				sleepRecord.getPresetWakeupTime().set(Calendar.SECOND, 0);
+				sleepRecord.getGoToBedTime().set(Calendar.MILLISECOND, 0);
+				sleepRecord.getPresetWakeupTime().setTimeZone(
+						TimeZone.getDefault());
+
+				p += 2;
+				sleepRecord.setSleepEfficiency((data[p]));
+
+				p += 1;
+
+				while ((p + 5) <= data.length) {
+					SleepPattern slppePattern = new SleepPattern();
+
+					slppePattern.setTime(((data[p + 3] * 60) + data[p + 4]));
+					slppePattern
+							.setDuration(((data[p + 1] * 60) + data[p + 2]));
+					slppePattern.setAmplitude((data[p]));
+					sleepRecord.getPatterns().add(slppePattern);
+					p += 5;
+				}
+				onReadSleepHistoryData(sleepRecord);
 			}
-			// sd.sleepPattern = [[NSArray alloc] initWithArray:pattern];
-			//
-			// if ([self.delegate
-			// respondsToSelector:selector(wristBand:didReceiveSleepData:)]) {
-			// [self.delegate wristBand:self didReceiveSleepData:sd];
-			// }
-			onReadSleepHistoryData(sleepRecord);
+			_rawDataBuffer = null;
+			onReadHistoryDataFinished();
+		} else if (!isPedometerStart || !isPedometerEnd || !isSleepDataStart
+				|| !isSleepDataEnd) {
+			onReadDataFailed(isPedometerStart, isPedometerEnd,
+					isSleepDataStart, isSleepDataEnd);
 		}
-		rawDataBuffer = null;
+
+	}
+
+	protected void onReadDataFailed(boolean isPedometerStart,
+			boolean isPedometerEnd, boolean isSleepDataStart,
+			boolean isSleepDataEnd) {
+		// TODO Auto-generated method stub
+
+	}
+
+	protected void onReadHistoryDataFinished() {
+		// TODO Auto-generated method stub
+		Log.v(TAG, "onReadHistoryDataFinished");
+	}
+
+	protected void onReadCurrentRecord(Record record) {
+		// TODO Auto-generated method stub
 
 	}
 
@@ -372,6 +370,20 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 			}
 			Log.v(TAG, "printByteArray : " + _msg);
 		}
+	}
+
+	protected static void printByteArray(byte value[]) {
+		String _msg = "";
+
+		for (int i = 0; i < value.length; i++) {
+
+			_msg += Integer.toHexString(value[i]) + ",";
+			if (i % 10 == 0) {
+				Log.v(TAG, "printByteArray : " + _msg);
+				_msg = "";
+			}
+		}
+
 	}
 
 	@Override
@@ -727,8 +739,6 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 		int iDataToFindLen = dataToFind.length;
 		boolean bGotData = false;
 		int iMatchDataCntr = 0;
-		printByteArray(srcData, startIndex, startIndex + dataToFind.length);
-		printByteArray(dataToFind, 0, dataToFind.length);
 		if (startIndex + iDataToFindLen > iDataLen)
 			return false;
 		for (int i = startIndex; i < startIndex + iDataToFindLen; i++) {
@@ -1156,26 +1166,90 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	}
 
-	public void onReadActivityHistoryData(List<Record> pedometerData) {
-
+	protected void onReadActivityHistoryData(List<Record> pedometerData) {
 		DatabaseHandler db = new DatabaseHandler(this, TABLE_CONTENT, null, 1);
-
-		for (Record record : pedometerData) {
-
-			if (db.updateRecord(record) == 0) {
-				db.addRecord(record);
+		Log.v(TAG,
+				"Incoming Activity Data Size : "+ pedometerData.size());
+		if (bTrace) {
+			Log.v(TAG,
+					"----------------------------Incoming Activity Data----------------------------");
+			for (Record record : pedometerData) {
+				Log.v(TAG, "Synced Activity > " + record.toString());
 			}
+			Log.v(TAG,
+					"----------------------------Incoming Activity Data----------------------------");
 
+			Log.v(TAG,
+					"~~~~~~~~~~~~~~~~~~~~~~~~~~~ OLD Activity ~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			List<Record> records = db.getAllRecords();
+			for (Record record : records) {
+
+				Log.v(TAG, record.toString());
+			}
+			Log.v(TAG,
+					"~~~~~~~~~~~~~~~~~~~~~~~~~~~ OLD Activity ~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		}
+		Log.v(TAG,
+				"=====================Sync Activity Start=====================");
+		
+		db.updateRecord(pedometerData);
+//		for (Record record : pedometerData) {
+//			if (bTrace)
+//				Log.v(TAG, "Incoming Record " + record.toString());
+//			if (db.updateRecord(record) == 0) {
+//				db.addRecord(record);
+//				Log.v(TAG, "INSERT Activity =>=>=> " + record.toString());
+//			} else {
+//
+//				if (bTrace)
+//					Log.v(TAG, "UPDATE Activity ^^^ " + record.toString()
+//							+ "!!!!!!!!!!!!!!");
+//			}
+//
+//		}
 
+		Log.v(TAG,
+				"=====================Sync Activity End=====================");
 	}
 
-	public void onReadSleepHistoryData(SleepRecord sleepRecord) {
-		DatabaseHandler db = new DatabaseHandler(this, TABLE_CONTENT, null, 1);
+	protected void onReadSleepHistoryData(SleepRecord sleepRecord) {
+		if (bTrace) {
+			Log.v(TAG,
+					"----------------------------Incoming Sleep Data----------------------------");
 
+			Log.v(TAG, "Synced Sleep > " + sleepRecord.toString());
+
+			Log.v(TAG,
+					"----------------------------Incoming Sleep Data----------------------------");
+		}
+		DatabaseHandler db = new DatabaseHandler(this, TABLE_CONTENT, null, 1);
+		 if (bTrace)
+		{
+			Log.v(TAG,
+					"~~~~~~~~~~~~~~~~~~~~~~~~~~~ OLD Sleep Data ~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			List<SleepRecord> sleepRecords = db.getAllSleepRecords();
+			for (SleepRecord sleepRrecord : sleepRecords) {
+				Log.v(TAG, sleepRrecord.toString());
+			}
+			Log.v(TAG,
+					"~~~~~~~~~~~~~~~~~~~~~~~~~~~ OLD Sleep Data ~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		}
+
+		if (bTrace)
+			Log.v(TAG,
+					"=====================Sync Sleep Start=====================");
+//		db.updateSleepRecord(sleepRecord);
 		if (db.updateSleepRecord(sleepRecord) == 0) {
 			db.addSleepRecord(sleepRecord);
+			Log.v(TAG, "INSERT Sleep Record =>=>=> " + sleepRecord.toString());
+		} else {
+			if (bTrace)
+				Log.v(TAG, "UPDATE Sleep Recod ^^^ " + sleepRecord.toString()
+						+ "!!!!!!!!!!!!!!");
 		}
+		if (bTrace)
+			Log.v(TAG,
+					"=====================Sync Sleep Start=====================");
 
 	}
 
