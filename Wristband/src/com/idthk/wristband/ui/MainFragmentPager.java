@@ -143,7 +143,7 @@ public class MainFragmentPager extends Fragment implements
 		lastSyncTimeTv = ((TextView) v
 				.findViewById(R.id.last_sync_time_textview));
 		
-		String s = "2012-05-08";
+		
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 

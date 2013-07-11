@@ -19,6 +19,7 @@ package com.idthk.wristband.ui;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 //import java.lang.reflect.Array;
@@ -132,7 +133,7 @@ public class MainFragment extends Fragment implements
 	private TextView mStepIndicatedTV = null;
 	private TextView mCaloriesIndicatedTV = null;
 	private TextView mDistancesIndicatedTV = null;
-
+	
 	public interface OnShareButtonClickedListener {
 		public void onShareButtonClicked(String s);
 
@@ -401,16 +402,16 @@ public class MainFragment extends Fragment implements
 				endSleep = prefs.getString(
 						getString(R.string.pref_weekend_wake), "08:00AM");
 			}
-			if (mRootView.findViewById(R.id.sleep_start_textfield) != null)
-				((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
-						.setText(startSleep);
-			if (mRootView.findViewById(R.id.sleep_end_textfield) != null)
-				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
-						.setText(endSleep);
-			if (mRootView.findViewById(R.id.sleep_duration_textfield) != null)
-				((TextView) mRootView
-						.findViewById(R.id.sleep_duration_textfield))
-						.setText(String.valueOf(inbedTime));
+//			if (mRootView.findViewById(R.id.sleep_start_textfield) != null)
+//				((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
+//						.setText(startSleep);
+//			if (mRootView.findViewById(R.id.sleep_end_textfield) != null)
+//				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
+//						.setText(endSleep);
+//			if (mRootView.findViewById(R.id.sleep_duration_textfield) != null)
+//				((TextView) mRootView
+//						.findViewById(R.id.sleep_duration_textfield))
+//						.setText(String.valueOf(inbedTime));
 
 		}
 
@@ -418,55 +419,82 @@ public class MainFragment extends Fragment implements
 
 	private void populateGraph(View mRootView) {
 		if (mPageNumber == 0) {
-
+			Calendar now = Calendar.getInstance();
+			Utilities.targetDate().setTime(now.getTime());
 			Utilities.publishGraph(getActivity(), mRootView,
 					((ViewGroup) mRootView.findViewById(R.id.graph1)),
 					SleepStatisticTabFragment.TAB_DAY);
 		} else {
 			// TODO implement sleep patter graph view
-			populateSleepPatternGraph(((ViewGroup) mRootView
+			Utilities.populateSleepPatternGraph(getActivity(), mRootView,((ViewGroup) mRootView
 					.findViewById(R.id.graph1)));
 		}
 
 	}
 
-	private void populateSleepPatternGraph(ViewGroup graph) {
+	/*private void populateSleepPatternGraph(ViewGroup graph) {
 		graph.removeAllViews();
 		GraphViewSeriesStyle style = new GraphViewSeriesStyle();
 		style.thickness = 5;
 		style.color = 0xFF73CBfD;
 
 		Context context = getActivity();
+		
+		
 		LineGraphView mGraphView = new LineGraphView(context, "");
 		DatabaseHandler db = new DatabaseHandler(context, Main.TABLE_CONTENT,
 				null, 1);
-		// Calendar _calendar = Calendar.getInstance();
-		// _calendar.set(2012, 1, 1);
-		List<SleepRecord> sleeprecord = db.getLastSleepRecord();
-		if (sleeprecord.size() == 1) {
-			List<SleepPattern> patterns = sleeprecord.get(0).getPatterns();
-			GraphViewData[] data = new GraphViewData[patterns.size()];
+		
+		SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+		
+		SleepRecord sleeprecord = db.getLastSleepRecord();
+		
+		((TextView)mRootView.findViewById(R.id.sleep_time_hour_textview)).setText(df.format(sleeprecord.getGoToBedTime().getTime()));
+	
+		((TextView)mRootView.findViewById(R.id.sleep_end_textfield)).setText(df.format(sleeprecord.getActualWakeupTime().getTime()));
+		((TextView)mRootView.findViewById(R.id.sleep_duration_textfield)).setText(String.valueOf(sleeprecord.getInBedTime()));
+		if (sleeprecord != null) {
+			List<SleepPattern> patterns = sleeprecord.getPatterns();
+			List <GraphViewData> data = new ArrayList<GraphViewData>();
+
 			int j = 0;
-
+			int xValue = 0;
 			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-			String[] hStr = new String[patterns.size()];
 			for (SleepPattern pattern : patterns) {
+				for(int i = 0 ; i < pattern.getDuration();i++)
+				{
+					int a = 0;
+					switch(pattern.getAmplitude())
+					{
+					case 22:
+							a = 1;
+						break;
+					case 44:
+							a = 2;
+						break;
+					case 64:
 
-				data[j] = new GraphViewData(j, pattern.getAmplitude());
-				hStr[j] = sdf.format(pattern.getTime());
-				j++;
+					case 66:
+						a = 3;
+						break;
+					}
+					data.add( new GraphViewData(xValue, a));
+					xValue++;
+				}
+				
 			}
+			
+			GraphViewData[] a = data.toArray(new GraphViewData[data.size()]);
+			GraphViewSeries series = new GraphViewSeries("Hour", style,
+					a);
 
-			GraphViewSeries series = new GraphViewSeries("Hour", style, data);
-
-			mGraphView.setManualYAxisBounds(60, 0);
-			mGraphView.setHorizontalLabels(hStr);
+			mGraphView.setManualYAxisBounds(3, 0);
 			mGraphView.addSeries(series);
-
+			// stuff that updates ui
 			graph.addView(mGraphView);
 		}
 	}
-
+*/
 	/**
 	 * Returns the page number represented by this fragment object.
 	 */
@@ -513,16 +541,35 @@ public class MainFragment extends Fragment implements
 			}
 		} else if (mPageNumber == 1) {
 
-			if (key.equals(getString(R.string.pref_weekday))) {
-
-			} else if (key.equals(getString(R.string.pref_weekend))) {
-
+			if (key.equals(getString(R.string.keySleepStart))) {
+				String wakeup_start = sharedPreferences.getString(key, "10:00 pm");
+				((TextView)mRootView.findViewById(R.id.sleep_time_hour_textview)).setText(wakeup_start);
 			}
+			else if (key.equals(getString(R.string.keySleepEnd))) {
+				String wakeup_end = sharedPreferences.getString(key, "8:00 am");
+				((TextView)mRootView.findViewById(R.id.sleep_time_hour_textview)).setText(wakeup_end);
+				
+			}
+			else if(key.equals(getString(R.string.keyActualSleepTime)))
+			{
+				int value = sharedPreferences.getInt(key, 0);
+				
+				 ((TextView)mRootView.findViewById(R.id.sleep_time_hour_textview)).setText(String.valueOf(value/60));
+				 
+				 ((TextView)mRootView.findViewById(R.id.sleep_time_mins_textview)).setText(String.valueOf(value%60));
+			}
+			else if(key.equals(getString(R.string.keyTimeFallAsSleep)))
+			{
+				((TextView)mRootView.findViewById(R.id.fall_asleep_time_mins_textview)).setText(sharedPreferences.getInt(key, 0));
+			}
+				
 
 		}
 		if (key.equals(getString(R.string.pref_last_sync_time))) {
 			// moved to Main.java
 		}
+		
+
 	}
 
 	public void onStreamMessage(int steps, int calories, float distance,
@@ -543,6 +590,7 @@ public class MainFragment extends Fragment implements
 		currentBatteryLevel = batteryLevel;
 
 		if (mPageNumber == 0) {
+			
 			if (mStepsProgressBar != null)
 				mStepsProgressBar.setProgress(currentSteps);
 			if (mCaloriesProgressBar != null)

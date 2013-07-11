@@ -56,9 +56,12 @@ public class SleepLandscapeActivity extends LandscapeActivity {
 		
 		displayType = SleepStatisticTabFragment.TAB_DAY;
 		
-		Utilities.publishGraph((Context)this , getWindow().getDecorView().getRootView(),
-				((ViewGroup) findViewById(R.id.graph1)),
-				displayType);
+//		Utilities.publishGraph((Context)this , getWindow().getDecorView().getRootView(),
+//				((ViewGroup) findViewById(R.id.graph1)),
+//				displayType);
+		
+		Utilities.populateSleepPatternGraph((Context)this , getWindow().getDecorView().getRootView(),
+				((ViewGroup) findViewById(R.id.graph1)));
 		checkButtonVisible();
 	}
 	

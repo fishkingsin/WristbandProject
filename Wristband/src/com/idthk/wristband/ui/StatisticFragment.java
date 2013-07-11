@@ -72,19 +72,19 @@ public class StatisticFragment extends Fragment implements
 				@Override
 				public void onClick(View arg0) {
 					int ret = Utilities.nextEntryDate(message);
-					if (ret == -1 || ret == 0) {
+//					if (ret == -1 || ret == 0) {
 						Utilities.publishGraph(getActivity(), mRootView,
 								((ViewGroup) mRootView
 										.findViewById(R.id.graph1)), message);
-					}
-
-					if (ret == 0) {
-						nextEntryButton.setVisibility(View.INVISIBLE);
-						prevEntryButton.setVisibility(View.VISIBLE);
-					} else {
-						nextEntryButton.setVisibility(View.VISIBLE);
-						prevEntryButton.setVisibility(View.VISIBLE);
-					}
+//					}
+//
+//					if (ret == 0) {
+//						nextEntryButton.setVisibility(View.INVISIBLE);
+//						prevEntryButton.setVisibility(View.VISIBLE);
+//					} else {
+//						nextEntryButton.setVisibility(View.VISIBLE);
+//						prevEntryButton.setVisibility(View.VISIBLE);
+//					}
 
 				}
 			});
@@ -96,19 +96,19 @@ public class StatisticFragment extends Fragment implements
 				@Override
 				public void onClick(View arg0) {
 					int ret = Utilities.prevEntryDate(message);
-					if (ret == 1 || ret == 0) {
+//					if (ret == 1 || ret == 0) {
 						Utilities.publishGraph(getActivity(), mRootView,
 								((ViewGroup) mRootView
 										.findViewById(R.id.graph1)), message);
-					}
-
-					if (ret == 0) {
-						prevEntryButton.setVisibility(View.INVISIBLE);
-						nextEntryButton.setVisibility(View.VISIBLE);
-					} else {
-						nextEntryButton.setVisibility(View.VISIBLE);
-						prevEntryButton.setVisibility(View.VISIBLE);
-					}
+//					}
+//
+//					if (ret == 0) {
+//						prevEntryButton.setVisibility(View.INVISIBLE);
+//						nextEntryButton.setVisibility(View.VISIBLE);
+//					} else {
+//						nextEntryButton.setVisibility(View.VISIBLE);
+//						prevEntryButton.setVisibility(View.VISIBLE);
+//					}
 				}
 
 			});
@@ -117,25 +117,25 @@ public class StatisticFragment extends Fragment implements
 			Log.v(TAG, e.getMessage());
 		}
 
-		if (message.equals(SleepStatisticTabFragment.TAB_WEEK)) {
-			if (Utilities.firstDate().get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-				Utilities.prevEntryDate(message);
-				nextEntryButton.setVisibility(View.INVISIBLE);
-			}
-		} else if (message.equals(SleepStatisticTabFragment.TAB_MONTH)) {
-			nextEntryButton.setVisibility(View.INVISIBLE);
-		} else if (message.equals(SleepStatisticTabFragment.TAB_YEAR)) {
-
-			nextEntryButton.setVisibility(View.INVISIBLE);
-		} else if (message.equals(ActivityStatisticTabFragment.TAB_DAY)) {
-			nextEntryButton.setVisibility(View.INVISIBLE);
-		} else if (message.equals(ActivityStatisticTabFragment.TAB_WEEK)) {
-			nextEntryButton.setVisibility(View.INVISIBLE);
-		} else if (message.equals(ActivityStatisticTabFragment.TAB_MONTH)) {
-			nextEntryButton.setVisibility(View.INVISIBLE);
-		} else if (message.equals(ActivityStatisticTabFragment.TAB_YEAR)) {
-			nextEntryButton.setVisibility(View.INVISIBLE);
-		}
+//		if (message.equals(SleepStatisticTabFragment.TAB_WEEK)) {
+//			if (Utilities.firstDate().get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+//				Utilities.prevEntryDate(message);
+//				nextEntryButton.setVisibility(View.INVISIBLE);
+//			}
+//		} else if (message.equals(SleepStatisticTabFragment.TAB_MONTH)) {
+//			nextEntryButton.setVisibility(View.INVISIBLE);
+//		} else if (message.equals(SleepStatisticTabFragment.TAB_YEAR)) {
+//
+//			nextEntryButton.setVisibility(View.INVISIBLE);
+//		} else if (message.equals(ActivityStatisticTabFragment.TAB_DAY)) {
+//			nextEntryButton.setVisibility(View.INVISIBLE);
+//		} else if (message.equals(ActivityStatisticTabFragment.TAB_WEEK)) {
+//			nextEntryButton.setVisibility(View.INVISIBLE);
+//		} else if (message.equals(ActivityStatisticTabFragment.TAB_MONTH)) {
+//			nextEntryButton.setVisibility(View.INVISIBLE);
+//		} else if (message.equals(ActivityStatisticTabFragment.TAB_YEAR)) {
+//			nextEntryButton.setVisibility(View.INVISIBLE);
+//		}
 
 		// TextView messageTextView = (TextView) mRootView
 		// .findViewById(R.id.activity_indicator);
