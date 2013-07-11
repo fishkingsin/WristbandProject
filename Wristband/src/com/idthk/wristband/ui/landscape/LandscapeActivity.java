@@ -133,70 +133,50 @@ public class LandscapeActivity extends Activity implements OnClickListener {
 //		}
 	}
 
-//	public void loadPrevEntry() {
-//		if (Utilities.prevEntryDate(displayType)) {
-//			Utilities.publishGraph((Context)this , getWindow().getDecorView().getRootView(),
-//					((ViewGroup) findViewById(R.id.graph1)),
-//					displayType);
+
+//	protected void createDBTable(String string) {
+//		DatabaseHandler db = new DatabaseHandler(this,string,null,1);
+//
+//		/**
+//		 * Read Operations
+//		 * */
+//
+//		// Reading all contacts
+//		Log.d("Reading: ", "Reading all Record from "+string+" ...");
+//		List<Record> records = db.getAllRecords();
+//
+//		for (Record cn : records) {
+//			String log = "Timestamp: " +cn.getTimeStamp()
+//					+ " ,Date: " + DatePreference.summaryFormatter().format(cn.getCalendar().getTime())
+//					+ " ,Year: " + cn.getYear()
+//					+ " ,Month: " + cn.getMonth()
+//					+ " ,Week of Year: " + cn.getWeekofYear()
+//					+ " ,Day: " + cn.getDay()
+//					+ " ,Hour: " + cn.getHour()
+//					
+//					+ " ,Minutes: " + cn.getActivityTime();
+//			// Writing Contacts to log
+//			Log.d("Name: ", log);
 //		}
 //		
-//		checkButtonVisible();
 //	}
-//
-//
-//	public void loadNextEntry() {
-//		
-//		if (Utilities.nextEntryDate(displayType)) {
-//			Utilities.publishGraph((Context)this , getWindow().getDecorView().getRootView(),
-//					((ViewGroup) findViewById(R.id.graph1)),
-//					displayType);
-//		}
-//		checkButtonVisible();
-//
-//	}
-	protected void createDBTable(String string) {
-		DatabaseHandler db = new DatabaseHandler(this,string,null,1);
-
-		/**
-		 * Read Operations
-		 * */
-
-		// Reading all contacts
-		Log.d("Reading: ", "Reading all Record from "+string+" ...");
-		List<Record> records = db.getAllRecords();
-
-		for (Record cn : records) {
-			String log = "Timestamp: " +cn.getTimeStamp()
-					+ " ,Date: " + DatePreference.summaryFormatter().format(cn.getCalendar().getTime())
-					+ " ,Year: " + cn.getYear()
-					+ " ,Month: " + cn.getMonth()
-					+ " ,Week of Year: " + cn.getWeekofYear()
-					+ " ,Day: " + cn.getDay()
-					+ " ,Hour: " + cn.getHour()
-					
-					+ " ,Minutes: " + cn.getActivityTime();
-			// Writing Contacts to log
-			Log.d("Name: ", log);
-		}
-		
-	}
 	
 	protected void checkButtonVisible() {
 		// TODO Auto-generated method stub
-		if (Utilities.targetDate().compareTo(Utilities.lastDate()) == 0 || Utilities.targetDate().compareTo(Utilities.lastDate()) == 1) {
-			nextEntryButton.setVisibility(View.INVISIBLE);
-			prevEntryButton.setVisibility(View.VISIBLE);
-		} else {
-			prevEntryButton.setVisibility(View.VISIBLE);
-			nextEntryButton.setVisibility(View.VISIBLE);
-		}
-		if (Utilities.targetDate().compareTo(Utilities.firstDate()) == 0 || Utilities.targetDate().compareTo(Utilities.firstDate()) == -1) {
-			prevEntryButton.setVisibility(View.INVISIBLE);
-			nextEntryButton.setVisibility(View.VISIBLE);
-		} else {
-			prevEntryButton.setVisibility(View.VISIBLE);
-			nextEntryButton.setVisibility(View.VISIBLE);
-		}
+//		if (Utilities.targetDate().compareTo(Utilities.lastDate()) == 0 || Utilities.targetDate().compareTo(Utilities.lastDate()) == 1) {
+//			nextEntryButton.setVisibility(View.INVISIBLE);
+//			prevEntryButton.setVisibility(View.VISIBLE);
+//		} else {
+//			prevEntryButton.setVisibility(View.VISIBLE);
+//			nextEntryButton.setVisibility(View.VISIBLE);
+//		}
+//		if (Utilities.targetDate().compareTo(Utilities.firstDate()) == 0 || Utilities.targetDate().compareTo(Utilities.firstDate()) == -1) {
+//			prevEntryButton.setVisibility(View.INVISIBLE);
+//			nextEntryButton.setVisibility(View.VISIBLE);
+//		} else {
+//			prevEntryButton.setVisibility(View.VISIBLE);
+//			nextEntryButton.setVisibility(View.VISIBLE);
+//		}
 		
 	}
 }
