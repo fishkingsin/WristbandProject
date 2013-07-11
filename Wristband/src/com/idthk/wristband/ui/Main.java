@@ -95,7 +95,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	public static final String TITLE = "title";
 	public static final String TARGET_ORIENTTION = "target_orientation";
-
+	public static final String TABLE_CONTENT = "activity_table";
 	final static byte[] SAMPLE_DATA = { (byte) 0x6d, (byte) 0x6d, (byte) 0x6d,
 		(byte) 0x6d, (byte) 0x6d, (byte) 0x6d, (byte) 0xd, (byte) 0x1,
 		(byte) 0x1, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0,
@@ -1357,8 +1357,9 @@ public class Main extends BLEBaseFragmentActivity implements
 			_msg += value[i] + " , ";
 		}
 		showMessage("Unknown Message");
+		printByteArray(value);
 		showMessage(s);
-		showMessage(_msg);
+		//showMessage(_msg);
 		
 
 	}
@@ -1432,8 +1433,22 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	protected void onReadHistoryDataFinished()
 	{
+		Log.v(TAG,"==================onReadHistoryDataFinished==================");
 		DatabaseHandler db = new DatabaseHandler(this, TABLE_CONTENT, null, 1);
-			
+		Log.v(TAG,"**************************Activity Record**************************");
+		List<Record>records = db.getAllRecords();
+		for(Record record:records)
+		{
+			Log.v(TAG,record.toString());
+		}
+		Log.v(TAG,"**************************Activity Record**************************");
+		Log.v(TAG,"-----------------------------Sleep Record-----------------------------");
+		List<SleepRecord>sleepRecords = db.getAllSleepRecords();
+		for(SleepRecord record:sleepRecords)
+		{
+			Log.v(TAG,record.toString());
+		}
+		Log.v(TAG,"-----------------------------Sleep Record-----------------------------");
 		SleepRecord sleepRrecord = db.getLastSleepRecord();
 		if(sleepRrecord!=null)
 		{
