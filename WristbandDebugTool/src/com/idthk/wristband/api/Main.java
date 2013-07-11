@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.List;
 
+import com.idthk.wristband.database.DatabaseHandler;
 import com.idthk.wristband.database.Record;
 import com.idthk.wristband.database.SleepRecord;
 
@@ -346,18 +347,34 @@ public class Main extends BLEBaseFragmentActivity {
 
 	}
 	@Override
-	public void onReadActivityHistoryData(List<Record> pedometerData) {
-
-		super.onReadActivityHistoryData(pedometerData);
-	}
-	@Override
-	public void onReadSleepHistoryData(SleepRecord sleepRecord) {
-
-		Log.v(TAG, "onReadSleepHistoryData");
+	protected void onReadHistoryDataFinished() {
+		DatabaseHandler db = new DatabaseHandler(this,
+				TABLE_CONTENT, null, 1);
+		List<Record>records = db.getAllRecords();
+		for(Record record:records)
+		{
+			Log.v("onReadHistoryDataFinished",record.toString());
+		}
 		
-		Log.v(TAG, sleepRecord.toString());
-		super.onReadSleepHistoryData(sleepRecord);
+		List<SleepRecord>sleepRecords = db.getAllSleepRecords();
+		for(SleepRecord record:sleepRecords)
+		{
+			Log.v("onReadHistoryDataFinished",record.toString());
+		}
 	}
+//	@Override
+//	public void onReadActivityHistoryData(List<Record> pedometerData) {
+//
+//		super.onReadActivityHistoryData(pedometerData);
+//	}
+//	@Override
+//	public void onReadSleepHistoryData(SleepRecord sleepRecord) {
+//
+//		Log.v(TAG, "onReadSleepHistoryData");
+//		
+//		Log.v(TAG, sleepRecord.toString());
+//		super.onReadSleepHistoryData(sleepRecord);
+//	}
 
 	@Override
 	public void onReadVersion(int xx, int yy) {
