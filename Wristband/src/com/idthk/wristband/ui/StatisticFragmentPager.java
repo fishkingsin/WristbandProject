@@ -9,16 +9,6 @@
 
 package com.idthk.wristband.ui;
 
-import java.util.Random;
-
-import com.idthk.wristband.ui.R;
-import com.jjoe64.graphview.BarGraphView;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GraphViewSeries;
-import com.jjoe64.graphview.GraphView.GraphViewData;
-import com.viewpagerindicator.CirclePageIndicator;
-import com.viewpagerindicator.PageIndicator;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,6 +19,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.viewpagerindicator.CirclePageIndicator;
+import com.viewpagerindicator.PageIndicator;
 
 public class StatisticFragmentPager extends Fragment {
 	private static final int NUMBER_OF_PAGES = 2;

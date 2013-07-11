@@ -16,14 +16,9 @@
 
 package com.idthk.wristband.ui;
 
-import com.idthk.wristband.ui.R;
-
-import android.support.v4.app.Fragment;
 import android.app.Activity;
-import android.content.SharedPreferences;
-//import android.app.Fragment;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +26,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.ImageView;
+//import android.app.Fragment;
 
 /**
  * A fragment representing a single step in a wizard. The fragment shows a dummy

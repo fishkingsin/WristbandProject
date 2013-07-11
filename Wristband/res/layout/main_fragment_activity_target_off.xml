@@ -171,12 +171,28 @@
                     android:src="@drawable/page_1_005" />
 
                 <TextView
-                    android:id="@+id/TextView01"
+                    
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:paddingTop="3dp"
-                    android:text="Distances (km)"
+                    android:text="Distances ("
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                <TextView
+                    android:id="@+id/distanceUnitTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingTop="3dp"
+                    android:text="km"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                <TextView
+                    
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingTop="3dp"
+                    android:text=")"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
         </RelativeLayout>

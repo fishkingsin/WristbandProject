@@ -16,13 +16,10 @@
 
 package com.idthk.wristband.ui;
 
-import com.idthk.wristband.ui.R;
-
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import android.view.Window;
 import android.view.Window;
 /**
  * Demonstration of PreferenceFragment, showing a single fragment in an

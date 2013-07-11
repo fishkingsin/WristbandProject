@@ -3,29 +3,7 @@ package com.idthk.wristband.ui;
 //import java.util.ArrayList;
 //import java.util.List;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
-
-import com.idthk.wristband.ui.Utilities;
-import com.idthk.wristband.database.DatabaseHandler;
-import com.idthk.wristband.database.Record;
-import com.idthk.wristband.graphview.RoundBarGraphView;
-import com.idthk.wristband.ui.R;
-import com.jjoe64.graphview.BarGraphView;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GraphViewSeries;
-import com.jjoe64.graphview.GraphView.GraphViewData;
-import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
-import com.jjoe64.graphview.LineGraphView;
-//import com.idthk.wristband.ui.ScrollPagerMain.ScrollPagerMainCallback;
-
-//import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -36,7 +14,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
+//import com.idthk.wristband.ui.ScrollPagerMain.ScrollPagerMainCallback;
+//import android.annotation.SuppressLint;
 
 public class StatisticFragment extends Fragment implements
 		LoaderCallbacks<Void> {

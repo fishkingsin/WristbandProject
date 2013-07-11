@@ -1,35 +1,19 @@
 package com.idthk.wristband.ui;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import com.idthk.wristband.ui.R;
-
 import android.app.Activity;
-
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
-import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.preference.Preference.OnPreferenceClickListener;
 import android.util.Log;
 import android.view.Window;
-import android.webkit.WebView;
-import android.widget.Toast;
 
 public class PreferencesActivity extends Activity {
 	static final String TAG = "PreferencesActivity";

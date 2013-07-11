@@ -4,12 +4,6 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import com.idthk.wristband.ui.Utilities;
-import com.idthk.wristband.ui.R;
-import com.viewpagerindicator.CirclePageIndicator;
-import com.viewpagerindicator.PageIndicator;
-
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,12 +11,9 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-//import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,24 +21,29 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-//import android.widget.TextView;
+import com.viewpagerindicator.CirclePageIndicator;
+import com.viewpagerindicator.PageIndicator;
 
 public class MainFragmentPager extends Fragment implements
 		SharedPreferences.OnSharedPreferenceChangeListener {
 	private static final int NUMBER_OF_PAGES = 2;
 	public static final int ACTIVITY = 0;
 	public static final int SLEEP = 1;
-	private static final String TAG = "MainFragmentPager";
+	static final String TAG = "MainFragmentPager";
 	private int mCurrentPage = 0;
 	private ViewPager mViewPager;
 	private MyFragmentPagerAdapter mMyFragmentPagerAdapter;
 
 	PagerChangedCallback mCallback;
 	private ImageView battery_indicated_imageview;
+	private Integer battery_images[] = { R.drawable.battery_0,
+
+	R.drawable.battery_1, R.drawable.battery_2 };
 	private TextView userNameTv;
 	private TextView lastSyncTimeTv;
 	PageIndicator mIndicator;
 	private ImageView profilePic;
+
 	// Container Activity must implement this interface
 	public interface PagerChangedCallback {
 		public void onPagerChangedCallback(int page);
@@ -77,33 +73,28 @@ public class MainFragmentPager extends Fragment implements
 				.inflate(R.layout.main_fragmentpager, container, false);
 
 		// load user profile
-		
+
 		publishUserProfile(v);
 
 		mViewPager = (ViewPager) v.findViewById(R.id.pager);
-		
-		
+
 		mMyFragmentPagerAdapter = new MyFragmentPagerAdapter(
 				getFragmentManager());
 		mViewPager.setAdapter(mMyFragmentPagerAdapter);
 		mCallback.onPagerChangedCallback(ACTIVITY);
-		
-		
-		
-		
-		mIndicator = (CirclePageIndicator)v.findViewById(R.id.indicator);
-        mIndicator.setViewPager(mViewPager);
-        mIndicator
-		.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-			@Override
-			public void onPageSelected(int position) {
-				mCurrentPage = position;
 
-				mCallback.onPagerChangedCallback(mCurrentPage);
+		mIndicator = (CirclePageIndicator) v.findViewById(R.id.indicator);
+		mIndicator.setViewPager(mViewPager);
+		mIndicator
+				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+					@Override
+					public void onPageSelected(int position) {
+						mCurrentPage = position;
 
+						mCallback.onPagerChangedCallback(mCurrentPage);
 
-			}
-		});
+					}
+				});
 		return v;
 	}
 
@@ -115,20 +106,21 @@ public class MainFragmentPager extends Fragment implements
 		String path = sharedPreferences.getString(
 				getString(R.string.pref_profile_pic), "");
 		// Log.v(TAG, "profile path : " + path);
-		
+
 		profilePic = ((ImageView) v.findViewById(R.id.profile_pic));
-		
-		profilePic.setOnClickListener(new OnClickListener(){
+
+		profilePic.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(getActivity(), UserPreferencesActivity.class);
-				 startActivityForResult(intent,Main.TO_USER_PROFILE_REQUEST);
+				Intent intent = new Intent(getActivity(),
+						UserPreferencesActivity.class);
+				startActivityForResult(intent, Main.TO_USER_PROFILE_REQUEST);
 			}
-			
+
 		});
-		
+
 		if (path != "") {
 			Bitmap myBitmap = Utilities.decodeFile(new File(path),
 					this.getActivity());
@@ -142,13 +134,15 @@ public class MainFragmentPager extends Fragment implements
 		userNameTv = ((TextView) v.findViewById(R.id.userNameTv));
 		lastSyncTimeTv = ((TextView) v
 				.findViewById(R.id.last_sync_time_textview));
-		
-		
+		lastSyncTimeTv.setText(sharedPreferences.getString(
+				getString(R.string.pref_last_sync_time),
+				getString(R.string.default_last_sync_time)));
+
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-		((TextView) v.findViewById(R.id.today_text_view))
-				.setText(sdf.format(cal.getTime()));
+		((TextView) v.findViewById(R.id.today_text_view)).setText(sdf
+				.format(cal.getTime()));
 	}
 
 	@Override
@@ -174,10 +168,11 @@ public class MainFragmentPager extends Fragment implements
 	@Override
 	public void onResume() {
 		// mCallback.onPagerChangedCallback(mCurrentPage);
-		
+
 		super.onResume();
 
 	}
+
 	@Override
 	public void onDestroyView() {
 
@@ -186,6 +181,7 @@ public class MainFragmentPager extends Fragment implements
 
 		super.onDestroyView();
 	}
+
 	private static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 		// SparseArray<Fragment> registeredFragments = new
 		// SparseArray<Fragment>();
@@ -229,6 +225,21 @@ public class MainFragmentPager extends Fragment implements
 	public int getCurrentPage() {
 		// TODO Auto-generated method stub
 		return mCurrentPage;
+	}
+
+	public void updateBatteryLevet(int batteryLevel) {
+		// TODO Auto-generated method stub
+		if (battery_indicated_imageview != null) {
+			if (batteryLevel <= 33) {
+				battery_indicated_imageview.setImageResource(battery_images[0]);
+			}
+			else if (batteryLevel > 33 && batteryLevel<=66) {
+				battery_indicated_imageview.setImageResource(battery_images[1]);
+			}
+			else if (batteryLevel >66 ) {
+				battery_indicated_imageview.setImageResource(battery_images[2]);
+			}
+		}
 	}
 
 }

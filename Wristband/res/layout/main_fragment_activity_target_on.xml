@@ -228,7 +228,7 @@
                 
                 android:text="(" />
                 <TextView
-                android:id="@+id/distance_unit_textview"
+                android:id="@+id/distanceUnitTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 

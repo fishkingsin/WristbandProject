@@ -1,6 +1,5 @@
 package com.idthk.wristband.ui.preference;
 
-import java.text.DecimalFormat;
 import java.util.Calendar;
 
 import android.content.Context;

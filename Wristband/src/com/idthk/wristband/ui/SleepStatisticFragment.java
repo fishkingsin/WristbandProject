@@ -5,30 +5,20 @@ package com.idthk.wristband.ui;
 
 import java.util.Random;
 
-import com.idthk.wristband.graphview.RoundBarGraphView;
-import com.idthk.wristband.ui.R;
-import com.jjoe64.graphview.BarGraphView;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GraphViewSeries;
-import com.jjoe64.graphview.GraphView.GraphViewData;
-//import com.idthk.wristband.ui.ScrollPagerMain.ScrollPagerMainCallback;
-
-//import android.annotation.SuppressLint;
 import android.app.Activity;
-//import android.content.Context;
 import android.os.Bundle;
-//import android.support.v4.app.ListFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
-//import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
-//import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-//import android.widget.ArrayAdapter;
-//import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.idthk.wristband.graphview.RoundBarGraphView;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GraphView.GraphViewData;
+import com.jjoe64.graphview.GraphViewSeries;
 
 public class SleepStatisticFragment extends Fragment implements
 		LoaderCallbacks<Void> {

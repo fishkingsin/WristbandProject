@@ -20,7 +20,6 @@ import com.idthk.wristband.ui.R;
 
 import android.support.v4.app.Fragment;
 import android.app.Activity;
-//import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -97,7 +96,7 @@ public class StatisticSlidePageFragment extends Fragment{
     	if(mPageNumber==0)
     	{
     		rootView = (ViewGroup) inflater
-                  .inflate(R.layout.main_scrollview_activity, container, false);
+                  .inflate(R.layout.main_fragment_activity, container, false);
     		((Button)rootView.findViewById(R.id.button_facebook_share)).setOnClickListener( new OnClickListener() {
                 public void onClick(View m) {
                 	
@@ -134,7 +133,7 @@ public class StatisticSlidePageFragment extends Fragment{
     	else
     	{
     		rootView = (ViewGroup) inflater
-                    .inflate(R.layout.main_scrollview_sleep, container, false);
+                    .inflate(R.layout.main_fragment_sleep, container, false);
     		((Button)rootView.findViewById(R.id.button_facebook_share)).setOnClickListener( new OnClickListener() {
                 public void onClick(View m) {
                 	

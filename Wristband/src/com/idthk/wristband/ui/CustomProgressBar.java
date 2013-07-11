@@ -22,15 +22,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Rect;
-import android.graphics.drawable.ClipDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RoundRectShape;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Gravity;
 import android.widget.ProgressBar;
 
 /**

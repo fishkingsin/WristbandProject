@@ -1,14 +1,7 @@
 package com.idthk.wristband.ui;
 
-import com.idthk.wristband.socialnetwork.FacebookShareActivity;
-import com.idthk.wristband.ui.R;
-//import com.idthk.wristband.ui.MainSlideFragment.OnShareButtonClickedListener;
-
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-//import android.app.FragmentTransaction;
-//import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,13 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-//import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
-//import android.widget.TextView;
+
 
 public class TabsFragment extends Fragment implements OnTabChangeListener {
 

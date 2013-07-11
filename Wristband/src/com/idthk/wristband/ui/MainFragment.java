@@ -16,83 +16,24 @@
 
 package com.idthk.wristband.ui;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-//import java.lang.reflect.Array;
-//import java.util.ArrayList;
-//import java.util.List;
-import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
-import java.util.prefs.Preferences;
 
-//import org.xmlpull.v1.XmlPullParser;
-
-import com.idthk.wristband.ui.Utilities;
-import com.idthk.wristband.database.DatabaseHandler;
-import com.idthk.wristband.database.Record;
-import com.idthk.wristband.database.SleepPattern;
-import com.idthk.wristband.database.SleepRecord;
-import com.idthk.wristband.graphview.RoundBarGraphView;
-import com.idthk.wristband.ui.R;
-import com.idthk.wristband.ui.preference.TimePreference;
-//import com.idthk.wristband.ui.ScrollPagerMain.ScrollPagerMainCallback;
-//import com.tomoki.iwai.ScrollPagerHorizontal;
-//import com.tomoki.iwai.ScrollPagerVertical;
-
-import android.support.v4.app.Fragment;
-import android.text.format.DateFormat;
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.os.Handler;
-//import android.graphics.BitmapFactory;
-//import android.graphics.Color;
-//import android.graphics.Rect;
-//import android.graphics.drawable.ClipDrawable;
-//import android.graphics.drawable.Drawable;
-//import android.graphics.drawable.ShapeDrawable;
-//import android.graphics.drawable.shapes.RoundRectShape;
-//import android.os.AsyncTask;
-//import android.app.Fragment;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.DialogPreference;
-//import android.preference.Preference;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
-//import android.util.AttributeSet;
+import android.support.v4.app.Fragment;
 import android.util.Log;
-//import android.util.Xml;
-//import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
-//import android.widget.FrameLayout;
-//import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.ImageView;
-import android.widget.Button;
-import android.widget.TimePicker;
+import com.idthk.wristband.ui.preference.TimePreference;
 
-import com.jjoe64.graphview.BarGraphView;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GraphView.GraphViewData;
-import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
-import com.jjoe64.graphview.GraphViewSeries;
-import com.jjoe64.graphview.LineGraphView;
-
-//import com.jjoe64.graphview.LineGraphView;
 
 /**
  * A fragment representing a single step in a wizard. The fragment shows a dummy
@@ -154,8 +95,6 @@ public class MainFragment extends Fragment implements
 	private float currentDistanceProgress = 0;
 	private Integer currentCalories = 0;
 	private Integer currentSteps = 0;
-	private Integer currentBatteryLevel = 0;
-
 	/**
 	 * Factory method for this fragment class. Constructs a new fragment for the
 	 * given page number.
@@ -185,7 +124,6 @@ public class MainFragment extends Fragment implements
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnHeadlineSelectedListener");
 		}
-		Main mainActivity = (Main) activity;
 
 	}
 
@@ -221,7 +159,7 @@ public class MainFragment extends Fragment implements
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 		if (mPageNumber == 0) {
 			mRootView = (ViewGroup) inflater.inflate(
-					R.layout.main_scrollview_activity, container, false);
+					R.layout.main_fragment_activity, container, false);
 
 			m_activityTimeProgressBar = (CustomProgressBar) mRootView
 					.findViewById(R.id.target_progress_bar_large);
@@ -290,7 +228,7 @@ public class MainFragment extends Fragment implements
 
 		} else {
 			mRootView = (ViewGroup) inflater.inflate(
-					R.layout.main_scrollview_sleep, container, false);
+					R.layout.main_fragment_sleep, container, false);
 
 			((Button) mRootView.findViewById(R.id.button_facebook_share))
 					.setOnClickListener(new OnClickListener() {
@@ -401,18 +339,18 @@ public class MainFragment extends Fragment implements
 						+ TimePreference.getAmPm(startSleep);
 				endSleep = prefs.getString(
 						getString(R.string.pref_weekend_wake), "08:00AM");
+			
+			if (mRootView.findViewById(R.id.sleep_start_textfield) != null)
+				((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
+						.setText(startSleep);
+			if (mRootView.findViewById(R.id.sleep_end_textfield) != null)
+				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
+						.setText(endSleep);
+			if (mRootView.findViewById(R.id.sleep_duration_textfield) != null)
+				((TextView) mRootView
+						.findViewById(R.id.sleep_duration_textfield))
+						.setText(String.valueOf(inbedTime));
 			}
-//			if (mRootView.findViewById(R.id.sleep_start_textfield) != null)
-//				((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
-//						.setText(startSleep);
-//			if (mRootView.findViewById(R.id.sleep_end_textfield) != null)
-//				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
-//						.setText(endSleep);
-//			if (mRootView.findViewById(R.id.sleep_duration_textfield) != null)
-//				((TextView) mRootView
-//						.findViewById(R.id.sleep_duration_textfield))
-//						.setText(String.valueOf(inbedTime));
-
 		}
 
 	}
@@ -543,11 +481,16 @@ public class MainFragment extends Fragment implements
 
 			if (key.equals(getString(R.string.keySleepStart))) {
 				String wakeup_start = sharedPreferences.getString(key, "10:00 pm");
-				((TextView)mRootView.findViewById(R.id.sleep_time_hour_textview)).setText(wakeup_start);
+				((TextView)mRootView.findViewById(R.id.sleep_start_textfield)).setText(wakeup_start);
 			}
-			else if (key.equals(getString(R.string.keySleepEnd))) {
+			else if (key.equals(getString(R.string.pref_weekend))) {
 				String wakeup_end = sharedPreferences.getString(key, "8:00 am");
-				((TextView)mRootView.findViewById(R.id.sleep_time_hour_textview)).setText(wakeup_end);
+				((TextView)mRootView.findViewById(R.id.sleep_end_textfield)).setText(wakeup_end);
+				
+			}
+			else if (key.equals(getString(R.string.pref_weekday))) {
+				String wakeup_end = sharedPreferences.getString(key, "07:00 am");
+				((TextView)mRootView.findViewById(R.id.sleep_end_textfield)).setText(wakeup_end);
 				
 			}
 			else if(key.equals(getString(R.string.keyActualSleepTime)))
@@ -560,7 +503,7 @@ public class MainFragment extends Fragment implements
 			}
 			else if(key.equals(getString(R.string.keyTimeFallAsSleep)))
 			{
-				((TextView)mRootView.findViewById(R.id.fall_asleep_time_mins_textview)).setText(sharedPreferences.getInt(key, 0));
+				((TextView)mRootView.findViewById(R.id.fall_asleep_time_mins_textview)).setText(String.valueOf(sharedPreferences.getInt(key, 0)));
 			}
 				
 
@@ -575,20 +518,18 @@ public class MainFragment extends Fragment implements
 	public void onStreamMessage(int steps, int calories, float distance,
 			int activityTime, int batteryLevel) {
 		// TODO Auto-generated method stub
-		String s = "";
-		s += "Wristband Stream :\n";
-		s += "steps : " + steps + "\n";
-		s += "calories : " + calories + "\n";
-		s += "distance : " + distance + "\n";
-		s += "activityTime : " + activityTime + "\n";
-		s += "batteryLevel : " + batteryLevel + "\n";
-
+//		String s = "";
+//		s += "Wristband Stream :\n";
+//		s += "steps : " + steps + "\n";
+//		s += "calories : " + calories + "\n";
+//		s += "distance : " + distance + "\n";
+//		s += "activityTime : " + activityTime + "\n";
+//		s += "batteryLevel : " + batteryLevel + "\n";
+//		Log.v(TAG,s);
 		currentSteps = steps;
 		currentCalories = calories;
 		currentActivityTime = activityTime;
 		currentDistanceProgress = distance;
-		currentBatteryLevel = batteryLevel;
-
 		if (mPageNumber == 0) {
 			
 			if (mStepsProgressBar != null)
