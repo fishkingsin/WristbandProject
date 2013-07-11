@@ -3,25 +3,19 @@ package com.idthk.wristband.ui;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Random;
 
 import org.bostonandroid.datepreference.DatePreference;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
@@ -30,7 +24,6 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.OrientationEventListener;
@@ -41,10 +34,8 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.idthk.wristband.api.BLEBaseFragmentActivity;
-import com.idthk.wristband.ui.Utilities;
 import com.idthk.wristband.database.DatabaseHandler;
 import com.idthk.wristband.database.Record;
-import com.idthk.wristband.database.SleepPattern;
 import com.idthk.wristband.database.SleepRecord;
 import com.idthk.wristband.socialnetwork.FacebookShareActivity;
 import com.idthk.wristband.socialnetwork.TwitterShareActivity;
@@ -54,9 +45,7 @@ import com.idthk.wristband.ui.landscape.LandscapeActivity;
 import com.idthk.wristband.ui.landscape.SleepLandscapeActivity;
 import com.idthk.wristband.ui.landscape.StatisticLandscapeActivity;
 import com.idthk.wristband.ui.preference.TimePreference;
-//import android.content.res.Configuration;
-//import android.hardware.SensorManager;
-//import android.widget.Toast;
+
 
 public class Main extends BLEBaseFragmentActivity implements
 		MainFragmentPager.PagerChangedCallback,
@@ -616,6 +605,35 @@ public class Main extends BLEBaseFragmentActivity implements
 			R.drawable.wireless_connection_icon_4 };
 
 	private CountDownTimer mCountDownTimer;
+	
+	private CountDownTimer mStreamModeTimeout = new CountDownTimer(1000 * 5, 1000) {
+
+		public void onFinish() {
+			Log.v(TAG, "mStreamModeTimeout");
+			disconnect();
+			connect();
+		}
+
+		@Override
+		public void onTick(long millisUntilFinished) {
+			// TODO Auto-generated method stub
+
+		}
+	};
+	private CountDownTimer mSyncingTimeout  = new CountDownTimer(1000 * 60, 1000) {
+
+		public void onFinish() {
+			Log.v(TAG, "mSyncingTimeout");
+			disconnect();
+			connect();
+		}
+
+		@Override
+		public void onTick(long millisUntilFinished) {
+			// TODO Auto-generated method stub
+
+		}
+	};
 
 	private ProgressDialog pd;
 
@@ -1189,12 +1207,18 @@ public class Main extends BLEBaseFragmentActivity implements
 		mStartUpState = WristbandStartupConstant.CONNECT;
 
 		
+		// try {
+		pd.setTitle("Syncing Device");
+		pd.setMessage("Please wait.");
+		pd.show();
+		
 		try {
 			Thread.sleep(4000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		mSyncingTimeout.start();
 		getSerial();
 
 	}
@@ -1229,6 +1253,8 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onStreamMessage(int steps, int calories, float distance,
 			int activityTime, int batteryLevel) {
+		this.mStreamModeTimeout.cancel();
+		this.mStreamModeTimeout.start();
 		// TODO Auto-generated method stub
 		String s = "";
 		s += "Wristband Stream :\n";
@@ -1249,6 +1275,17 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 		super.onStreamMessage(steps, calories, distance, activityTime,
 				batteryLevel);
+		
+		
+		 MainFragmentPager mainfragmentPager = (MainFragmentPager)
+	                getSupportFragmentManager().findFragmentByTag(TabsFragment.TAB_MAIN);
+
+	        if (mainfragmentPager != null) {
+	            // If article frag is available, we're in two-pane layout...
+
+	            // Call a method in the ArticleFragment to update its content
+	        	mainfragmentPager.updateBatteryLevet(batteryLevel);
+	        } 
 	}
 
 	@Override
@@ -1407,29 +1444,36 @@ public class Main extends BLEBaseFragmentActivity implements
 		if(! isPedometerStart || !isPedometerEnd)Log.e(TAG,"onReadactivityDataFailed");
 		// TODO Auto-generated method stub
 		mStartUpState = WristbandStartupConstant.GET_SOFTWARE_VERSION;
+		pd.dismiss();
+		new AlertDialog.Builder(this)
+		.setTitle("Read Data Failed")
+		.setMessage("Reconnected?")
+		.setPositiveButton(R.string.popup_retry,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,
+							int which) {
+						// continue with delete
+						connect();
+					}
+				})
+		.setNegativeButton(R.string.popup_quite,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,
+							int which) {
+						// do nothing
+						finish();
+					}
+				})
+		.setNeutralButton(R.string.cancel,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,
+							int which) {
+
+					}
+				}).show();
 		checkState(mStartUpState);
 	}
-	@Override
-	public void onReadActivityHistoryData(List<Record> pedometerData) {
 
-//		mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
-//		checkState(mStartUpState);
-		super.onReadActivityHistoryData(pedometerData);
-		DatabaseHandler db = new DatabaseHandler(this,
-				Main.TABLE_CONTENT, null, 1);
-		for (Record record : pedometerData) {
-			if(db.updateRecord(record)==0)
-			{
-				db.addRecord(record);
-			}
-			
-		}
-	}
-	@Override
-	public void onReadSleepHistoryData(SleepRecord data) {
-		super.onReadSleepHistoryData(data);
-
-	}
 	@Override
 	protected void onReadHistoryDataFinished()
 	{
@@ -1455,7 +1499,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			SharedPreferences sharedPreferences = PreferenceManager
 					.getDefaultSharedPreferences(this);
 			SharedPreferences.Editor editor = sharedPreferences.edit();
-			editor.putBoolean(FIRST_TIME, false);
+			
 			
 			editor.putInt(getString(R.string.keyActualSleepTime),sleepRrecord.getActualSleepTime());
 			editor.putInt(getString(R.string.keyTimeFallAsSleep),sleepRrecord.getFallingAsleepDuration());
@@ -1534,9 +1578,11 @@ public class Main extends BLEBaseFragmentActivity implements
 	private void checkState(int state) {
 		switch (state) {
 		case WristbandStartupConstant.DISCONNECT:
+			
 			break;
 		case WristbandStartupConstant.CONNECT: {
-			// try {
+			
+			
 			Log.v(TAG, "checkState set Profile");
 			try {
 				SharedPreferences sharedPreferences = PreferenceManager
@@ -1687,8 +1733,10 @@ public class Main extends BLEBaseFragmentActivity implements
 			}
 			break;
 		case WristbandStartupConstant.START_STREAM:
-			Log.v(TAG, "Woo hooo start Streaming now");
 			pd.dismiss();
+			Log.v(TAG, "Woo hooo start Streaming now");
+			mStreamModeTimeout.start();
+			mSyncingTimeout.cancel();
 			break;
 		}
 	}
