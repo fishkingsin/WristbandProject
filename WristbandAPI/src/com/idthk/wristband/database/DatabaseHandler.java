@@ -205,9 +205,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 						Float.parseFloat(cursor.getString(cursor
 								.getColumnIndex(KEY_DISTANCE))));
 				cursor.close();
+				db.close();
 				return record;
 			} while (cursor.moveToNext());
 		}
+		db.close();
 		return null;
 	}
 
@@ -235,9 +237,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 						Float.parseFloat(cursor.getString(cursor
 								.getColumnIndex(KEY_DISTANCE))));
 				cursor.close();
+				db.close();
 				return record;
 			} while (cursor.moveToNext());
 		}
+		db.close();
 		return null;
 	}
 
@@ -284,9 +288,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				sleepRecord.setPatterns(getSleepPatterns(sleepRecord
 						.getGoToBedTime().getTime()));
 				cursor.close();
+				db.close();
 				return sleepRecord;
 			} while (cursor.moveToNext());
 		}
+		db.close();
 		return null;
 		// return getSleepRecordsByRawQuery(selectQuery);
 	}
@@ -352,6 +358,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
+		db.close();
 		return recordList;
 	}
 
@@ -378,6 +385,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
+		db.close();
 		return recordList;
 	}
 
@@ -403,6 +411,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
+		db.close();
 		return recordList;
 	}
 
@@ -430,6 +439,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
+		db.close();
 		return recordList;
 	}
 
@@ -478,6 +488,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
+		db.close();
 		return recordList;
 	}
 
@@ -513,6 +524,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
+		db.close();
 		return recordList;
 	}
 
@@ -545,6 +557,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
+		db.close();
 		return recordList;
 	}
 	public List<SleepRecord> getSumOfSleepTimeByRange(Calendar start, Calendar end) {
@@ -576,6 +589,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
+		db.close();
 		return recordList;
 	}
 	
@@ -623,6 +637,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
+		db.close();
 		return recordList;
 	}
 
@@ -646,6 +661,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
+		db.close();
 		return recordList;
 	}
 
@@ -681,6 +697,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
+		db.close();
 		return recordList;
 	}
 
@@ -710,6 +727,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
+		db.close();
 		return recordList;
 	}
 
@@ -721,6 +739,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		cursor.close();
 
 		// return count
+		db.close();
 		return cursor.getCount();
 	}
 
@@ -754,6 +773,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			}
 		}
 		cursor.close();
+		db.close();
 
 		return dateRange;
 
