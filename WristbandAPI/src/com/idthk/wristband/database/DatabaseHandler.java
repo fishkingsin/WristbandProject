@@ -60,6 +60,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String SQL_DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
 	private static final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(
 			SQL_DATEFORMAT);
+	String SQL_DATE_ONLY_FORMAT = "yyyy-MM-dd";
+	SimpleDateFormat dateOnlyFormat = new SimpleDateFormat(
+			SQL_DATE_ONLY_FORMAT);
 	String sql_num_format = "%1$02d";
 
 	public DatabaseHandler(Context context) {
@@ -527,14 +530,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.close();
 		return recordList;
 	}
-	public Record getSumOfRecordByRange(Calendar start, Calendar end) {
-		
-		String selectQuery = "SELECT SUM(" + KEY_MINUTES + ")" 
-				+ " , "+ KEY_DATE 
+	public List<Record> getSumOfRecordByRange(Calendar start, Calendar end) {
+		List<Record> recordList = new ArrayList<Record>();
+		String selectQuery = "SELECT SUM(" + KEY_MINUTES + ") " 
 				+ " FROM "+ TABLE_RECORDS + " WHERE strftime('%Y-%m-%d', " + KEY_DATE
-				+ ") >='" + sqlDateFormat.format(start.getTime()) + "'"
+				+ ") >='" + dateOnlyFormat.format(start.getTime()) + "'"
 				+ " AND strftime('%Y-%m-%d', " + KEY_DATE + ") <='"
-				+ sqlDateFormat.format(end.getTime()) + "'";
+				+ dateOnlyFormat.format(end.getTime()) + "'";
 		Log.v(TAG,selectQuery);
 		SQLiteDatabase db = this.getWritableDatabase();
 
@@ -542,21 +544,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		if (cursor.moveToFirst()) {
 			do {
+				
 				Record record = new Record();
-				Calendar _calendar = Calendar.getInstance();
 
-				_calendar.setTime(stringToDate(cursor.getString(1)));
-
-				record.setDate(_calendar);
+				record.setDate(end);
 				record.setActivityTime(cursor.getInt(0));
-
-				cursor.close();
-				db.close();
-				return record;
+				recordList.add(record);
+				
+				
 			} while (cursor.moveToNext());
 		}
-		
-		return null;
+		cursor.close();
+		db.close();
+		return recordList;
+	
 	}
 	public List<Record> getSumOfRecordsByRange(Calendar start, Calendar end) {
 		List<Record> recordList = new ArrayList<Record>();
@@ -564,9 +565,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_DATE + " , strftime('%H'," + KEY_DATE + ") as hour"
 				+ " , strftime('HH:mm'," + KEY_DATE + ") as time" + " FROM "
 				+ TABLE_RECORDS + " WHERE strftime('%Y-%m-%d', " + KEY_DATE
-				+ ") >='" + sqlDateFormat.format(start.getTime()) + "'"
+				+ ") >='" + dateOnlyFormat.format(start.getTime()) + "'"
 				+ " AND strftime('%Y-%m-%d', " + KEY_DATE + ") <='"
-				+ sqlDateFormat.format(end.getTime()) + "'"
+				+ dateOnlyFormat.format(end.getTime()) + "'"
 				+ " GROUP BY strftime('%d', " + KEY_DATE + ")" + " ORDER BY "
 				+ KEY_DATE;
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -596,9 +597,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_DATE + " , strftime('%H'," + KEY_DATE + ") as hour"
 				+ " , strftime('HH:mm'," + KEY_DATE + ") as time" + " FROM "
 				+ TABLE_SLEEP + " WHERE strftime('%Y-%m-%d', " + KEY_DATE
-				+ ") >='" + sqlDateFormat.format(start.getTime()) + "'"
+				+ ") >='" + dateOnlyFormat.format(start.getTime()) + "'"
 				+ " AND strftime('%Y-%m-%d', " + KEY_DATE + ") <='"
-				+ sqlDateFormat.format(end.getTime()) + "'"
+				+ dateOnlyFormat.format(end.getTime()) + "'"
 				+ " GROUP BY strftime('%d', " + KEY_DATE + ")" + " ORDER BY "
 				+ KEY_DATE;
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -638,9 +639,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	public List<Record> getSumOfRecordsByDay(Calendar whichdate) {
 		List<Record> recordList = new ArrayList<Record>();
-		String SQL_DATE_ONLY_FORMAT = "yyyy-MM-dd";
-		SimpleDateFormat dateOnlyFormat = new SimpleDateFormat(
-				SQL_DATE_ONLY_FORMAT);
+		
 
 		String selectQuery = "SELECT SUM(" + KEY_MINUTES + ")" + " , "
 				+ KEY_DATE + " , strftime('%H'," + KEY_DATE + ") as hour"
