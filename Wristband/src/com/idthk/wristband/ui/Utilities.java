@@ -31,7 +31,7 @@ import com.idthk.wristband.database.DatabaseHandler;
 import com.idthk.wristband.database.Record;
 import com.idthk.wristband.database.SleepPattern;
 import com.idthk.wristband.database.SleepRecord;
-import com.idthk.wristband.graphview.RoundBarGraphView;
+import com.jjoe64.graphview.BarGraphView;
 import com.jjoe64.graphview.GraphView.GraphViewData;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
@@ -356,7 +356,7 @@ public class Utilities {
 
 		} else if (message.equals(ActivityStatisticTabFragment.TAB_WEEK)) {
 
-			RoundBarGraphView mGraphView = new RoundBarGraphView(context, "");
+			BarGraphView mGraphView = new BarGraphView(context, "");
 			DatabaseHandler db = new DatabaseHandler(context,
 					Main.TABLE_CONTENT, null, 1);
 
@@ -412,7 +412,7 @@ public class Utilities {
 			graph.addView(mGraphView);
 
 		} else if (message.equals(ActivityStatisticTabFragment.TAB_MONTH)) {
-			RoundBarGraphView mGraphView = new RoundBarGraphView(context, "");
+			BarGraphView mGraphView = new BarGraphView(context, "");
 			DatabaseHandler db = new DatabaseHandler(context,
 					Main.TABLE_CONTENT, null, 1);
 			List<Record> records = db.getSumOfRecordsByMonth(targetDate());
@@ -461,7 +461,7 @@ public class Utilities {
 			graph.addView(mGraphView);
 
 		} else if (message.equals(ActivityStatisticTabFragment.TAB_YEAR)) {
-			RoundBarGraphView mGraphView = new RoundBarGraphView(context, "");
+			BarGraphView mGraphView = new BarGraphView(context, "");
 
 			DatabaseHandler db = new DatabaseHandler(context,
 					Main.TABLE_CONTENT, null, 1);
@@ -507,7 +507,7 @@ public class Utilities {
 			mGraphView.addSeries(series);
 			graph.addView(mGraphView);
 		} else if (message.equals(SleepStatisticTabFragment.TAB_WEEK)) {
-			RoundBarGraphView mGraphView = new RoundBarGraphView(context, "");
+			BarGraphView mGraphView = new BarGraphView(context, "");
 			DatabaseHandler db = new DatabaseHandler(context,
 					Main.TABLE_CONTENT, null, 1);
 
@@ -587,7 +587,7 @@ public class Utilities {
 			mGraphView.addSeries(series);
 			graph.addView(mGraphView);
 		} else if (message.equals(SleepStatisticTabFragment.TAB_MONTH)) {
-			RoundBarGraphView mGraphView = new RoundBarGraphView(context, "");
+			BarGraphView mGraphView = new BarGraphView(context, "");
 			DatabaseHandler db = new DatabaseHandler(context,
 					Main.TABLE_CONTENT, null, 1);
 			List<SleepRecord> sleepRecords = db
@@ -632,7 +632,7 @@ public class Utilities {
 			mGraphView.addSeries(series);
 			graph.addView(mGraphView);
 		} else if (message.equals(SleepStatisticTabFragment.TAB_YEAR)) {
-			RoundBarGraphView mGraphView = new RoundBarGraphView(context, "");
+			BarGraphView mGraphView = new BarGraphView(context, "");
 
 			DatabaseHandler db = new DatabaseHandler(context,
 					Main.TABLE_CONTENT, null, 1);
