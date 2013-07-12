@@ -74,6 +74,21 @@ public class Utilities {
 		Utilities.simpleDateFormat = simpleDateForamt;
 	}
 
+	/**
+	 * @return the dateFormatYear
+	 */
+	public static SimpleDateFormat getDateFormatYear() {
+		return dateFormatYear;
+	}
+
+	/**
+	 * @param dateFormatYear
+	 *            the dateFormatYear to set
+	 */
+	public static void setDateFormatYear(SimpleDateFormat dateFormatYear) {
+		Utilities.dateFormatYear = dateFormatYear;
+	}
+
 	public static Calendar lastDate() {
 		return _lastDate;
 	}
@@ -305,17 +320,8 @@ public class Utilities {
 			List<Record> records = db.getSumOfRecordsByDay(targetDate());
 			GraphViewData[] data = new GraphViewData[PER_HOUR];
 			hStr = new String[PER_HOUR];
-//
-//			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-//
 			String format = "%1$02d";
-//			if (records.size() > 0) {
-//				TextView tv = (TextView) rootView
-//						.findViewById(R.id.graph_view_title_indicator);
-//				SimpleDateFormat _format = new SimpleDateFormat("yyyy-MM-dd");
-//				tv.setText(_format.format(records.get(0).getCalendar()
-//						.getTime()));
-//			}
+
 			int r = 0;
 			for (int i = 0; i < PER_HOUR; i++) {
 				hStr[i] = String.format(format, i) + ":00";
@@ -323,9 +329,10 @@ public class Utilities {
 				if (r < records.size()) {
 					Record record = records.get(r);
 					int hour = record.getCalendar().get(Calendar.HOUR_OF_DAY);
-					Log.v("ActivityStatisticTabFragment.TAB_DAY", " hour int: "
-							+ hour);
+					
 					if (hour == i) {
+//						Log.v("ActivityStatisticTabFragment.TAB_DAY", " hour int: "
+//								+ hour);
 						ret = record.getActivityTime();
 						r++;
 
@@ -334,8 +341,10 @@ public class Utilities {
 				}
 				data[i] = new GraphViewData(i, ret);
 			}
+			String dayString = String.valueOf(targetDate().get(Calendar.DAY_OF_MONTH)) +" "+targetDate().getDisplayName(Calendar.MONTH,
+					Calendar.LONG, Locale.getDefault()) +" "+ String.valueOf(targetDate().get(Calendar.YEAR));
 			((TextView) rootView.findViewById(R.id.graph_view_title_indicator))
-					.setText(dateFormatYear.format(targetDate().getTime()));
+					.setText(dayString);
 			GraphViewSeries series = new GraphViewSeries("Day", style, data);
 
 			mGraphView.setManualYAxisBounds(24, 0);
@@ -362,8 +371,8 @@ public class Utilities {
 			saturday.add(Calendar.DAY_OF_WEEK, Calendar.SATURDAY - dayOfTheWeek);
 
 			List<Record> records = db.getSumOfRecordsByRange(sunday, saturday);
-			getLog(sTag, targetDate().toString());
-			getLog(sTag, sunday.toString());
+			//getLog(sTag, targetDate().toString());
+			//getLog(sTag, sunday.toString());
 
 			GraphViewData[] data = new GraphViewData[PER_WEEK];
 
@@ -378,31 +387,20 @@ public class Utilities {
 					// sunday .. saturday
 					int weekday = records.get(r).getCalendar()
 							.get(Calendar.DAY_OF_WEEK);
-					Log.v("ActivityStatisticTabFragment.TAB_WEEK",
-							" weekday int: " + weekday);
+					
 					if (weekday == Calendar.SUNDAY + i) {
+//						Log.v("ActivityStatisticTabFragment.TAB_WEEK",
+//								" weekday int: " + weekday);
 						Record record = records.get(r);
 						ret = record.getActivityTime();
 
 						r++;
 					}
 				}
-				hStr[i] = getWeekDay(i+Calendar.SUNDAY);
+				hStr[i] = getWeekDay(i + Calendar.SUNDAY);
 				data[i] = new GraphViewData(i, ret);
 			}
-			// rangeOfWeek =
-			// dateFormatMonthAndDay.format(sunday.getTime())+"-"+dateFormatMonthAndDay.format(saturday.getTime());
-			int year1 = sunday.get(Calendar.YEAR);
-			int year2 = saturday.get(Calendar.YEAR);
-			rangeOfWeek = ((year1==year2)?String.valueOf(year1):String.valueOf(year1)+"-"+String.valueOf(year2))+"\n"+sunday.getDisplayName(Calendar.MONTH, Calendar.LONG,
-					Locale.getDefault())
-					+ " "
-					+ String.valueOf(sunday.get(Calendar.DAY_OF_MONTH))
-					+ " - "
-					+ saturday.getDisplayName(Calendar.MONTH, Calendar.LONG,
-							Locale.getDefault())
-					+ " "
-					+ String.valueOf(saturday.get(Calendar.DAY_OF_MONTH));
+				rangeOfWeek = getWeekRangeSring(sunday, saturday);
 			((TextView) rootView.findViewById(R.id.graph_view_title_indicator))
 					.setText(rangeOfWeek);
 
@@ -431,10 +429,10 @@ public class Utilities {
 				if (r < records.size()) {
 					Record record = records.get(r);
 					int day = record.getCalendar().get(Calendar.DAY_OF_MONTH);
-					Log.v("ActivityStatisticTabFragment.TAB_MONH", " da int: "
-							+ day);
+					
 					if (day == i) {
-
+//						Log.v("ActivityStatisticTabFragment.TAB_MONH", " da int: "
+//								+ day);
 						ret = record.getActivityTime();
 						r++;
 					}
@@ -447,12 +445,12 @@ public class Utilities {
 								Locale.getDefault()));
 					}
 				}
-				hStr[i] = String.valueOf(i);
+				hStr[i] = String.valueOf(i + 1);
 				data[i] = new GraphViewData(i, ret);
 			}
 			((TextView) rootView.findViewById(R.id.graph_view_title_indicator))
 					.setText(targetDate().getDisplayName(Calendar.MONTH,
-							Calendar.LONG, Locale.getDefault()));
+							Calendar.LONG, Locale.getDefault()) + " " +String.valueOf(targetDate().get(Calendar.YEAR)));
 			GraphViewSeries series = new GraphViewSeries("Month", style, data);
 
 			mGraphView.setManualYAxisBounds(1440, 0);
@@ -483,9 +481,10 @@ public class Utilities {
 
 					int month = records.get(r).getCalendar()
 							.get(Calendar.MONTH);
-					Log.v("ActivityStatisticTabFragment.TAB_YEAR",
-							" month int: " + month);
+					
 					if (month == i) {
+//						Log.v("ActivityStatisticTabFragment.TAB_YEAR",
+//								" month int: " + month);
 						Record record = records.get(r);
 						ret = record.getActivityTime();
 						r++;
@@ -513,10 +512,12 @@ public class Utilities {
 					Main.TABLE_CONTENT, null, 1);
 
 			Calendar sunday = Calendar.getInstance();
+			sunday.setTime(targetDate().getTime());
 			int dayOfTheWeek = targetDate().get(Calendar.DAY_OF_WEEK);
 			sunday.add(Calendar.DAY_OF_WEEK, Calendar.SUNDAY - dayOfTheWeek);
 
 			Calendar saturday = Calendar.getInstance();
+			saturday.setTime(targetDate().getTime());
 			dayOfTheWeek = targetDate().get(Calendar.DAY_OF_WEEK);
 			saturday.add(Calendar.DAY_OF_WEEK, Calendar.SATURDAY - dayOfTheWeek);
 
@@ -536,10 +537,10 @@ public class Utilities {
 					SleepRecord sleepRecord = records.get(r);
 					int weekday = sleepRecord.getGoToBedTime().get(
 							Calendar.DAY_OF_WEEK);
-					Log.v("SleepStatisticTabFragment.TAB_WEEK",
-							" weekday int: " + weekday);
+					
 					if (weekday == Calendar.SUNDAY + i) {
-
+//						Log.v("SleepStatisticTabFragment.TAB_WEEK",
+//								" weekday int: " + weekday);
 						ret = sleepRecord.getActualSleepTime();
 
 						r++;
@@ -573,15 +574,8 @@ public class Utilities {
 
 			TextView tv = (TextView) rootView
 					.findViewById(R.id.graph_view_title_indicator);
-			rangeOfWeek = sunday.getDisplayName(Calendar.MONTH, Calendar.LONG,
-					Locale.getDefault())
-					+ " "
-					+ String.valueOf(sunday.get(Calendar.DAY_OF_MONTH))
-					+ " - "
-					+ saturday.getDisplayName(Calendar.MONTH, Calendar.LONG,
-							Locale.getDefault())
-					+ " "
-					+ String.valueOf(saturday.get(Calendar.DAY_OF_MONTH));// dateFormatMonthAndDay.format(sunday.getTime())+"-"+dateFormatMonthAndDay.format(saturday.getTime());
+			rangeOfWeek = getWeekRangeSring(sunday,saturday);
+					
 			((TextView) rootView.findViewById(R.id.graph_view_title_indicator))
 					.setText(rangeOfWeek);
 			tv.setText(rangeOfWeek);
@@ -617,10 +611,10 @@ public class Utilities {
 						ret = sleepRecord.getActualSleepTime();
 						r++;
 					}
-					
+
 				}
 
-				hStr[i] = String.valueOf(i);
+				hStr[i] = String.valueOf(i + 1);
 				data[i] = new GraphViewData(i, ret);
 			}
 
@@ -628,7 +622,7 @@ public class Utilities {
 					.findViewById(R.id.graph_view_title_indicator);
 
 			tv.setText(targetDate().getDisplayName(Calendar.MONTH,
-					Calendar.LONG, Locale.getDefault()));
+					Calendar.LONG, Locale.getDefault())+ " " +String.valueOf(targetDate().get(Calendar.YEAR)));
 			GraphViewSeries series = new GraphViewSeries("Month", style, data);
 
 			mGraphView.setManualYAxisBounds(1440, 0);
@@ -687,33 +681,51 @@ public class Utilities {
 
 	}
 
+	private static String getWeekRangeSring(Calendar sunday, Calendar saturday) {
+		int year1 = sunday.get(Calendar.YEAR);
+		int year2 = saturday.get(Calendar.YEAR);
+	
+		// TODO Auto-generated method stub
+		return String.valueOf(sunday.get(Calendar.DAY_OF_MONTH))
+				+ " "
+				+ sunday.getDisplayName(Calendar.MONTH, Calendar.SHORT,
+						Locale.getDefault())
+
+				+ " - "
+				+  String.valueOf(saturday.get(Calendar.DAY_OF_MONTH)) + " " + saturday.getDisplayName(Calendar.MONTH, Calendar.SHORT,
+						Locale.getDefault())
+				+ " "
+				+ ((year1 == year2) ? String.valueOf(year1) : String
+						.valueOf(year1) + "-" + String.valueOf(year2));
+	}
+
 	private static String getWeekDay(int i) {
 		// TODO Auto-generated method stub
 		switch (i) {
 		case Calendar.SUNDAY:
 			return "SUNDAY";
-			
+
 		case Calendar.MONDAY:
 			return "MONDAY";
-			
+
 		case Calendar.TUESDAY:
 			return "TUESDAY";
-			
+
 		case Calendar.WEDNESDAY:
 			return "WEDNESDAY";
-			
+
 		case Calendar.THURSDAY:
 			return "THURSDAY";
-			
+
 		case Calendar.FRIDAY:
 			return "FRIDAY";
-			
+
 		case Calendar.SATURDAY:
 			return "SATURDAY";
 		default:
 			return "N/A";
 		}
-		
+
 	}
 
 	private static String getMonth(int i) {
@@ -768,18 +780,23 @@ public class Utilities {
 
 		SleepRecord sleeprecord = db.getLastSleepRecord();
 		String bedTime = "00:00";
-		String actualSleepTime = "00:00";
+		int actualSleepTime = 0;
 		String inBedTime = "0";
 		if (sleeprecord != null) {
 			bedTime = df.format(sleeprecord.getGoToBedTime().getTime());
-			actualSleepTime = df.format(sleeprecord.getActualWakeupTime()
-					.getTime());
+			actualSleepTime = sleeprecord.getActualSleepTime();
 			inBedTime = String.valueOf(sleeprecord.getInBedTime());
 		}
-		TextView sleepTimeHourTV = ((TextView) rootView
+		TextView acutalSleepTimeHourTV = ((TextView) rootView
 				.findViewById(R.id.sleep_time_hour_textview));
-		if (sleepTimeHourTV != null)
-			sleepTimeHourTV.setText(bedTime);
+		if (acutalSleepTimeHourTV != null)
+			acutalSleepTimeHourTV.setText(String.valueOf(actualSleepTime/60));
+		
+		TextView acutalSleepTimeMinutesTV = ((TextView) rootView
+				.findViewById(R.id.sleep_time_mins_textview));
+		if (acutalSleepTimeMinutesTV != null)
+			acutalSleepTimeMinutesTV.setText(String.valueOf(actualSleepTime%60));
+		
 
 		TextView sleepEndTV = ((TextView) rootView
 				.findViewById(R.id.sleep_end_textfield));
@@ -855,13 +872,12 @@ public class Utilities {
 			targetDate().add(Calendar.YEAR, -1);
 			type = Calendar.YEAR;
 		}
-//		if (targetDate().get(type) == firstDate().get(type)
-//				|| Utilities.targetDate().compareTo(Utilities.firstDate()) == -1) {
-//			Utilities.targetDate().setTime(firstDate().getTime());
-//
-//		}
-//		ret = Utilities.targetDate().compareTo(Utilities.firstDate());
 
+		ret = Utilities.targetDate().compareTo(Utilities.firstDate());
+		if (targetDate().get(type) == firstDate().get(type)
+				|| Utilities.targetDate().compareTo(Utilities.firstDate()) == -1) {
+			Utilities.targetDate().setTime(firstDate().getTime());
+		}
 		return ret;
 	}
 
@@ -892,13 +908,13 @@ public class Utilities {
 			type = Calendar.YEAR;
 
 		}
-//		if (targetDate().get(type) == lastDate().get(type)
-//				|| Utilities.targetDate().compareTo(Utilities.lastDate()) == 1) {
-//			Utilities.targetDate().setTime(lastDate().getTime());
-//
-//		}
-//		ret = Utilities.targetDate().compareTo(Utilities.lastDate());
 
+		ret = Utilities.targetDate().compareTo(Utilities.lastDate());
+		if (targetDate().get(type) == lastDate().get(type)
+				|| Utilities.targetDate().compareTo(Utilities.lastDate()) == 1) {
+			Utilities.targetDate().setTime(lastDate().getTime());
+
+		}
 		return ret;
 	}
 
