@@ -527,7 +527,37 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.close();
 		return recordList;
 	}
+	public Record getSumOfRecordByRange(Calendar start, Calendar end) {
+		
+		String selectQuery = "SELECT SUM(" + KEY_MINUTES + ")" 
+				+ " , "+ KEY_DATE 
+				+ " FROM "+ TABLE_RECORDS + " WHERE strftime('%Y-%m-%d', " + KEY_DATE
+				+ ") >='" + sqlDateFormat.format(start.getTime()) + "'"
+				+ " AND strftime('%Y-%m-%d', " + KEY_DATE + ") <='"
+				+ sqlDateFormat.format(end.getTime()) + "'";
+		Log.v(TAG,selectQuery);
+		SQLiteDatabase db = this.getWritableDatabase();
 
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		if (cursor.moveToFirst()) {
+			do {
+				Record record = new Record();
+				Calendar _calendar = Calendar.getInstance();
+
+				_calendar.setTime(stringToDate(cursor.getString(1)));
+
+				record.setDate(_calendar);
+				record.setActivityTime(cursor.getInt(0));
+
+				cursor.close();
+				db.close();
+				return record;
+			} while (cursor.moveToNext());
+		}
+		
+		return null;
+	}
 	public List<Record> getSumOfRecordsByRange(Calendar start, Calendar end) {
 		List<Record> recordList = new ArrayList<Record>();
 		String selectQuery = "SELECT SUM(" + KEY_MINUTES + ")" + " , "
