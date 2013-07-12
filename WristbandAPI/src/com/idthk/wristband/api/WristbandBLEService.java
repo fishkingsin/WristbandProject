@@ -698,6 +698,7 @@ public class WristbandBLEService extends Service {
 			}
 		}
 	}
+	
 
 	// public void disconnect(BluetoothDevice device) {
 	// if (mBluetoothGatt != null) {

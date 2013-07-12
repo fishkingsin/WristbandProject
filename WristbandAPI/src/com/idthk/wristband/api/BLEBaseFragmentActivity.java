@@ -1,35 +1,14 @@
 package com.idthk.wristband.api;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
-import com.idthk.wristband.database.DatabaseHandler;
-import com.idthk.wristband.database.Record;
-import com.idthk.wristband.database.SleepPattern;
-import com.idthk.wristband.database.SleepRecord;
-import com.samsung.android.sdk.bt.gatt.BluetoothGattCharacteristic;
-import com.samsung.android.sdk.bt.gatt.BluetoothGattService;
-
-import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-
 import android.app.AlertDialog;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -39,16 +18,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
 import android.support.v4.app.FragmentActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Menu;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.idthk.wristband.database.DatabaseHandler;
+import com.idthk.wristband.database.Record;
+import com.idthk.wristband.database.SleepPattern;
+import com.idthk.wristband.database.SleepRecord;
 
 public class BLEBaseFragmentActivity extends FragmentActivity {
 	static final String TAG = "BLEBaseFragmentActivity";
@@ -80,7 +62,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	private CountDownTimer mCountDownTimer;
 	public boolean bTrace = false;
 	byte[] rawDataBuffer;
-	
+	String savedAddress = "";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -481,14 +463,16 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 			case WristbandBLEService.BLE_CONNECT_MSG:
 
 				mState = BLE_PROFILE_CONNECTED;
-
+				
+				savedAddress = data.getString(BluetoothDevice.EXTRA_DEVICE);
+				Log.v(TAG,"ConnectTo Device address "+savedAddress);
 				onConnected();
 				break;
 			case WristbandBLEService.GATT_DEVICE_FOUND_MSG:
 
-				final BluetoothDevice device = data
-						.getParcelable(BluetoothDevice.EXTRA_DEVICE);
-
+//				final BluetoothDevice device = data
+//						.getParcelable(BluetoothDevice.EXTRA_DEVICE);
+				
 				onDeviceFound();
 				break;
 
@@ -989,7 +973,26 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	public void connect() {
 
 		if (mService != null) {
-			mService.scan(true);
+			
+			Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
+			if(pairedDevices.size()>0)
+			{
+				boolean result = false;
+		        for (BluetoothDevice pairedDevice : pairedDevices) {
+		        	result = mService.isBLEDevice(pairedDevice);
+		        	if(result && pairedDevice.getName().startsWith("A"))
+		        	{
+		        		mService.mDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(
+		        				savedAddress);
+		        		
+		        		mService.connect( false);
+		        	}
+		        }
+			}
+			else
+			{
+				mService.scan(true);
+			}
 		}
 	}
 
