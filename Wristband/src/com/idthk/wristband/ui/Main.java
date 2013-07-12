@@ -20,6 +20,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.AnimationDrawable;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -601,11 +602,6 @@ public class Main extends BLEBaseFragmentActivity implements
 	private int incomingSteps = 0;
 	private int incomingCalories = 0;
 	private float incomingDistance = 0;
-	Integer connectivity_images[] = { R.drawable.wireless_connection_icon_0,
-			R.drawable.wireless_connection_icon_1,
-			R.drawable.wireless_connection_icon_2,
-			R.drawable.wireless_connection_icon_3,
-			R.drawable.wireless_connection_icon_4 };
 
 	private CountDownTimer mBackgroundTimer = new CountDownTimer(1000 * 60 * 5,
 			1000) {
@@ -631,8 +627,8 @@ public class Main extends BLEBaseFragmentActivity implements
 				Log.v(TAG, "mStreamModeTimeout");
 
 				new AlertDialog.Builder(mContext)
-						.setTitle("Stream Mode Tiemout")
-						.setMessage("Reconnected?")
+						.setTitle(R.string.stream_mode_timeout)
+						.setMessage(getString(R.string.reconnect))
 						.setPositiveButton(R.string.popup_retry,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
@@ -671,67 +667,84 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	private CountDownTimer mDBStoringTimer = new CountDownTimer(1000 * 5, 1000) {
 
-		
-
 		public void onFinish() {
-			Log.v(TAG,"mDBStoringTimer : Start");
+			Log.v(TAG, "mDBStoringTimer : Start");
+			Log.v(TAG, "------------------------------------------------");
 			isStoringTimerStarted = false;
 			try {
-				//get current hour
+				// get current hour
 				Calendar currentHour = Calendar.getInstance();
 				currentHour.set(Calendar.MINUTE, 0);
 				currentHour.set(Calendar.SECOND, 0);
 				currentHour.set(Calendar.MILLISECOND, 0);
-				Log.v(TAG,"mDBStoringTimer : currentHour : "+Utilities.getSimpleDateForamt().format(currentHour.getTime()));
-				//get 00:00
+				Log.v(TAG,
+						"mDBStoringTimer : currentHour : "
+								+ Utilities.getSimpleDateForamt().format(
+										currentHour.getTime()));
+				// get 00:00
 				Calendar start = Calendar.getInstance();
 				start.set(Calendar.HOUR_OF_DAY, 0);
 				start.set(Calendar.MINUTE, 0);
 				start.set(Calendar.SECOND, 0);
 				start.set(Calendar.MILLISECOND, 0);
-				Log.v(TAG,"mDBStoringTimer : startHour : "+Utilities.getSimpleDateForamt().format(start.getTime()));
-				//get last hour
+				Log.v(TAG,
+						"mDBStoringTimer : startHour : "
+								+ Utilities.getSimpleDateForamt().format(
+										start.getTime()));
+				// get last hour
 				Calendar end = Calendar.getInstance();
-				end.set(Calendar.HOUR_OF_DAY, currentHour.get(Calendar.HOUR_OF_DAY)-1);
+				end.set(Calendar.HOUR_OF_DAY,
+						currentHour.get(Calendar.HOUR_OF_DAY) - 1);
 				end.set(Calendar.MINUTE, 0);
 				end.set(Calendar.SECOND, 0);
 				end.set(Calendar.MILLISECOND, 0);
-				Log.v(TAG,"mDBStoringTimer : endHour : "+Utilities.getSimpleDateForamt().format(end.getTime()));
+				Log.v(TAG, "mDBStoringTimer : endHour : "
+						+ Utilities.getSimpleDateForamt().format(end.getTime()));
 				DatabaseHandler db = new DatabaseHandler(mContext,
 						Main.TABLE_CONTENT, null, 1);
-				//retrieve sum of the record of the previour time 
-				Record lastrecord = db.getSumOfRecordByRange(start, end);
+				// retrieve sum of the record of the previour time
+				List<Record> lastrecords = db.getSumOfRecordByRange(start, end);
 				int currentActivityTime = 0;
 				int currentSteps = 0;
 				int currentCalories = 0;
-				float currentDistance =0;
-				if(lastrecord!=null)
-				{
-					Log.v(TAG,"mDBStoringTimer : lastRecord : "+lastrecord.toString());
-				
-					currentActivityTime = incomingActivityTime - lastrecord.getActivityTime();
+				float currentDistance = 0;
+				if (lastrecords.size() > 0) {
+					Record lastrecord = lastrecords.get(0);
+					Log.v(TAG,
+							"mDBStoringTimer : lastRecord : "
+									+ lastrecord.toString());
+
+					currentActivityTime = Math.max(incomingActivityTime
+							- lastrecord.getActivityTime(),0);
 					currentSteps = incomingSteps - lastrecord.getSteps();
-					currentCalories = incomingCalories - lastrecord.getCalories();
-					currentDistance = incomingDistance - lastrecord.getDistance();
-				}
-				else
-				{
+					currentCalories = incomingCalories
+							- lastrecord.getCalories();
+					currentDistance = incomingDistance
+							- lastrecord.getDistance();
+				} else {
 					currentActivityTime = incomingActivityTime;
 					currentSteps = incomingSteps;
 					currentCalories = incomingCalories;
 					currentDistance = incomingDistance;
 				}
 				
-				Record currentRecord = new Record(currentHour.getTimeInMillis(), currentActivityTime, currentSteps,
-						currentCalories, currentCalories );
-				Log.v(TAG,"mDBStoringTimer : currentRecord : "+currentRecord.toString());
-				//update the current record
-				db.updateRecord(currentRecord);
+				Record currentRecord = new Record(
+						currentHour.getTimeInMillis(), currentActivityTime,
+						currentSteps, currentCalories, currentCalories);
+				Log.v(TAG,
+						"mDBStoringTimer : currentRecord : "
+								+ currentRecord.toString());
+				// update the current record
+				if (db.updateRecord(currentRecord) == 0) {
+					db.addRecord(currentRecord);
+				}
 
 			} catch (Exception e) {
+				e.printStackTrace();
 				Log.e(TAG, "mStreamTimeout :" + e.toString());
 
 			}
+			Log.v(TAG, "------------------------------------------------");
 		}
 
 		@Override
@@ -745,9 +758,10 @@ public class Main extends BLEBaseFragmentActivity implements
 
 		public void onFinish() {
 			Log.v(TAG, "mSyncingTimeout");
+			pd.dismiss();
 			new AlertDialog.Builder(mContext)
-					.setTitle("Sync Data Tiemout")
-					.setMessage("Reconnected?")
+					.setTitle(R.string.sync_data_timeout)
+					.setMessage(getString(R.string.reconnect))
 					.setPositiveButton(R.string.popup_retry,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
@@ -781,12 +795,13 @@ public class Main extends BLEBaseFragmentActivity implements
 	};
 
 	private ProgressDialog pd;
+	private ImageView connectivityAnnotation;
 
 	private boolean firstTime;
 	private boolean isInLandscapeActivity;
 	private boolean inBackground;
 	private boolean isInPreferenceActivity;
-	private boolean canRotateView;
+//	private boolean canRotateView;
 
 	private SleepRecord sleepRecord = null;
 	private boolean isStoringTimerStarted = false;
@@ -802,20 +817,23 @@ public class Main extends BLEBaseFragmentActivity implements
 		mContext = this;
 
 		pd = new ProgressDialog(mContext);
-		pd.setTitle("Processing...");
-		pd.setMessage("Please wait.");
+		pd.setTitle(R.string.processing);
+		pd.setMessage(getString(R.string.please_wait));
 		pd.setCancelable(false);
 		pd.setIndeterminate(true);
 
 		setContentView(R.layout.main);
+
+		connectivityAnnotation = (ImageView) findViewById(R.id.connectivity);
+		setConnectionAnimation(true, false);
+
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		prefs.registerOnSharedPreferenceChangeListener(this);
 		firstTime = prefs.getBoolean(FIRST_TIME, true);
-		canRotateView = prefs.getBoolean(
-				getString(R.string.pref_enable_rotation_view), false);
-		((ImageView) findViewById(R.id.connectivity))
-				.setImageResource(R.drawable.wireless_connection_icon_0);
+//		canRotateView = prefs.getBoolean(
+//				getString(R.string.pref_enable_rotation_view), false);
+
 		if (firstTime) {
 
 			// class CreateDBTask extends AsyncTask<Void, Integer, Void> {
@@ -824,7 +842,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			// protected void onPreExecute() {
 			//
 			// pd.setTitle("Create Sample DB...");
-			// pd.setMessage("Please wait.");
+			// pd.setMessage(getString(R.string.please_wait));
 			// pd.show();
 			// }
 			//
@@ -861,7 +879,7 @@ public class Main extends BLEBaseFragmentActivity implements
 				@Override
 				public void onOrientationChanged(int orientation) {
 					// TODO Auto-generated method stub
-					if (canShow(orientation) && canRotateView) {
+					if (canShow(orientation) ) {
 						startLandscapeActivity(orientation);
 
 					}
@@ -1163,6 +1181,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	public void onDestroy() {
 		mDBStoringTimer.cancel();
 		mSyncingTimeout.cancel();
+		mStreamModeTimeout.cancel();
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
@@ -1176,49 +1195,11 @@ public class Main extends BLEBaseFragmentActivity implements
 			orientationListener.disable();
 
 		if (inBackground) {
-
+			mStreamModeTimeout.cancel();
 			mBackgroundTimer.start();
 			Log.v(TAG, "I think i am going into background");
 		} else {
 
-		}
-	}
-
-	private class UpdateConnectivityTask extends AsyncTask<Void, Integer, Void> {
-
-		@Override
-		protected void onPreExecute() {
-
-		}
-
-		@Override
-		protected Void doInBackground(Void... params) {
-
-			Log.v("UpdateBarTask", "doInBackground");
-
-			while (getState() == STATE_READY) {
-				for (int i = 1; i < 3; i++) {
-
-					try {
-						publishProgress(i);
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-			if (getState() == BLE_PROFILE_CONNECTED) {
-				publishProgress(connectivity_images.length - 2);
-			}
-
-			return null;
-		}
-
-		@Override
-		protected void onProgressUpdate(Integer... values) {
-			((ImageView) findViewById(R.id.connectivity))
-					.setImageResource(connectivity_images[values[0]]);
 		}
 	}
 
@@ -1280,8 +1261,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		super.onConnected();
 		showMessage("Connected");
 		setUiState();
-		((ImageView) findViewById(R.id.connectivity))
-				.setImageResource(connectivity_images[1]);
+		setConnectionAnimation(false, true);
 	}
 
 	@Override
@@ -1299,8 +1279,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 		showMessage("Disconnected");
 		setUiState();
-		((ImageView) findViewById(R.id.connectivity))
-				.setImageResource(connectivity_images[0]);
+		setConnectionAnimation(false, false);
 
 		if (!isInLandscapeActivity && !isInPreferenceActivity) {
 			connect();
@@ -1328,8 +1307,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		setUiState();
 		showMessage("Service Discovered");
 
-		((ImageView) findViewById(R.id.connectivity))
-				.setImageResource(connectivity_images[connectivity_images.length - 1]);
+		setConnectionAnimation(false, true);
 
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
@@ -1341,11 +1319,13 @@ public class Main extends BLEBaseFragmentActivity implements
 		editor.commit();
 		mStartUpState = WristbandStartupConstant.CONNECT;
 
-		// try {
-		pd.setTitle("Syncing Device");
-		pd.setMessage("Please wait.");
-		pd.show();
-
+		try {
+			pd.setTitle(R.string.syncing_device);
+			pd.setMessage(getString(R.string.please_wait));
+			pd.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		try {
 			Thread.sleep(4000);
 		} catch (InterruptedException e) {
@@ -1364,8 +1344,8 @@ public class Main extends BLEBaseFragmentActivity implements
 	 * 
 	 * @Override protected void onPreExecute() { // pd = new
 	 * ProgressDialog(mContext); // pd.setTitle("Processing..."); //
-	 * pd.setMessage("Please wait."); // pd.setCancelable(false); //
-	 * pd.setIndeterminate(true); // pd.show(); }
+	 * pd.setMessage(getString(R.string.please_wait)); //
+	 * pd.setCancelable(false); // pd.setIndeterminate(true); // pd.show(); }
 	 * 
 	 * @Override protected Void doInBackground(Void... params) {
 	 * 
@@ -1402,7 +1382,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		s += "distance : " + distance + "\n";
 		s += "activityTime : " + activityTime + "\n";
 		s += "batteryLevel : " + batteryLevel + "\n";
-		incomingActivityTime = steps;
+		incomingActivityTime = activityTime;
 		incomingSteps = steps;
 		incomingCalories = calories;
 		incomingDistance = distance;
@@ -1588,8 +1568,8 @@ public class Main extends BLEBaseFragmentActivity implements
 		pd.dismiss();
 		try {
 			new AlertDialog.Builder(this)
-					.setTitle("Read Data Failed")
-					.setMessage("Reconnected?")
+					.setTitle(R.string.read_data_failed)
+					.setMessage(getString(R.string.reconnect))
 					.setPositiveButton(R.string.popup_retry,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
@@ -1727,7 +1707,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	}
 
 	private void checkState(int state) {
-		//every time call check stats  restrat mSyncingTimeout
+		// every time call check stats restrat mSyncingTimeout
 		mSyncingTimeout.cancel();
 		mSyncingTimeout.start();
 		switch (state) {
@@ -1758,7 +1738,7 @@ public class Main extends BLEBaseFragmentActivity implements
 						height);
 			} catch (Exception e) {
 				new AlertDialog.Builder(this)
-						.setTitle("Shit happen")
+						.setTitle("Something wrong happen")
 						.setMessage("Set Profile")
 						.setNeutralButton(R.string.cancel,
 								new DialogInterface.OnClickListener() {
@@ -1790,7 +1770,7 @@ public class Main extends BLEBaseFragmentActivity implements
 								getString(R.string.pref_targetCalories), 1000));
 			} catch (Exception e) {
 				new AlertDialog.Builder(this)
-						.setTitle("Shit happen")
+						.setTitle("Something wrong happen")
 						.setMessage("Set Target")
 						.setNeutralButton(R.string.cancel,
 								new DialogInterface.OnClickListener() {
@@ -1827,7 +1807,7 @@ public class Main extends BLEBaseFragmentActivity implements
 												: 0);
 			} catch (Exception e) {
 				new AlertDialog.Builder(this)
-						.setTitle("Shit Sleep")
+						.setTitle("Something wrong Sleep")
 						.setMessage("Set Profile")
 						.setNeutralButton(R.string.cancel,
 								new DialogInterface.OnClickListener() {
@@ -1848,7 +1828,7 @@ public class Main extends BLEBaseFragmentActivity implements
 						c.get(Calendar.SECOND), c.get(Calendar.WEDNESDAY));
 			} catch (Exception e) {
 				new AlertDialog.Builder(this)
-						.setTitle("Shit happen")
+						.setTitle("Something wrong happen")
 						.setMessage("Set Time")
 						.setNeutralButton(R.string.cancel,
 								new DialogInterface.OnClickListener() {
@@ -1864,7 +1844,39 @@ public class Main extends BLEBaseFragmentActivity implements
 			getVersion();
 			break;
 		case WristbandStartupConstant.GET_SOFTWARE_VERSION:
-			getHistory();
+			mSyncingTimeout.cancel();
+			pd.dismiss();
+
+			try {
+				new AlertDialog.Builder(this)
+						.setTitle(R.string.sync_history_data)
+						.setMessage(getString(R.string.do_you_want_to_sync))
+						.setPositiveButton("Yes",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
+										try {
+											pd.setTitle(R.string.syncing_device);
+											pd.setMessage(getString(R.string.please_wait));
+											pd.show();
+										} catch (Exception e) {
+											e.printStackTrace();
+										}
+										getHistory();
+									}
+								})
+						.setNeutralButton(R.string.cancel,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
+										mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
+										checkState(mStartUpState);
+									}
+								}).show();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			break;
 		case WristbandStartupConstant.GET_HISTORY_DATA:
 			try {
@@ -1875,13 +1887,13 @@ public class Main extends BLEBaseFragmentActivity implements
 					e.printStackTrace();
 				}
 				startStream();
-				((ImageView) findViewById(R.id.connectivity))
-						.setImageResource(connectivity_images[connectivity_images.length - 1]);
+				setConnectionAnimation(false, true);
+
 				mStartUpState = WristbandStartupConstant.START_STREAM;
 				checkState(mStartUpState);
 			} catch (Exception e) {
 				new AlertDialog.Builder(this)
-						.setTitle("Shit happen")
+						.setTitle("Something wrong happen")
 						.setMessage("Start Stream")
 						.setNeutralButton(R.string.cancel,
 								new DialogInterface.OnClickListener() {
@@ -1973,8 +1985,28 @@ public class Main extends BLEBaseFragmentActivity implements
 			String key) {
 		Log.v(TAG, "onSharedPreferenceChanged " + key);
 		// TODO Auto-generated method stub
-		if (key.equals(getString(R.string.pref_enable_rotation_view))) {
-			canRotateView = sharedPreferences.getBoolean(key, false);
+		
+
+	}
+
+	private void setConnectionAnimation(boolean start, boolean connected) {
+		if (start) {
+			connectivityAnnotation.clearAnimation();
+			connectivityAnnotation
+					.setBackgroundResource(R.drawable.connectivity_animation);
+			AnimationDrawable frameAnimation = (AnimationDrawable) connectivityAnnotation
+					.getBackground();
+			frameAnimation.start();
+		} else {
+			connectivityAnnotation.clearAnimation();
+
+			if (connected) {
+				connectivityAnnotation
+						.setBackgroundResource(R.drawable.wireless_connection_icon_4);
+			} else {
+				connectivityAnnotation
+						.setBackgroundResource(R.drawable.wireless_connection_icon_0);
+			}
 		}
 
 	}
