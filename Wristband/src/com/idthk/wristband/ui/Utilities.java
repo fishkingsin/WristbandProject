@@ -347,7 +347,7 @@ public class Utilities {
 					.setText(dayString);
 			GraphViewSeries series = new GraphViewSeries("Day", style, data);
 
-			mGraphView.setManualYAxisBounds(24, 0);
+			mGraphView.setManualYAxisBounds(60, 0);
 			mGraphView.setHorizontalLabels(hStr);
 			mGraphView.setVerticalLabels(new String[] { "High", "Mid", "Low" });
 			mGraphView.addSeries(series);
