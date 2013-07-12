@@ -1,36 +1,24 @@
 package com.idthk.wristband.ui.landscape;
 
-import java.util.Calendar;
 import java.util.List;
-import java.util.Random;
 
 import org.bostonandroid.datepreference.DatePreference;
 
-import com.idthk.wristband.database.DatabaseHandler;
-import com.idthk.wristband.database.Record;
-import com.idthk.wristband.graphview.RoundBarGraphView;
-import com.idthk.wristband.ui.Main;
-import com.idthk.wristband.ui.R;
-import com.jjoe64.graphview.BarGraphView;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GraphViewSeries;
-import com.jjoe64.graphview.GraphView.GraphViewData;
-import com.jjoe64.graphview.LineGraphView;
-
-import android.app.Activity;
 import android.content.Intent;
-//import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.View.OnClickListener;
+
+import com.idthk.wristband.database.DatabaseHandler;
+import com.idthk.wristband.database.Record;
+import com.idthk.wristband.ui.Main;
+import com.idthk.wristband.ui.R;
+//import android.content.Intent;
 //import android.widget.Toast;
-import android.view.ViewGroup;
-import android.widget.Button;
 
 public class BLELandscapeActivity extends LandscapeActivity implements OnClickListener {
 	static final String TAG = "LandscapeActivity";
