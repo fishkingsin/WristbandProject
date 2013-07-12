@@ -310,46 +310,53 @@ public class MainFragment extends Fragment implements
 
 			int weekday = datetime.get(Calendar.WEEK_OF_MONTH);
 
-			String startSleep, endSleep;
+//			String startSleep, endSleep;
 			int inbedTime = prefs.getInt(getString(R.string.pref_in_bed_time),
 					8);
-
-			String format = "%1$02d";
-
-			if (weekday == 5 || weekday == 6) {
-				startSleep = prefs.getString(getString(R.string.pref_weekend),
-						"00:00");
-				startSleep = String.format(format,
-						TimePreference.getHour(startSleep))
-						+ ":"
-						+ String.format(format,
-								TimePreference.getMinute(startSleep))
-						+ TimePreference.getAmPm(startSleep);
-				endSleep = prefs.getString(
-						getString(R.string.pref_weekend_wake), "08:00AM");
-
-			} else {
-				startSleep = prefs.getString(getString(R.string.pref_weekday),
-						"00:00");
-				startSleep = String.format(format,
-						TimePreference.getHour(startSleep))
-						+ ":"
-						+ String.format(format,
-								TimePreference.getMinute(startSleep))
-						+ TimePreference.getAmPm(startSleep);
-				endSleep = prefs.getString(
-						getString(R.string.pref_weekend_wake), "08:00AM");
-			
-			if (mRootView.findViewById(R.id.sleep_start_textfield) != null)
-				((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
-						.setText(startSleep);
-			if (mRootView.findViewById(R.id.sleep_end_textfield) != null)
-				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
-						.setText(endSleep);
 			if (mRootView.findViewById(R.id.sleep_duration_textfield) != null)
 				((TextView) mRootView
 						.findViewById(R.id.sleep_duration_textfield))
 						.setText(String.valueOf(inbedTime));
+//			String format = "%1$02d";
+
+			if (weekday ==Calendar.SUNDAY || weekday == Calendar.SATURDAY) {
+//				startSleep = prefs.getString(getString(R.string.pref_weekend),
+//						"00:00");
+//				startSleep = String.format(format,
+//						TimePreference.getHour(startSleep))
+//						+ ":"
+//						+ String.format(format,
+//								TimePreference.getMinute(startSleep))
+//						+ TimePreference.getAmPm(startSleep);
+//				endSleep = prefs.getString(
+//						getString(R.string.pref_weekend_wake), "08:00AM");
+				
+				String wakeup_end = prefs.getString(getString(R.string.pref_weekend), getString(R.string.default_weekend_wake));
+				((TextView)mRootView.findViewById(R.id.sleep_end_textfield)).setText(wakeup_end);
+			
+				
+
+			} else {
+				String wakeup_day = prefs.getString(getString(R.string.pref_weekday), getString(R.string.default_weekday_wake));
+				((TextView)mRootView.findViewById(R.id.sleep_end_textfield)).setText(wakeup_day);
+//				startSleep = prefs.getString(getString(R.string.pref_weekday),
+//						"00:00");
+//				startSleep = String.format(format,
+//						TimePreference.getHour(startSleep))
+//						+ ":"
+//						+ String.format(format,
+//								TimePreference.getMinute(startSleep))
+//						+ TimePreference.getAmPm(startSleep);
+//				endSleep = prefs.getString(
+//						getString(R.string.pref_weekend_wake), "08:00AM");
+			
+//			if (mRootView.findViewById(R.id.sleep_start_textfield) != null)
+//				((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
+//						.setText(startSleep);
+//			if (mRootView.findViewById(R.id.sleep_end_textfield) != null)
+//				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
+//						.setText(endSleep);
+			
 			}
 		}
 
@@ -370,69 +377,7 @@ public class MainFragment extends Fragment implements
 
 	}
 
-	/*private void populateSleepPatternGraph(ViewGroup graph) {
-		graph.removeAllViews();
-		GraphViewSeriesStyle style = new GraphViewSeriesStyle();
-		style.thickness = 5;
-		style.color = 0xFF73CBfD;
-
-		Context context = getActivity();
-		
-		
-		LineGraphView mGraphView = new LineGraphView(context, "");
-		DatabaseHandler db = new DatabaseHandler(context, Main.TABLE_CONTENT,
-				null, 1);
-		
-		SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-		
-		SleepRecord sleeprecord = db.getLastSleepRecord();
-		
-		((TextView)mRootView.findViewById(R.id.sleep_time_hour_textview)).setText(df.format(sleeprecord.getGoToBedTime().getTime()));
 	
-		((TextView)mRootView.findViewById(R.id.sleep_end_textfield)).setText(df.format(sleeprecord.getActualWakeupTime().getTime()));
-		((TextView)mRootView.findViewById(R.id.sleep_duration_textfield)).setText(String.valueOf(sleeprecord.getInBedTime()));
-		if (sleeprecord != null) {
-			List<SleepPattern> patterns = sleeprecord.getPatterns();
-			List <GraphViewData> data = new ArrayList<GraphViewData>();
-
-			int j = 0;
-			int xValue = 0;
-			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-			for (SleepPattern pattern : patterns) {
-				for(int i = 0 ; i < pattern.getDuration();i++)
-				{
-					int a = 0;
-					switch(pattern.getAmplitude())
-					{
-					case 22:
-							a = 1;
-						break;
-					case 44:
-							a = 2;
-						break;
-					case 64:
-
-					case 66:
-						a = 3;
-						break;
-					}
-					data.add( new GraphViewData(xValue, a));
-					xValue++;
-				}
-				
-			}
-			
-			GraphViewData[] a = data.toArray(new GraphViewData[data.size()]);
-			GraphViewSeries series = new GraphViewSeries("Hour", style,
-					a);
-
-			mGraphView.setManualYAxisBounds(3, 0);
-			mGraphView.addSeries(series);
-			// stuff that updates ui
-			graph.addView(mGraphView);
-		}
-	}
-*/
 	/**
 	 * Returns the page number represented by this fragment object.
 	 */

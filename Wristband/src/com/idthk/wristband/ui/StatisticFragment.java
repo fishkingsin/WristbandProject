@@ -14,8 +14,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-//import com.idthk.wristband.ui.ScrollPagerMain.ScrollPagerMainCallback;
-//import android.annotation.SuppressLint;
 
 public class StatisticFragment extends Fragment implements
 		LoaderCallbacks<Void> {
@@ -51,20 +49,21 @@ public class StatisticFragment extends Fragment implements
 				@Override
 				public void onClick(View arg0) {
 					int ret = Utilities.nextEntryDate(message);
-//					if (ret == -1 || ret == 0) {
-						Utilities.publishGraph(getActivity(), mRootView,
-								((ViewGroup) mRootView
-										.findViewById(R.id.graph1)), message);
-//					}
-//
-//					if (ret == 0) {
-//						nextEntryButton.setVisibility(View.INVISIBLE);
-//						prevEntryButton.setVisibility(View.VISIBLE);
-//					} else {
-//						nextEntryButton.setVisibility(View.VISIBLE);
-//						prevEntryButton.setVisibility(View.VISIBLE);
-//					}
-
+						
+						if(ret==1)
+						{
+							if(nextEntryButton!=null)nextEntryButton.setVisibility(View.INVISIBLE);
+							if(prevEntryButton!=null)prevEntryButton.setVisibility(View.VISIBLE);
+						}
+						else
+							
+						{
+							Utilities.publishGraph(getActivity(), mRootView,
+									((ViewGroup) mRootView
+											.findViewById(R.id.graph1)), message);
+							if(nextEntryButton!=null)nextEntryButton.setVisibility(View.VISIBLE);
+							if(prevEntryButton!=null)prevEntryButton.setVisibility(View.VISIBLE);
+						}
 				}
 			});
 
@@ -75,56 +74,54 @@ public class StatisticFragment extends Fragment implements
 				@Override
 				public void onClick(View arg0) {
 					int ret = Utilities.prevEntryDate(message);
-//					if (ret == 1 || ret == 0) {
-						Utilities.publishGraph(getActivity(), mRootView,
-								((ViewGroup) mRootView
-										.findViewById(R.id.graph1)), message);
-//					}
-//
-//					if (ret == 0) {
-//						prevEntryButton.setVisibility(View.INVISIBLE);
-//						nextEntryButton.setVisibility(View.VISIBLE);
-//					} else {
-//						nextEntryButton.setVisibility(View.VISIBLE);
-//						prevEntryButton.setVisibility(View.VISIBLE);
-//					}
+
+						
+						if(ret==-1)
+						{
+							if(prevEntryButton!=null)prevEntryButton.setVisibility(View.INVISIBLE);
+							if(nextEntryButton!=null)nextEntryButton.setVisibility(View.VISIBLE);
+						}
+						else
+						{
+							Utilities.publishGraph(getActivity(), mRootView,
+									((ViewGroup) mRootView
+											.findViewById(R.id.graph1)), message);
+							if(prevEntryButton!=null)prevEntryButton.setVisibility(View.VISIBLE);
+							if(nextEntryButton!=null)nextEntryButton.setVisibility(View.VISIBLE);
+							
+						}
 				}
 
 			});
+			checkButtonVisible();
 
 		} catch (Exception e) {
 			Log.v(TAG, e.getMessage());
 		}
-
-//		if (message.equals(SleepStatisticTabFragment.TAB_WEEK)) {
-//			if (Utilities.firstDate().get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-//				Utilities.prevEntryDate(message);
-//				nextEntryButton.setVisibility(View.INVISIBLE);
-//			}
-//		} else if (message.equals(SleepStatisticTabFragment.TAB_MONTH)) {
-//			nextEntryButton.setVisibility(View.INVISIBLE);
-//		} else if (message.equals(SleepStatisticTabFragment.TAB_YEAR)) {
-//
-//			nextEntryButton.setVisibility(View.INVISIBLE);
-//		} else if (message.equals(ActivityStatisticTabFragment.TAB_DAY)) {
-//			nextEntryButton.setVisibility(View.INVISIBLE);
-//		} else if (message.equals(ActivityStatisticTabFragment.TAB_WEEK)) {
-//			nextEntryButton.setVisibility(View.INVISIBLE);
-//		} else if (message.equals(ActivityStatisticTabFragment.TAB_MONTH)) {
-//			nextEntryButton.setVisibility(View.INVISIBLE);
-//		} else if (message.equals(ActivityStatisticTabFragment.TAB_YEAR)) {
-//			nextEntryButton.setVisibility(View.INVISIBLE);
-//		}
-
-		// TextView messageTextView = (TextView) mRootView
-		// .findViewById(R.id.activity_indicator);
-
 		Utilities.publishGraph(getActivity(), mRootView,
 				((ViewGroup) mRootView.findViewById(R.id.graph1)), message);
-		// test value
 		return mRootView;
 	}
+	protected void checkButtonVisible() {
 
+		if (Utilities.targetDate().compareTo(Utilities.lastDate()) == 0 ) 
+		{
+			nextEntryButton.setVisibility(View.INVISIBLE);
+			prevEntryButton.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			prevEntryButton.setVisibility(View.VISIBLE);
+			nextEntryButton.setVisibility(View.VISIBLE);
+		}
+		if (Utilities.targetDate().compareTo(Utilities.firstDate()) == 0 ) {
+			prevEntryButton.setVisibility(View.INVISIBLE);
+			nextEntryButton.setVisibility(View.VISIBLE);
+		} else {
+			prevEntryButton.setVisibility(View.VISIBLE);
+			nextEntryButton.setVisibility(View.VISIBLE);
+		}
+	}
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
