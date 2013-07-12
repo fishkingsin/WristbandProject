@@ -60,7 +60,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	}
 
 	private CountDownTimer mCountDownTimer;
-	public boolean bTrace = false;
+	public boolean bTrace = true;
 	byte[] rawDataBuffer;
 	String savedAddress = "";
 	@Override
@@ -203,6 +203,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 					calendar.set(Calendar.MINUTE, 0);
 					calendar.set(Calendar.SECOND, 0);
 					calendar.set(Calendar.MILLISECOND, 0);
+					//calendar.setTimeZone(TimeZone.getDefault());
 					record.setDate(calendar);
 
 					record.setSteps((data[p + 1] * 100) + data[p + 2]);
@@ -216,7 +217,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 				} else {
 					p = 0;
 					Calendar calendar = Calendar.getInstance();
-					calendar.set(2000 + data[p], data[p + 1], data[p + 2]);
+					calendar.set(2000 + data[p], data[p + 1]-1, data[p + 2]);
 					calendar.set(Calendar.MINUTE, 0);
 					calendar.set(Calendar.SECOND, 0);
 					calendar.set(Calendar.MILLISECOND, 0);
@@ -256,7 +257,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 				p = 0;
 
 				sleepRecord.setGoToBedTime(Calendar.getInstance());
-				sleepRecord.getGoToBedTime().set(2000 + data[p], data[p + 1],
+				sleepRecord.getGoToBedTime().set(2000 + data[p], data[p + 1]-1,
 						data[p + 2]);
 				sleepRecord.getGoToBedTime().set(Calendar.HOUR_OF_DAY,
 						data[p + 3]);
@@ -285,8 +286,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 						data[p + 1]);
 				sleepRecord.getActualWakeupTime().set(Calendar.SECOND, 0);
 				sleepRecord.getGoToBedTime().set(Calendar.MILLISECOND, 0);
-				sleepRecord.getActualWakeupTime().setTimeZone(
-						TimeZone.getDefault());
+
 
 				p += 2;
 				sleepRecord.setPresetWakeupTime(Calendar.getInstance());
@@ -297,8 +297,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 						data[p + 1]);
 				sleepRecord.getPresetWakeupTime().set(Calendar.SECOND, 0);
 				sleepRecord.getGoToBedTime().set(Calendar.MILLISECOND, 0);
-				sleepRecord.getPresetWakeupTime().setTimeZone(
-						TimeZone.getDefault());
+
 
 				p += 2;
 				sleepRecord.setSleepEfficiency((data[p]));
@@ -341,7 +340,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	protected void onReadCurrentRecord(Record record) {
 		// TODO Auto-generated method stub
-
+		Log.v(TAG,"Current Record = "+record.toString());
 	}
 
 	protected static void printByteArray(byte value[], int start, int end) {
@@ -847,7 +846,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 		mService.EnableDeviceNoti(WristbandBLEService.PE128_NOTI_SERVICE,
 				WristbandBLEService.PE128_CHAR_STREAMING);
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
