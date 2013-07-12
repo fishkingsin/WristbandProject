@@ -23,7 +23,7 @@
 		        android:layout_centerInParent="true"
 		        android:layout_centerVertical="true"
 		        android:padding="10dp"
-		        android:src="@drawable/wireless_connection_icon_4" />
+		        android:background="@drawable/connectivity_animation" />
 
 		    <TextView
 		        android:id="@+id/titlebar_textview"

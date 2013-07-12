@@ -49,11 +49,11 @@
             android:key="@string/pref_targetActivity"
             android:title="@string/Daily_Activity_Target_mins" />
 
-        <CheckBoxPreference
+        <!-- <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pref_enable_rotation_view"
             android:title="@string/enable_rotation_view" >
-        </CheckBoxPreference>
+        </CheckBoxPreference> -->
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pref_toggle_target"

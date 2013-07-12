@@ -1,0 +1,16 @@
+<animation-list
+     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/connectivity_icon"
+    android:oneshot="false" >
+
+    <item
+        android:drawable="@drawable/wireless_connection_icon_1"
+        android:duration="500"/>
+    <item
+        android:drawable="@drawable/wireless_connection_icon_2"
+        android:duration="500"/>
+    <item
+        android:drawable="@drawable/wireless_connection_icon_3"
+        android:duration="500"/>
+
+</animation-list>
