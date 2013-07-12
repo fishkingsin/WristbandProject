@@ -597,13 +597,31 @@ public class Main extends BLEBaseFragmentActivity implements
 	String mStatisticType = "";
 
 	Context mContext;
+	private int incomingActivityTime = 0;
+	private int incomingSteps = 0;
+	private int incomingCalories = 0;
+	private float incomingDistance = 0;
 	Integer connectivity_images[] = { R.drawable.wireless_connection_icon_0,
 			R.drawable.wireless_connection_icon_1,
 			R.drawable.wireless_connection_icon_2,
 			R.drawable.wireless_connection_icon_3,
 			R.drawable.wireless_connection_icon_4 };
 
-	private CountDownTimer mCountDownTimer;
+	private CountDownTimer mBackgroundTimer = new CountDownTimer(1000 * 60 * 5,
+			1000) {
+
+		public void onFinish() {
+			Log.v(TAG, "5 mins pass finish app");
+			disconnect();
+			finish();
+		}
+
+		@Override
+		public void onTick(long millisUntilFinished) {
+			// TODO Auto-generated method stub
+
+		}
+	};
 
 	private CountDownTimer mStreamModeTimeout = new CountDownTimer(1000 * 5,
 			1000) {
@@ -650,7 +668,80 @@ public class Main extends BLEBaseFragmentActivity implements
 
 		}
 	};
-	private CountDownTimer mSyncingTimeout = new CountDownTimer(1000 * 60, 1000) {
+
+	private CountDownTimer mDBStoringTimer = new CountDownTimer(1000 * 5, 1000) {
+
+		
+
+		public void onFinish() {
+			Log.v(TAG,"mDBStoringTimer : Start");
+			isStoringTimerStarted = false;
+			try {
+				//get current hour
+				Calendar currentHour = Calendar.getInstance();
+				currentHour.set(Calendar.MINUTE, 0);
+				currentHour.set(Calendar.SECOND, 0);
+				currentHour.set(Calendar.MILLISECOND, 0);
+				Log.v(TAG,"mDBStoringTimer : currentHour : "+Utilities.getSimpleDateForamt().format(currentHour.getTime()));
+				//get 00:00
+				Calendar start = Calendar.getInstance();
+				start.set(Calendar.HOUR_OF_DAY, 0);
+				start.set(Calendar.MINUTE, 0);
+				start.set(Calendar.SECOND, 0);
+				start.set(Calendar.MILLISECOND, 0);
+				Log.v(TAG,"mDBStoringTimer : startHour : "+Utilities.getSimpleDateForamt().format(start.getTime()));
+				//get last hour
+				Calendar end = Calendar.getInstance();
+				end.set(Calendar.HOUR_OF_DAY, currentHour.get(Calendar.HOUR_OF_DAY)-1);
+				end.set(Calendar.MINUTE, 0);
+				end.set(Calendar.SECOND, 0);
+				end.set(Calendar.MILLISECOND, 0);
+				Log.v(TAG,"mDBStoringTimer : endHour : "+Utilities.getSimpleDateForamt().format(end.getTime()));
+				DatabaseHandler db = new DatabaseHandler(mContext,
+						Main.TABLE_CONTENT, null, 1);
+				//retrieve sum of the record of the previour time 
+				Record lastrecord = db.getSumOfRecordByRange(start, end);
+				int currentActivityTime = 0;
+				int currentSteps = 0;
+				int currentCalories = 0;
+				float currentDistance =0;
+				if(lastrecord!=null)
+				{
+					Log.v(TAG,"mDBStoringTimer : lastRecord : "+lastrecord.toString());
+				
+					currentActivityTime = incomingActivityTime - lastrecord.getActivityTime();
+					currentSteps = incomingSteps - lastrecord.getSteps();
+					currentCalories = incomingCalories - lastrecord.getCalories();
+					currentDistance = incomingDistance - lastrecord.getDistance();
+				}
+				else
+				{
+					currentActivityTime = incomingActivityTime;
+					currentSteps = incomingSteps;
+					currentCalories = incomingCalories;
+					currentDistance = incomingDistance;
+				}
+				
+				Record currentRecord = new Record(currentHour.getTimeInMillis(), currentActivityTime, currentSteps,
+						currentCalories, currentCalories );
+				Log.v(TAG,"mDBStoringTimer : currentRecord : "+currentRecord.toString());
+				//update the current record
+				db.updateRecord(currentRecord);
+
+			} catch (Exception e) {
+				Log.e(TAG, "mStreamTimeout :" + e.toString());
+
+			}
+		}
+
+		@Override
+		public void onTick(long millisUntilFinished) {
+			// TODO Auto-generated method stub
+
+		}
+	};
+
+	private CountDownTimer mSyncingTimeout = new CountDownTimer(1000 * 5, 1000) {
 
 		public void onFinish() {
 			Log.v(TAG, "mSyncingTimeout");
@@ -698,6 +789,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	private boolean canRotateView;
 
 	private SleepRecord sleepRecord = null;
+	private boolean isStoringTimerStarted = false;
 
 	final static private long ONE_SECOND = 1000;
 	final static private long TWENTY_SECONDS = ONE_SECOND * 20;
@@ -1058,8 +1150,8 @@ public class Main extends BLEBaseFragmentActivity implements
 			// You just came from the background
 			inBackground = false;
 
-			if (mCountDownTimer != null)
-				mCountDownTimer.cancel();
+			if (mBackgroundTimer != null)
+				mBackgroundTimer.cancel();
 			Log.v(TAG, "I think i am coming back from background");
 		} else {
 			// You just returned from another activity within your own app
@@ -1069,7 +1161,8 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	public void onDestroy() {
-
+		mDBStoringTimer.cancel();
+		mSyncingTimeout.cancel();
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
@@ -1084,19 +1177,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 		if (inBackground) {
 
-			mCountDownTimer = new CountDownTimer(1000 * 60 * 5, 1000) {
-
-				public void onFinish() {
-					Log.v(TAG, "5 mins pass finish app");
-					disconnect();
-				}
-
-				@Override
-				public void onTick(long millisUntilFinished) {
-					// TODO Auto-generated method stub
-
-				}
-			}.start();
+			mBackgroundTimer.start();
 			Log.v(TAG, "I think i am going into background");
 		} else {
 
@@ -1306,6 +1387,11 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onStreamMessage(int steps, int calories, float distance,
 			int activityTime, int batteryLevel) {
+		if (!isStoringTimerStarted) {
+			isStoringTimerStarted = true;
+			mDBStoringTimer.start();
+
+		}
 		this.mStreamModeTimeout.cancel();
 		this.mStreamModeTimeout.start();
 		// TODO Auto-generated method stub
@@ -1316,9 +1402,11 @@ public class Main extends BLEBaseFragmentActivity implements
 		s += "distance : " + distance + "\n";
 		s += "activityTime : " + activityTime + "\n";
 		s += "batteryLevel : " + batteryLevel + "\n";
-
+		incomingActivityTime = steps;
+		incomingSteps = steps;
+		incomingCalories = calories;
+		incomingDistance = distance;
 		try {
-
 			mFrag.onStreamMessage(steps, calories, distance, activityTime,
 					batteryLevel);
 		} catch (Exception e) {
@@ -1498,32 +1586,36 @@ public class Main extends BLEBaseFragmentActivity implements
 		// TODO Auto-generated method stub
 		mStartUpState = WristbandStartupConstant.GET_SOFTWARE_VERSION;
 		pd.dismiss();
-		new AlertDialog.Builder(this)
-				.setTitle("Read Data Failed")
-				.setMessage("Reconnected?")
-				.setPositiveButton(R.string.popup_retry,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-								// continue with delete
-								connect();
-							}
-						})
-				.setNegativeButton(R.string.popup_quite,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
-								// do nothing
-								finish();
-							}
-						})
-				.setNeutralButton(R.string.cancel,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int which) {
+		try {
+			new AlertDialog.Builder(this)
+					.setTitle("Read Data Failed")
+					.setMessage("Reconnected?")
+					.setPositiveButton(R.string.popup_retry,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// continue with delete
+									connect();
+								}
+							})
+					.setNegativeButton(R.string.popup_quite,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// do nothing
+									finish();
+								}
+							})
+					.setNeutralButton(R.string.cancel,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
 
-							}
-						}).show();
+								}
+							}).show();
+		} catch (Exception e) {
+			Log.e(TAG, e.toString());
+		}
 		checkState(mStartUpState);
 	}
 
@@ -1594,32 +1686,36 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onConnectionTimeout() {
 		if (!this.isDestroyed()) {
-			new AlertDialog.Builder(this)
-					.setTitle(R.string.connection_time_out)
-					.setMessage(R.string.do_you_want_to_reconnect)
-					.setPositiveButton(R.string.popup_retry,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int which) {
-									// continue with delete
-									connect();
-								}
-							})
-					.setNegativeButton(R.string.popup_quite,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int which) {
-									// do nothing
-									finish();
-								}
-							})
-					.setNeutralButton(R.string.cancel,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int which) {
+			try {
+				new AlertDialog.Builder(this)
+						.setTitle(R.string.connection_time_out)
+						.setMessage(R.string.do_you_want_to_reconnect)
+						.setPositiveButton(R.string.popup_retry,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
+										// continue with delete
+										connect();
+									}
+								})
+						.setNegativeButton(R.string.popup_quite,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
+										// do nothing
+										finish();
+									}
+								})
+						.setNeutralButton(R.string.cancel,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
 
-								}
-							}).show();
+									}
+								}).show();
+			} catch (Exception e) {
+				Log.e(TAG, e.toString());
+			}
 		}
 		super.onConnectionTimeout();
 	}
@@ -1631,6 +1727,9 @@ public class Main extends BLEBaseFragmentActivity implements
 	}
 
 	private void checkState(int state) {
+		//every time call check stats  restrat mSyncingTimeout
+		mSyncingTimeout.cancel();
+		mSyncingTimeout.start();
 		switch (state) {
 		case WristbandStartupConstant.DISCONNECT:
 
@@ -1803,21 +1902,24 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	public void onBackPressed() {
-
-		new AlertDialog.Builder(this)
-				.setIcon(android.R.drawable.ic_dialog_alert)
-				.setTitle(R.string.popup_title)
-				.setMessage(R.string.popup_message)
-				.setPositiveButton(R.string.popup_yes,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								disconnect();
-								finish();
-							}
-						}).setNegativeButton(R.string.popup_no, null).show();
-
+		try {
+			new AlertDialog.Builder(this)
+					.setIcon(android.R.drawable.ic_dialog_alert)
+					.setTitle(R.string.popup_title)
+					.setMessage(R.string.popup_message)
+					.setPositiveButton(R.string.popup_yes,
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									disconnect();
+									finish();
+								}
+							}).setNegativeButton(R.string.popup_no, null)
+					.show();
+		} catch (Exception e) {
+			Log.e(TAG, e.toString());
+		}
 	}
 
 	@Override
