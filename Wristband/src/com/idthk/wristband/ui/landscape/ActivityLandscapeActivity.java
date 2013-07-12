@@ -32,7 +32,9 @@ public class ActivityLandscapeActivity extends LandscapeActivity {
 		setContentView(R.layout.landsape_main_activity);
 		super.onCreate(savedInstanceState);
 		
-
+		Calendar now = Calendar.getInstance();
+		
+		Utilities.targetDate().setTime(now.getTime());
 		displayType = ActivityStatisticTabFragment.TAB_DAY;
 		Utilities.publishGraph((Context)this , getWindow().getDecorView().getRootView(),
 				((ViewGroup) findViewById(R.id.graph1)),
