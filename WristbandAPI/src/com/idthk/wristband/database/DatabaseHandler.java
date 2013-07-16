@@ -790,11 +790,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 						if (cursor.getString(1) != null)
 							dateRange.add(cursor.getString(1));
-
-						// Log.v(TAG, cursor.getString(0));
-						// Log.v(TAG, cursor.getString(1));
-						// Log.v(TAG, "first date " + cursor.getString(0)
-						// + "\nlast date" + cursor.getString(1));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -957,12 +952,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				insert.bindLong(2, sleepPattern.getAmplitude() );
 				insert.bindLong(3, sleepPattern.getDuration() );
 				insert.bindLong(4, sleepPattern.getTime() );
-//				insert.bindLong(5, sleepRecord.getInBedTime());
-//				insert.bindLong(6, sleepRecord.getActualSleepTime() );
-//				insert.bindString(7, sqlDateFormat.format(sleepRecord.getGoToBedTime() ));
-//				insert.bindString(8, sqlDateFormat.format(sleepRecord.getActualWakeupTime() ));
-//				insert.bindString(9, sqlDateFormat.format(sleepRecord.getPresetWakeupTime() ));
-//				insert.bindLong(10, sleepRecord.getSleepEfficiency());
 				
 				insert.execute();
 				
