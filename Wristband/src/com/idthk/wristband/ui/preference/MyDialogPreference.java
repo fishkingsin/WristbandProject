@@ -33,11 +33,13 @@ public class MyDialogPreference extends DialogPreference {
 	@Override
 	protected void onDialogClosed(boolean positiveResult) {
 
-		persistBoolean(positiveResult);
+		 if(positiveResult) {
+		        persistBoolean(!getPersistedBoolean(true));
+		    }
 		Log.v("MyDialogPreference","positiveResult :"+positiveResult);
-		notifyChanged();
-		callChangeListener(positiveResult); 
-		super.onDialogClosed(positiveResult);
+//		notifyChanged();
+//		callChangeListener(positiveResult); 
+		
 	}
 
 }
