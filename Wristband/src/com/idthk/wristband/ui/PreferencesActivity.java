@@ -6,9 +6,11 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.preference.EditTextPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
@@ -69,6 +71,15 @@ public class PreferencesActivity extends Activity {
 			pref.setSummary(sharedPreferences.getString(
 					getString(R.string.pref_targetActivity), "0"));
 
+			
+			//set target distance
+			String key = getString(R.string.pref_targetDistances);
+			 pref = findPreference(getString(R.string.pref_targetDistances_display));
+			 float value = sharedPreferences.getFloat(
+					 key, 0);
+			 String format = "%.1f";
+			pref.setSummary(String.format(format,value));
+			
 			pref = findPreference(getString(R.string.pref_user_manual));
 			pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 				@Override
@@ -86,12 +97,18 @@ public class PreferencesActivity extends Activity {
 					return false;
 
 				}
+				
 			});
-			// boolean isWeekday =
-			// sharedPreferences.getBoolean(getString(R.string.pref_week_up_weekday),false);
-			// boolean isWeekend =
-			// sharedPreferences.getBoolean(getString(R.string.pref_week_up_weekend),false);
-
+			 String unitString = sharedPreferences.getString("prefUnit", "Metric");
+			 boolean isMetric = (unitString.equals("Metric"))?true:false;
+			if(isMetric)
+			{
+				convertMetricUnit();
+			}
+			else
+			{
+				convertImperialUnit();
+			}
 			pref = findPreference(getString(R.string.pref_unpair));
 			pref.setSummary(getString(R.string.serial)
 					+ "#:"
@@ -154,24 +171,120 @@ public class PreferencesActivity extends Activity {
 				boolean isWeekend = sharedPreferences.getBoolean(
 						getString(R.string.pref_week_up_weekend), false);
 
-				// PreferenceScreen prefScreen = (PreferenceScreen)
-				// findPreference(getString(R.string.pref_week_up_time));
-				// String summary=((isWeekday==true)?"Weekday":" ")+((isWeekend
-				// == false)?"Weekend":" ");
-				// // Log.v(TAG,"isWeekday "+isWeekday + " isWeekend "+isWeekday
-				// + "summary "+summary);
-				// prefScreen.setSummary(summary);
+			}else if(key.equals(getString(R.string.pref_targetDistances_display)))
+			{
+				
+				 pref = findPreference(key);
+				 String value = sharedPreferences.getString(
+						 key, "0");
+				//pref.setSummary(value);
+				
+				
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				String unitString = sharedPreferences.getString(key, "Metric");
+				 boolean isMetric = (unitString.equals("Metric"))?true:false;
+				if(isMetric)
+				{
+					editor.putFloat( getString(R.string.pref_targetDistances), Float.valueOf(value));
+				}else
+				{
+					editor.putFloat( getString(R.string.pref_targetDistances), Utilities.MI2KM(Float.valueOf(value)));
+				}
+				// Commit the edits!
+				editor.commit();
+				
+
+				
+			}
+			else if(key.equals(getString(R.string.pref_targetCalories)))
+			{
+				
+				 pref = findPreference(key);
+				 String value = sharedPreferences.getString(
+						 key, "0");
+				pref.setSummary(value);
+			}
+			else if(key.equals(getString(R.string.pref_targetSteps)))
+			{
+				
+				 pref = findPreference(key);
+				 String value = sharedPreferences.getString(
+						 key, "0");
+				pref.setSummary(value);
+			}
+			else if(key.equals("prefUnpair"))
+			{
+				boolean unpair = sharedPreferences.getBoolean(key, false);
+				
+				 pref = findPreference(key);
+				 if(unpair)
+				 {
+					 pref.setSummary(getString(R.string.serial)+"#:");
+				 }
+			}
+			else if(key.equals("prefUnit"))
+			{
+				
+				 pref = findPreference(key);
+				 String unitString = sharedPreferences.getString(key, "Metric");
+				 boolean isMetric = (unitString.equals("Metric"))?true:false;
+				if(isMetric)
+				{
+					convertMetricUnit();
+				}
+				else
+				{
+					convertImperialUnit();
+				}
 			}
 
-			// else if(key.equals(getString(R.string.target_step)))
-			// {
-			//
-			// pref.setSummary(sharedPreferences.getInt(
-			// getString(R.string.target_step),
-			// 10000));
-			//
-			// }
+		}
 
+		private void convertImperialUnit() {
+			SharedPreferences sharedPreferences = PreferenceManager
+					.getDefaultSharedPreferences(this.getActivity());
+			// TODO Auto-generated method stub
+			//set distance unit
+			Preference targetDistanceDisplayPref = findPreference(getString(R.string.pref_targetDistances_display));
+			Resources res = getResources();
+			String[] planets = res.getStringArray(R.array.distance_unit);
+			
+			float distance = sharedPreferences.getFloat(getString(R.string.pref_targetDistances),Float.valueOf(getString(R.string.defalut_target_distances)));
+			String format = "%.1f";
+			
+			targetDistanceDisplayPref.setTitle(getString(R.string.distances)+"("+planets[1]+")");
+			String value = String.format(format,Utilities.KM2MI(distance));
+			targetDistanceDisplayPref.setSummary(value);
+			
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+			editor.putString( value, getString(R.string.defalut_target_distances));
+			// Commit the edits!
+			editor.commit();
+			
+		}
+
+		private void convertMetricUnit() {
+			SharedPreferences sharedPreferences = PreferenceManager
+					.getDefaultSharedPreferences(this.getActivity());
+			// TODO Auto-generated method stub
+			Preference targetDistanceDisplayPref = findPreference(getString(R.string.pref_targetDistances_display));
+			
+			Resources res = getResources();
+			String[] planets = res.getStringArray(R.array.distance_unit);
+			float distance = sharedPreferences.getFloat(getString(R.string.pref_targetDistances),Float.valueOf(getString(R.string.defalut_target_distances)));
+			String format = ".1f%";
+			
+			targetDistanceDisplayPref.setTitle(getString(R.string.distances)+"("+planets[0]+")");
+			
+			String value = String.valueOf(distance);
+			targetDistanceDisplayPref.setSummary(value);
+			
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+			editor.putString( value, getString(R.string.defalut_target_distances));
+			// Commit the edits!
+			editor.commit();
+
+			
 		}
 	}
 }

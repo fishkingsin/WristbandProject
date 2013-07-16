@@ -22,7 +22,7 @@
 
     <PreferenceCategory android:title="@string/pref_user_profile" >
         <PreferenceScreen
-            android:key="prefUserProfile" 
+            android:key="prefUserProfile"
             android:title="@string/pref_user_profile" >
             <intent
                 android:action="android.intent.action.VIEW"
@@ -49,31 +49,33 @@
             android:key="@string/pref_targetActivity"
             android:title="@string/Daily_Activity_Target_mins" />
 
-        <!-- <CheckBoxPreference
+        <!--
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pref_enable_rotation_view"
             android:title="@string/enable_rotation_view" >
-        </CheckBoxPreference> -->
+        </CheckBoxPreference>
+        -->
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pref_toggle_target"
             android:title="@string/target" >
         </CheckBoxPreference>
 
-        <com.idthk.wristband.ui.preference.NumberPickerPreference
-            android:defaultValue="10000"
+        <EditTextPreference
+            android:inputType="number"
             android:key="@string/pref_targetSteps"
-            android:max="99999"
+            android:summary="10000"
             android:title="@string/steps" />
-        <com.idthk.wristband.ui.preference.NumberPickerPreference
-            android:defaultValue="7"
-            android:key="@string/pref_targetDistances"
-            android:max="99"
+        <com.idthk.wristband.ui.preference.MyEditTextPreference
+            android:inputType="number"
+            android:key="@string/pref_targetDistances_display"
+            android:summary="7"
             android:title="@string/distances" />
-        <com.idthk.wristband.ui.preference.NumberPickerPreference
-            android:defaultValue="1000"
+        <EditTextPreference
+            android:inputType="number"
             android:key="@string/pref_targetCalories"
-            android:max="99999"
+            android:summary="1000"
             android:title="@string/calories" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/sleep" >

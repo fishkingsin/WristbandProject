@@ -61,6 +61,7 @@
     <string name="pref_targetSteps">prefTargetSteps</string>
     <string name="pref_targetCalories">prefTargetCalories</string>
     <string name="pref_targetDistances">prefTargetDistances</string>
+    <string name="pref_targetDistances_display">prefTargetDistancesDisplay</string>
     <string name="pref_targetActivity">prefTargetActivity</string>
     <string name="pref_week_up_time">prefWeakUptime</string>
     <string name="pref_week_up_weekday">prefWeakUpWeekday</string>
