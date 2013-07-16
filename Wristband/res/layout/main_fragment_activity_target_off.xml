@@ -179,7 +179,7 @@
                     android:text="Distances ("
                     android:textAppearance="?android:attr/textAppearanceMedium" />
                 <TextView
-                    android:id="@+id/distanceUnitTextView"
+                    android:id="@+id/distanceUnitTextView1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
