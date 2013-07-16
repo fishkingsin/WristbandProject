@@ -25,6 +25,7 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.OrientationEventListener;
@@ -891,6 +892,10 @@ public class Main extends BLEBaseFragmentActivity implements
 		DatabaseHandler db = new DatabaseHandler(this, Main.TABLE_CONTENT,
 				null, 1);
 
+		getRecordRange(db);
+	}
+	private void getRecordRange(DatabaseHandler db)
+	{
 		List<String> cal = db.getRecordRange();
 		if (cal.size() > 0) {
 
@@ -1304,6 +1309,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	public void onServiceDiscovered() {
 
 		super.onServiceDiscovered();
+		
 		setUiState();
 		showMessage("Service Discovered");
 
@@ -1319,13 +1325,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		editor.commit();
 		mStartUpState = WristbandStartupConstant.CONNECT;
 
-		try {
-			pd.setTitle(R.string.syncing_device);
-			pd.setMessage(getString(R.string.please_wait));
-			pd.show();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		
 		try {
 			Thread.sleep(4000);
 		} catch (InterruptedException e) {
@@ -1634,6 +1634,9 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 		mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
 		checkState(mStartUpState);
+		
+
+		getRecordRange(db);
 	}
 
 	public static boolean isApplicationBroughtToBackground(
@@ -1762,12 +1765,12 @@ public class Main extends BLEBaseFragmentActivity implements
 								getString(R.string.pref_targetActivity), "30")),
 						(sharedPreferences.getBoolean(
 								getString(R.string.pref_toggle_target), false)) ? 0
-								: 1, sharedPreferences.getInt(
-								getString(R.string.pref_targetSteps), 10000),
-						sharedPreferences.getInt(
-								getString(R.string.pref_targetDistances), 7),
-						sharedPreferences.getInt(
-								getString(R.string.pref_targetCalories), 1000));
+								: 1, Integer.valueOf(sharedPreferences.getString(
+								getString(R.string.pref_targetSteps), "10000")),
+								Integer.valueOf( (int) sharedPreferences.getFloat(
+								getString(R.string.pref_targetDistances), 7)),
+								 Integer.valueOf(sharedPreferences.getString(
+								getString(R.string.pref_targetCalories), "1000")));
 			} catch (Exception e) {
 				new AlertDialog.Builder(this)
 						.setTitle("Something wrong happen")
@@ -1985,7 +1988,38 @@ public class Main extends BLEBaseFragmentActivity implements
 			String key) {
 		Log.v(TAG, "onSharedPreferenceChanged " + key);
 		// TODO Auto-generated method stub
-		
+		if (key.equals(getString(R.string.prefUnit)))
+		{
+			Log.v(TAG,"key.equals(getString(R.string.prefUnit)");
+			//TO DO
+			String unitString = sharedPreferences.getString(key, "Metric");
+			boolean isMetric = (unitString.equals("Metric"))?true:false;
+			//chnage preference when unit changed
+			
+//			SharedPreferences prefs = PreferenceManager
+//					.getDefaultSharedPreferences(this);
+			int oldHeight = sharedPreferences.getInt("prefHeight", 0);
+			int oldWeight = sharedPreferences.getInt("prefWeight", 0);
+			
+			//Metric/Imperial
+			
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+			
+			editor.putInt("prefHeight", 0);
+			editor.putInt("prefWeight", 0);
+
+			// Commit the edits!
+			editor.commit();
+
+			
+		}
+		else if(key.equals("prefUnpair"))
+		{
+			if(sharedPreferences.getBoolean(key, false))
+			{
+				disconnect();
+			}
+		}
 
 	}
 

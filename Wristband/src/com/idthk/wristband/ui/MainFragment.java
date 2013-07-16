@@ -21,6 +21,7 @@ import java.util.Calendar;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -89,12 +90,13 @@ public class MainFragment extends Fragment implements
 	// private TextView lastSyncTimeTv;
 	static private int targetSteps = 1;
 	static private int targetCalories = 1;
-	static private int targetDistances = 1;
+	static private float targetDistances = 1.0f;
 
 	private Integer currentActivityTime = 0;
 	private float currentDistanceProgress = 0;
 	private Integer currentCalories = 0;
 	private Integer currentSteps = 0;
+	private boolean isMetric = true;
 	/**
 	 * Factory method for this fragment class. Constructs a new fragment for the
 	 * given page number.
@@ -277,14 +279,19 @@ public class MainFragment extends Fragment implements
 			int targetActivity = Integer.valueOf(prefs.getString(
 					getString(R.string.pref_targetActivity), "30"));
 
-			targetSteps = prefs.getInt(getString(R.string.pref_targetSteps),
-					Integer.valueOf(getString(R.string.defalut_target_steps)));
-			targetCalories = prefs
-					.getInt(getString(R.string.pref_targetCalories),
-							Integer.valueOf(getString(R.string.defalut_target_calories)));
-			targetDistances = prefs
-					.getInt(getString(R.string.pref_targetDistances),
-							Integer.valueOf(getString(R.string.defalut_target_distances)));
+			targetSteps = Integer.valueOf(prefs.getString(getString(R.string.pref_targetSteps),
+					getString(R.string.defalut_target_steps)));
+			targetCalories = Integer.valueOf(prefs
+					.getString(getString(R.string.pref_targetCalories),
+							getString(R.string.defalut_target_calories)));
+			
+			
+			String value = prefs.getString(
+					getString(R.string.pref_targetDistances_display),getString(R.string.defalut_target_distances));
+			
+			targetDistances = (!value.equals(""))?Float.valueOf(value):0;
+					
+			
 
 			if (m_activityTimeProgressBar != null)
 				m_activityTimeProgressBar.setTarget(targetActivity);
@@ -297,14 +304,32 @@ public class MainFragment extends Fragment implements
 
 			goalStepsTv = ((TextView) mRootView
 					.findViewById(R.id.goal_steps_indicat_textview));
-			goalStepsTv.setText("" + targetSteps);
+			goalStepsTv.setText(String.valueOf(targetSteps));
 			goalCaloriesTv = ((TextView) mRootView
 					.findViewById(R.id.goal_calories_indicate_textview));
-			goalCaloriesTv.setText("" + targetCalories);
+			goalCaloriesTv.setText(String.valueOf(targetCalories));
 			goalDistancesTv = ((TextView) mRootView
 					.findViewById(R.id.goal_distances_indicat_textview));
-			goalDistancesTv.setText("" + targetDistances);
-
+			String format = "%.1f";
+			goalDistancesTv.setText(String.format(format,targetDistances));
+			
+			//new 
+			String unitString = prefs.getString(getString(R.string.prefUnit), "Metric");
+			isMetric = (unitString.equals("Metric"))?true:false;
+			TextView tv1 = ((TextView)mRootView.findViewById(R.id.distanceUnitTextView1)) ;
+			TextView tv2 = ((TextView)mRootView.findViewById(R.id.distanceUnitTextView2)) ;
+			if(isMetric)
+			{
+				tv2.setText("km");
+				tv1.setText("km");
+			}
+			else
+			{
+				
+				tv1.setText("mi");
+				tv2.setText("mi");
+			}
+			
 		} else {
 			Calendar datetime = Calendar.getInstance();
 
@@ -396,17 +421,28 @@ public class MainFragment extends Fragment implements
 				mNonTargetView.setVisibility((target) ? View.GONE
 						: View.VISIBLE);
 			} else if (key.equals(getString(R.string.pref_targetSteps))) {
-				targetSteps = sharedPreferences.getInt(
-						getString(R.string.pref_targetSteps), 0);
+				targetSteps = Integer.valueOf(sharedPreferences.getString(
+						getString(R.string.pref_targetSteps), "0"));
 				goalStepsTv.setText(Integer.toString(targetSteps));
 			} else if (key.equals(getString(R.string.pref_targetCalories))) {
-				targetCalories = sharedPreferences.getInt(
-						getString(R.string.pref_targetCalories), 0);
+				targetCalories = Integer.valueOf(sharedPreferences.getString(
+						getString(R.string.pref_targetCalories), "0"));
 				goalCaloriesTv.setText(Integer.toString(targetCalories));
-			} else if (key.equals(getString(R.string.pref_targetDistances))) {
-				targetDistances = sharedPreferences.getInt(
-						getString(R.string.pref_targetDistances), 0);
-				goalDistancesTv.setText(Integer.toString(targetDistances));
+			} else if (key.equals(getString(R.string.pref_targetDistances_display))) {
+//				float value = Float.valueOf(sharedPreferences.getFloat(
+//						getString(R.string.pref_targetDistances), 7));
+				
+//				targetDistances = (isMetric)?value:Utilities.KM2MI(value);
+				
+				String value = sharedPreferences.getString(
+						getString(R.string.pref_targetDistances_display),getString(R.string.defalut_target_distances));
+				targetDistances = Float.valueOf(value);
+
+				goalDistancesTv.setText(Float.toString(targetDistances));
+				
+				
+				
+				
 			} else if (key.equals(getString(R.string.pref_targetActivity))) {
 				int targetActivity = Integer.valueOf(sharedPreferences
 						.getString(getString(R.string.pref_targetActivity),
@@ -418,8 +454,34 @@ public class MainFragment extends Fragment implements
 					Log.e(TAG, "On error " + errr.getMessage());
 				}
 			} else if (key.equals(getString(R.string.pref_user_name))) {
+				
+			} else if (key.equals(getString(R.string.prefUnit)))
+			{
+				Log.v(TAG,"key.equals(getString(R.string.prefUnit)");
+				//TO DO
+				String unitString = sharedPreferences.getString(key, "Metric");
+				isMetric = (unitString.equals("Metric"))?true:false;
+				TextView tv1 = ((TextView)mRootView.findViewById(R.id.distanceUnitTextView1)) ;
+				TextView tv2 = ((TextView)mRootView.findViewById(R.id.distanceUnitTextView2)) ;
+				targetDistances = sharedPreferences.getFloat(getString(R.string.pref_targetDistances),0);
+				if(isMetric)
+				{
+					tv2.setText("km");
+					tv1.setText("km");
+					goalDistancesTv.setText(Float.toString(targetDistances));
+				}
+				else
+				{
+					
+					tv1.setText("mi");
+					tv2.setText("mi");
+					goalDistancesTv.setText(Float.toString(Utilities.KM2MI(targetDistances)));
+				}
+				
 
-			} else {
+			}
+			else {
+			
 
 			}
 		} else if (mPageNumber == 1) {
@@ -474,7 +536,7 @@ public class MainFragment extends Fragment implements
 		currentSteps = steps;
 		currentCalories = calories;
 		currentActivityTime = activityTime;
-		currentDistanceProgress = distance;
+		currentDistanceProgress = (float) ((isMetric)?Utilities.KM2MI(distance):distance);
 		if (mPageNumber == 0) {
 			
 			if (mStepsProgressBar != null)
@@ -493,19 +555,21 @@ public class MainFragment extends Fragment implements
 			if (mTargetCaloriesIndicatedTV != null)
 				mTargetCaloriesIndicatedTV.setText(String
 						.valueOf(currentCalories));
+			
+			String format = "%.1f";
 			if (mTargetDistancesIndicatedTV != null)
-				mTargetDistancesIndicatedTV.setText(String
-						.valueOf(currentDistanceProgress));
+				mTargetDistancesIndicatedTV.setText(String.format(format,currentDistanceProgress));
 
 			if (mTargetDistancesIndicatedTV != null)
 				mStepIndicatedTV.setText(String.valueOf(currentSteps));
 			if (mCaloriesIndicatedTV != null)
 				mCaloriesIndicatedTV.setText(String.valueOf(currentCalories));
 			if (mDistancesIndicatedTV != null)
-				mDistancesIndicatedTV.setText(String
-						.valueOf(currentDistanceProgress));
+				mDistancesIndicatedTV.setText(String.format(format,currentDistanceProgress));
 		}
 
 	}
+
+	
 
 }
