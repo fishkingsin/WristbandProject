@@ -199,7 +199,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 					Record record = new Record();
 					Calendar calendar = Calendar.getInstance();
 
-					calendar.set(Calendar.HOUR, (int) (data[p]));
+					calendar.set(Calendar.HOUR_OF_DAY, (int) (data[p]));
 					calendar.set(Calendar.MINUTE, 0);
 					calendar.set(Calendar.SECOND, 0);
 					calendar.set(Calendar.MILLISECOND, 0);
@@ -222,9 +222,10 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 					calendar.set(Calendar.SECOND, 0);
 					calendar.set(Calendar.MILLISECOND, 0);
 					p = 3;
+					
 					while ((p + 8) <= (data.length)) {
-
-						calendar.set(Calendar.HOUR, (int) (data[p]));
+						printByteArray(data,p,p+8);
+						calendar.set(Calendar.HOUR_OF_DAY, (int) (data[p]));
 
 						int steps = (data[p + 1] * 100) + data[p + 2];
 						float distance = (float) (data[p + 3] + (data[p + 4] * 0.01));
@@ -234,11 +235,10 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 						Record record = new Record(calendar.getTimeInMillis(),
 								activityTime);
 
-						record.setSteps(record.getSteps() + steps);
-						record.setDistance(record.getDistance() + distance);
-						record.setCalories(record.getCalories() + calories);
-						record.setActivityTime(record.getActivityTime()
-								+ activityTime);
+						record.setSteps( steps);
+						record.setDistance( distance);
+						record.setCalories( calories);
+						
 
 						p += 9;
 						pedometerData.add(record);
