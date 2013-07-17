@@ -25,6 +25,7 @@ public class DatePreference extends DialogPreference implements
 
   public DatePreference(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
+    
   }
 
   public DatePreference(Context context, AttributeSet attrs) {
@@ -172,6 +173,10 @@ public class DatePreference extends DialogPreference implements
   private void persistDate(String s) {
     persistString(s);
     setSummary(summaryFormatter().format(getDate().getTime()));
+  }
+  public void setSummary()
+  {
+	  setSummary(summaryFormatter().format(getDate().getTime()));
   }
 
   /**
