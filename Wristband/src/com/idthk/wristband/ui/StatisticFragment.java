@@ -96,7 +96,7 @@ public class StatisticFragment extends Fragment implements
 			checkButtonVisible();
 
 		} catch (Exception e) {
-			Log.v(TAG, e.getMessage());
+			Utilities.getLog(TAG, e.getMessage());
 		}
 		Utilities.publishGraph(getActivity(), mRootView,
 				((ViewGroup) mRootView.findViewById(R.id.graph1)), message);
@@ -132,7 +132,7 @@ public class StatisticFragment extends Fragment implements
 
 	@Override
 	public void onResume() {
-		Log.v(TAG, "on publish graph");
+		Utilities.getLog(TAG, "on publish graph");
 		super.onResume();
 		Utilities.publishGraph(getActivity(), mRootView,
 				((ViewGroup) mRootView.findViewById(R.id.graph1)), message);

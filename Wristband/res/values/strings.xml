@@ -68,6 +68,10 @@
     <string name="pref_week_up_weekend">prefWeakupWeekend</string>
     <string name="pref_actually_fall_as_sleep">prefFallAsSleep</string>
     <string name="pref_sleep_duration">prefSleepDuration</string>
+    <string name="prefDateOfBirth">prefDateOfBirth</string>
+    <string name="prefUnit">prefUnit</string>
+    
+    
     <string name="prefUnit">prefUnit</string>
     
     <string name="connecttomobile_content">Press and hold the button (for 5 seconds) until the LED indicator blink in blue.</string>
@@ -102,6 +106,10 @@
     <string name="pref_user_gender_dialogtitle">Select a gender</string>
     <string name="pref_date_of_birth_title">Date of birth</string>
     <string name="pref_user_height_title">Height(cm)</string>
+    <string name="prefHeightDisplay">prefHeightDisplay</string>
+    <string name="prefHeight">prefHeight</string>
+    <string name="prefWeightDisplay">prefWeightDisplay</string>
+    <string name="prefWeight">prefWeight</string>
     <string name="pref_user_weight_title">Width(kg)</string>
     <string name="pref_unit_title">Unit</string>
     <string name="default_unit">Metric</string>
@@ -134,7 +142,7 @@
     <string name="enable_rotation_view">Enable Rotation</string>
     <string name="unknown">Unknown</string>
     <string name="steps">Steps</string>
-    <string name="calories">Calories</string>
+    <string name="calories">Calories(kcal)</string>
     <string name="distances">Distances</string>
     <string name="default_distance_unit">km</string>
     <string name="zero">0</string>
@@ -170,6 +178,10 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="pref_unpair">prefUnpair</string>
+    <string name="prefUserGender">prefUserGender</string>
+    <string name="prefUnpair">prefUnpair</string>
+    <string name="prefUnpairSerial">prefUnpairSerial</string>
+    
     <string name="pairing">Pairing</string>
     <string name="pref_in_bed_time">prefInBedTime</string>
     <string name="weekday_wakeup_time">Weekday wake up time</string>

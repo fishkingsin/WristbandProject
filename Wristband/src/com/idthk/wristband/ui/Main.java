@@ -608,7 +608,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			1000) {
 
 		public void onFinish() {
-			Log.v(TAG, "5 mins pass finish app");
+			Utilities.getLog(TAG, "5 mins pass finish app");
 			disconnect();
 			finish();
 		}
@@ -624,8 +624,8 @@ public class Main extends BLEBaseFragmentActivity implements
 			1000) {
 
 		public void onFinish() {
-			try {
-				Log.v(TAG, "mStreamModeTimeout");
+/**			try {
+				Utilities.getLog(TAG, "mStreamModeTimeout");
 
 				new AlertDialog.Builder(mContext)
 						.setTitle(R.string.stream_mode_timeout)
@@ -633,10 +633,10 @@ public class Main extends BLEBaseFragmentActivity implements
 						.setPositiveButton(R.string.popup_retry,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
-											int which) {
+											int which) {**/
 										disconnect();
 										connect();
-									}
+									/**}
 								})
 						.setNegativeButton(R.string.popup_quite,
 								new DialogInterface.OnClickListener() {
@@ -656,7 +656,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			} catch (Exception e) {
 				Log.e(TAG, "mStreamTimeout :" + e.toString());
 
-			}
+			}**/
 		}
 
 		@Override
@@ -669,8 +669,8 @@ public class Main extends BLEBaseFragmentActivity implements
 	private CountDownTimer mDBStoringTimer = new CountDownTimer(1000 * 5, 1000) {
 
 		public void onFinish() {
-			Log.v(TAG, "mDBStoringTimer : Start");
-			Log.v(TAG, "------------------------------------------------");
+			Utilities.getLog(TAG, "mDBStoringTimer : Start");
+			Utilities.getLog(TAG, "------------------------------------------------");
 			isStoringTimerStarted = false;
 			try {
 				// get current hour
@@ -678,7 +678,7 @@ public class Main extends BLEBaseFragmentActivity implements
 				currentHour.set(Calendar.MINUTE, 0);
 				currentHour.set(Calendar.SECOND, 0);
 				currentHour.set(Calendar.MILLISECOND, 0);
-				Log.v(TAG,
+				Utilities.getLog(TAG,
 						"mDBStoringTimer : currentHour : "
 								+ Utilities.getSimpleDateForamt().format(
 										currentHour.getTime()));
@@ -688,7 +688,7 @@ public class Main extends BLEBaseFragmentActivity implements
 				start.set(Calendar.MINUTE, 0);
 				start.set(Calendar.SECOND, 0);
 				start.set(Calendar.MILLISECOND, 0);
-				Log.v(TAG,
+				Utilities.getLog(TAG,
 						"mDBStoringTimer : startHour : "
 								+ Utilities.getSimpleDateForamt().format(
 										start.getTime()));
@@ -699,7 +699,7 @@ public class Main extends BLEBaseFragmentActivity implements
 				end.set(Calendar.MINUTE, 0);
 				end.set(Calendar.SECOND, 0);
 				end.set(Calendar.MILLISECOND, 0);
-				Log.v(TAG, "mDBStoringTimer : endHour : "
+				Utilities.getLog(TAG, "mDBStoringTimer : endHour : "
 						+ Utilities.getSimpleDateForamt().format(end.getTime()));
 				DatabaseHandler db = new DatabaseHandler(mContext,
 						Main.TABLE_CONTENT, null, 1);
@@ -711,7 +711,7 @@ public class Main extends BLEBaseFragmentActivity implements
 				float currentDistance = 0;
 				if (lastrecords.size() > 0) {
 					Record lastrecord = lastrecords.get(0);
-					Log.v(TAG,
+					Utilities.getLog(TAG,
 							"mDBStoringTimer : lastRecord : "
 									+ lastrecord.toString());
 
@@ -732,7 +732,7 @@ public class Main extends BLEBaseFragmentActivity implements
 				Record currentRecord = new Record(
 						currentHour.getTimeInMillis(), currentActivityTime,
 						currentSteps, currentCalories, currentCalories);
-				Log.v(TAG,
+				Utilities.getLog(TAG,
 						"mDBStoringTimer : currentRecord : "
 								+ currentRecord.toString());
 				// update the current record
@@ -745,7 +745,7 @@ public class Main extends BLEBaseFragmentActivity implements
 				Log.e(TAG, "mStreamTimeout :" + e.toString());
 
 			}
-			Log.v(TAG, "------------------------------------------------");
+			Utilities.getLog(TAG, "------------------------------------------------");
 		}
 
 		@Override
@@ -758,18 +758,18 @@ public class Main extends BLEBaseFragmentActivity implements
 	private CountDownTimer mSyncingTimeout = new CountDownTimer(1000 * 5, 1000) {
 
 		public void onFinish() {
-			Log.v(TAG, "mSyncingTimeout");
+			Utilities.getLog(TAG, "mSyncingTimeout");
 			pd.dismiss();
-			new AlertDialog.Builder(mContext)
+			/**new AlertDialog.Builder(mContext)
 					.setTitle(R.string.sync_data_timeout)
 					.setMessage(getString(R.string.reconnect))
 					.setPositiveButton(R.string.popup_retry,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
-										int which) {
+										int which) {**/
 									disconnect();
 									connect();
-								}
+								/**}
 							})
 					.setNegativeButton(R.string.popup_quite,
 							new DialogInterface.OnClickListener() {
@@ -785,7 +785,7 @@ public class Main extends BLEBaseFragmentActivity implements
 										int which) {
 									disconnect();
 								}
-							}).show();
+							}).show();**/
 		}
 
 		@Override
@@ -1020,7 +1020,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	public void prepareToConnect() {
-		Log.v(TAG, "prepareToConnect");
+		Utilities.getLog(TAG, "prepareToConnect");
 		if (!firstTime) {
 
 			connect();
@@ -1031,7 +1031,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-		Log.v(TAG, "requestCode " + requestCode + " resultCode " + resultCode);
+		Utilities.getLog(TAG, "requestCode " + requestCode + " resultCode " + resultCode);
 		if (requestCode == USER_PREFERENCES_REQUEST) {
 			isInPreferenceActivity = false;
 			if (mTabHost != null) {
@@ -1109,7 +1109,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	}
 
 	public void initUI() {
-		Log.v(TAG, "initUI");
+		Utilities.getLog(TAG, "initUI");
 	}
 
 	@Override
@@ -1175,10 +1175,10 @@ public class Main extends BLEBaseFragmentActivity implements
 
 			if (mBackgroundTimer != null)
 				mBackgroundTimer.cancel();
-			Log.v(TAG, "I think i am coming back from background");
+			Utilities.getLog(TAG, "I think i am coming back from background");
 		} else {
 			// You just returned from another activity within your own app
-			Log.v(TAG, "returned from another activity within your own app");
+			Utilities.getLog(TAG, "returned from another activity within your own app");
 		}
 	}
 
@@ -1202,7 +1202,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		if (inBackground) {
 			mStreamModeTimeout.cancel();
 			mBackgroundTimer.start();
-			Log.v(TAG, "I think i am going into background");
+			Utilities.getLog(TAG, "I think i am going into background");
 		} else {
 
 		}
@@ -1215,7 +1215,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	public void onStatisticPagerChangedCallback(int page) {
-		Log.v(TAG, "onStatisticPagerChangedCallback " + page);
+		Utilities.getLog(TAG, "onStatisticPagerChangedCallback " + page);
 		if (findViewById(R.id.titlebar_textview) != null) {
 			// TODO Auto-generated method stub
 			if (page == 0) {
@@ -1238,7 +1238,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	private void showMessage(String msg) {
 
-		Log.v(TAG, msg);
+		Utilities.getLog(TAG, msg);
 
 	}
 
@@ -1318,7 +1318,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = prefs.edit();
-		Log.v(TAG, "Set " + getString(R.string.pref_last_sync_time) + " "
+		Utilities.getLog(TAG, "Set " + getString(R.string.pref_last_sync_time) + " "
 				+ Utilities.getCurrentDate());
 		editor.putString(getString(R.string.pref_last_sync_time),
 				Utilities.getCurrentDate());
@@ -1352,7 +1352,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	 * try {
 	 * 
 	 * Thread.sleep(2000); getSerial(); Thread.sleep(2000);
-	 * checkState(mStartUpState); } catch (Exception e) { Log.v(TAG,
+	 * checkState(mStartUpState); } catch (Exception e) { Utilities.getLog(TAG,
 	 * e.getMessage()); }
 	 * 
 	 * return null; }
@@ -1540,7 +1540,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	public void onReadSerial(byte serial[]) {
 		Charset charset = Charset.forName("UTF-8");
 		CharSequence seq2 = new String(serial, charset);
-		Log.v(TAG, "Serial : " + seq2);
+		Utilities.getLog(TAG, "Serial : " + seq2);
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -1601,24 +1601,24 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	protected void onReadHistoryDataFinished() {
-		Log.v(TAG,
+		Utilities.getLog(TAG,
 				"==================onReadHistoryDataFinished==================");
 		DatabaseHandler db = new DatabaseHandler(this, TABLE_CONTENT, null, 1);
-		Log.v(TAG,
+		Utilities.getLog(TAG,
 				"**************************Activity Record**************************");
 		List<Record> records = db.getAllRecords();
 		for (Record record : records) {
-			Log.v(TAG, record.toString());
+			Utilities.getLog(TAG, record.toString());
 		}
-		Log.v(TAG,
+		Utilities.getLog(TAG,
 				"**************************Activity Record**************************");
-		Log.v(TAG,
+		Utilities.getLog(TAG,
 				"-----------------------------Sleep Record-----------------------------");
 		List<SleepRecord> sleepRecords = db.getAllSleepRecords();
 		for (SleepRecord record : sleepRecords) {
-			Log.v(TAG, record.toString());
+			Utilities.getLog(TAG, record.toString());
 		}
-		Log.v(TAG,
+		Utilities.getLog(TAG,
 				"-----------------------------Sleep Record-----------------------------");
 		SleepRecord sleepRrecord = db.getLastSleepRecord();
 		if (sleepRrecord != null) {
@@ -1719,7 +1719,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			break;
 		case WristbandStartupConstant.CONNECT: {
 
-			Log.v(TAG, "checkState set Profile");
+			Utilities.getLog(TAG, "checkState set Profile");
 			try {
 				SharedPreferences sharedPreferences = PreferenceManager
 						.getDefaultSharedPreferences(this);
@@ -1734,7 +1734,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 				int weight = sharedPreferences.getInt("prefWeight", 50);
 
-				Log.v(TAG, "set Profile");
+				Utilities.getLog(TAG, "set Profile");
 
 				setProfile((gender.equals("Male")) ? 0 : 1,
 						c.get(Calendar.YEAR), c.get(Calendar.MONTH), weight,
@@ -1874,6 +1874,8 @@ public class Main extends BLEBaseFragmentActivity implements
 											int which) {
 										mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
 										checkState(mStartUpState);
+										mSyncingTimeout.cancel();
+										mSyncingTimeout.start();
 									}
 								}).show();
 
@@ -1908,7 +1910,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			break;
 		case WristbandStartupConstant.START_STREAM:
 			pd.dismiss();
-			Log.v(TAG, "Woo hooo start Streaming now");
+			Utilities.getLog(TAG, "Woo hooo start Streaming now");
 			mStreamModeTimeout.start();
 			mSyncingTimeout.cancel();
 			break;
@@ -1949,7 +1951,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	@Override
 	public void onPagerChangedCallback(int position) {
-		Log.v(TAG, "onPagerChangedCallback " + position);
+		Utilities.getLog(TAG, "onPagerChangedCallback " + position);
 		if (findViewById(R.id.titlebar_textview) != null) {
 			// TODO Auto-generated method stub
 			if (position == MainFragmentPager.ACTIVITY) {
@@ -1972,48 +1974,48 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onActivityStatisticTabbed(String s) {
 		// TODO Auto-generated method stub
-		Log.v(TAG, "onActivityStatisticTabbed " + s);
+		Utilities.getLog(TAG, "onActivityStatisticTabbed " + s);
 		mStatisticType = s;
 	}
 
 	@Override
 	public void onSleepStatisticTabbed(String s) {
 		// TODO Auto-generated method stub
-		Log.v(TAG, "onSleepStatisticTabbed " + s);
+		Utilities.getLog(TAG, "onSleepStatisticTabbed " + s);
 		mStatisticType = s;
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		Log.v(TAG, "onSharedPreferenceChanged " + key);
+		Utilities.getLog(TAG, "onSharedPreferenceChanged " + key);
 		// TODO Auto-generated method stub
 		if (key.equals(getString(R.string.prefUnit)))
 		{
-			Log.v(TAG,"key.equals(getString(R.string.prefUnit)");
+//			Utilities.getLog(TAG,"key.equals(getString(R.string.prefUnit)");
 			//TO DO
-			String unitString = sharedPreferences.getString(key, "Metric");
-			boolean isMetric = (unitString.equals("Metric"))?true:false;
+//			String unitString = sharedPreferences.getString(key, "Metric");
+//			boolean isMetric = (unitString.equals("Metric"))?true:false;
 			//chnage preference when unit changed
 			
 //			SharedPreferences prefs = PreferenceManager
 //					.getDefaultSharedPreferences(this);
-			int oldHeight = sharedPreferences.getInt("prefHeight", 0);
-			int oldWeight = sharedPreferences.getInt("prefWeight", 0);
-			
-			//Metric/Imperial
-			
-			SharedPreferences.Editor editor = sharedPreferences.edit();
-			
-			editor.putInt("prefHeight", 0);
-			editor.putInt("prefWeight", 0);
-
-			// Commit the edits!
-			editor.commit();
+//			int oldHeight = sharedPreferences.getInt("prefHeight", 0);
+//			int oldWeight = sharedPreferences.getInt("prefWeight", 0);
+//			
+//			//Metric/Imperial
+//			
+//			SharedPreferences.Editor editor = sharedPreferences.edit();
+//			
+//			editor.putInt("prefHeight", 0);
+//			editor.putInt("prefWeight", 0);
+//
+//			// Commit the edits!
+//			editor.commit();
 
 			
 		}
-		else if(key.equals("prefUnpair"))
+		else if(key.equals(getString(R.string.prefUnpair)))
 		{
 			if(sharedPreferences.getBoolean(key, false))
 			{

@@ -67,7 +67,7 @@
             android:key="@string/pref_targetSteps"
             android:summary="10000"
             android:title="@string/steps" />
-        <com.idthk.wristband.ui.preference.MyEditTextPreference
+        <EditTextPreference
             android:inputType="number"
             android:key="@string/pref_targetDistances_display"
             android:summary="7"

@@ -20,6 +20,7 @@ import java.util.Calendar;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceManager;
@@ -131,7 +132,7 @@ public class MainFragment extends Fragment implements
 
 	@Override
 	public void onResume() {
-		Log.v(TAG, "onResume");
+		Utilities.getLog(TAG, "onResume");
 		super.onResume();
 	}
 
@@ -155,7 +156,7 @@ public class MainFragment extends Fragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		// Log.v(TAG,"Tag : "+getTag());
+		// Utilities.getLog(TAG,"Tag : "+getTag());
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this.getActivity());
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -314,21 +315,7 @@ public class MainFragment extends Fragment implements
 			goalDistancesTv.setText(String.format(format,targetDistances));
 			
 			//new 
-			String unitString = prefs.getString(getString(R.string.prefUnit), "Metric");
-			isMetric = (unitString.equals("Metric"))?true:false;
-			TextView tv1 = ((TextView)mRootView.findViewById(R.id.distanceUnitTextView1)) ;
-			TextView tv2 = ((TextView)mRootView.findViewById(R.id.distanceUnitTextView2)) ;
-			if(isMetric)
-			{
-				tv2.setText("km");
-				tv1.setText("km");
-			}
-			else
-			{
-				
-				tv1.setText("mi");
-				tv2.setText("mi");
-			}
+			changeDistanceText(prefs);
 			
 		} else {
 			Calendar datetime = Calendar.getInstance();
@@ -385,6 +372,30 @@ public class MainFragment extends Fragment implements
 			}
 		}
 
+	}
+
+	private void changeDistanceText(SharedPreferences prefs) {
+		// TODO Auto-generated method stub
+		String unitString = prefs.getString(getString(R.string.prefUnit), "Metric");
+		isMetric = (unitString.equals("Metric"))?true:false;
+		
+		Resources res = getResources();
+		String distance_unit[] = res.getStringArray(R.array.distance_unit);
+		
+		
+		TextView tv1 = ((TextView)mRootView.findViewById(R.id.distanceUnitTextView1)) ;
+		TextView tv2 = ((TextView)mRootView.findViewById(R.id.distanceUnitTextView2)) ;
+		if(isMetric)
+		{
+			tv2.setText(distance_unit[0]);
+			tv1.setText(distance_unit[0]);
+		}
+		else
+		{
+			
+			tv1.setText(distance_unit[1]);
+			tv2.setText(distance_unit[1]);
+		}
 	}
 
 	private void populateGraph(View mRootView) {
@@ -448,7 +459,7 @@ public class MainFragment extends Fragment implements
 						.getString(getString(R.string.pref_targetActivity),
 								"30"));
 				try {
-					// Log.v(TAG, "targetActivity " + targetActivity);
+					// Utilities.getLog(TAG, "targetActivity " + targetActivity);
 					m_activityTimeProgressBar.setTarget(targetActivity);
 				} catch (NullPointerException errr) {
 					Log.e(TAG, "On error " + errr.getMessage());
@@ -457,26 +468,7 @@ public class MainFragment extends Fragment implements
 				
 			} else if (key.equals(getString(R.string.prefUnit)))
 			{
-				Log.v(TAG,"key.equals(getString(R.string.prefUnit)");
-				//TO DO
-				String unitString = sharedPreferences.getString(key, "Metric");
-				isMetric = (unitString.equals("Metric"))?true:false;
-				TextView tv1 = ((TextView)mRootView.findViewById(R.id.distanceUnitTextView1)) ;
-				TextView tv2 = ((TextView)mRootView.findViewById(R.id.distanceUnitTextView2)) ;
-				targetDistances = sharedPreferences.getFloat(getString(R.string.pref_targetDistances),0);
-				if(isMetric)
-				{
-					tv2.setText("km");
-					tv1.setText("km");
-					goalDistancesTv.setText(Float.toString(targetDistances));
-				}
-				else
-				{
-					
-					tv1.setText("mi");
-					tv2.setText("mi");
-					goalDistancesTv.setText(Float.toString(Utilities.KM2MI(targetDistances)));
-				}
+				changeDistanceText(sharedPreferences);
 				
 
 			}
@@ -532,7 +524,7 @@ public class MainFragment extends Fragment implements
 //		s += "distance : " + distance + "\n";
 //		s += "activityTime : " + activityTime + "\n";
 //		s += "batteryLevel : " + batteryLevel + "\n";
-//		Log.v(TAG,s);
+//		Utilities.getLog(TAG,s);
 		currentSteps = steps;
 		currentCalories = calories;
 		currentActivityTime = activityTime;

@@ -106,7 +106,7 @@ public class LandscapeActivity extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub
-		Log.v(TAG,arg0.toString());
+		Utilities.getLog(TAG,arg0.toString());
 		
 		if(arg0.getId() == R.id.btn_next_entry)
 		{

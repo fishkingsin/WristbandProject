@@ -1,5 +1,7 @@
 package com.idthk.wristband.ui;
 
+import com.idthk.wristband.ui.preference.NumberPickerPreference;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -71,15 +73,13 @@ public class PreferencesActivity extends Activity {
 			pref.setSummary(sharedPreferences.getString(
 					getString(R.string.pref_targetActivity), "0"));
 
-			
-			//set target distance
+			// set target distance
 			String key = getString(R.string.pref_targetDistances);
-			 pref = findPreference(getString(R.string.pref_targetDistances_display));
-			 float value = sharedPreferences.getFloat(
-					 key, 0);
-			 String format = "%.1f";
-			pref.setSummary(String.format(format,value));
-			
+			pref = findPreference(getString(R.string.pref_targetDistances_display));
+			float value = sharedPreferences.getFloat(key, 0);
+			String format = "%.1f";
+			pref.setSummary(String.format(format, value));
+
 			pref = findPreference(getString(R.string.pref_user_manual));
 			pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 				@Override
@@ -97,25 +97,16 @@ public class PreferencesActivity extends Activity {
 					return false;
 
 				}
-				
+
 			});
-			 String unitString = sharedPreferences.getString("prefUnit", "Metric");
-			 boolean isMetric = (unitString.equals("Metric"))?true:false;
-			if(isMetric)
-			{
-				convertMetricUnit();
-			}
-			else
-			{
-				convertImperialUnit();
-			}
+			covertUnit(sharedPreferences);
+			
 			pref = findPreference(getString(R.string.pref_unpair));
 			pref.setSummary(getString(R.string.serial)
 					+ "#:"
 					+ sharedPreferences.getString(
 							getString(R.string.pref_serial),
 							getString(R.string.default_serial_summary)));
-
 			try {
 				PackageInfo pInfo;
 				pInfo = mContext.getPackageManager().getPackageInfo(
@@ -156,8 +147,9 @@ public class PreferencesActivity extends Activity {
 						getString(R.string.pref_targetActivity), "0"));
 
 			}
-			if (key.equals(getString(R.string.pref_unpair))) {
-				Log.v(TAG,
+						
+			else if (key.equals(getString(R.string.pref_unpair))) {
+				Utilities.getLog(TAG,
 						key
 								+ " "
 								+ String.valueOf(sharedPreferences
@@ -171,120 +163,77 @@ public class PreferencesActivity extends Activity {
 				boolean isWeekend = sharedPreferences.getBoolean(
 						getString(R.string.pref_week_up_weekend), false);
 
-			}else if(key.equals(getString(R.string.pref_targetDistances_display)))
-			{
-				
-				 pref = findPreference(key);
-				 String value = sharedPreferences.getString(
-						 key, "0");
-				//pref.setSummary(value);
-				
-				
+			} else if (key
+					.equals(getString(R.string.pref_targetDistances_display))) {
+
+				pref = findPreference(key);
+				String value = sharedPreferences.getString(key, "0");
+				pref.setSummary(value);
+				//set distance and convert to km unit
 				SharedPreferences.Editor editor = sharedPreferences.edit();
-				String unitString = sharedPreferences.getString(key, "Metric");
-				 boolean isMetric = (unitString.equals("Metric"))?true:false;
-				if(isMetric)
-				{
-					editor.putFloat( getString(R.string.pref_targetDistances), Float.valueOf(value));
-				}else
-				{
-					editor.putFloat( getString(R.string.pref_targetDistances), Utilities.MI2KM(Float.valueOf(value)));
+				String unitString = sharedPreferences.getString(getString(R.string.prefUnit), "Metric");
+				boolean isMetric = (unitString.equals("Metric")) ? true : false;
+				if (isMetric) {
+					editor.putFloat(getString(R.string.pref_targetDistances),
+							Float.valueOf(value));
+				} else {
+					editor.putFloat(getString(R.string.pref_targetDistances),
+							Utilities.MI2KM(Float.valueOf(value)));
 				}
 				// Commit the edits!
 				editor.commit();
-				
 
-				
-			}
-			else if(key.equals(getString(R.string.pref_targetCalories)))
-			{
-				
-				 pref = findPreference(key);
-				 String value = sharedPreferences.getString(
-						 key, "0");
+			} else if (key.equals(getString(R.string.pref_targetCalories))) {
+
+				pref = findPreference(key);
+				String value = sharedPreferences.getString(key, "0");
 				pref.setSummary(value);
-			}
-			else if(key.equals(getString(R.string.pref_targetSteps)))
-			{
-				
-				 pref = findPreference(key);
-				 String value = sharedPreferences.getString(
-						 key, "0");
+			} else if (key.equals(getString(R.string.pref_targetSteps))) {
+
+				pref = findPreference(key);
+				String value = sharedPreferences.getString(key, "0");
 				pref.setSummary(value);
-			}
-			else if(key.equals("prefUnpair"))
-			{
+			} else if (key.equals("prefUnpair")) {
 				boolean unpair = sharedPreferences.getBoolean(key, false);
-				
-				 pref = findPreference(key);
-				 if(unpair)
-				 {
-					 pref.setSummary(getString(R.string.serial)+"#:");
-				 }
-			}
-			else if(key.equals("prefUnit"))
-			{
-				
-				 pref = findPreference(key);
-				 String unitString = sharedPreferences.getString(key, "Metric");
-				 boolean isMetric = (unitString.equals("Metric"))?true:false;
-				if(isMetric)
-				{
-					convertMetricUnit();
+
+				pref = findPreference(key);
+				if (unpair) {
+					pref.setSummary(getString(R.string.serial) + "#:");
 				}
-				else
-				{
-					convertImperialUnit();
-				}
+			} else if (key.equals(getString(R.string.prefUnit))) {
+
+				covertUnit(sharedPreferences);
 			}
 
 		}
-
-		private void convertImperialUnit() {
-			SharedPreferences sharedPreferences = PreferenceManager
-					.getDefaultSharedPreferences(this.getActivity());
-			// TODO Auto-generated method stub
-			//set distance unit
-			Preference targetDistanceDisplayPref = findPreference(getString(R.string.pref_targetDistances_display));
+		private void covertUnit(SharedPreferences sharedPreferences)
+		{
+			 
+			String unitString = sharedPreferences.getString(getString(R.string.prefUnit),
+					"Metric");
+			boolean isMetric = (unitString.equals("Metric")) ? true : false;
+			
+			Preference pref = findPreference(getString(R.string.pref_targetDistances_display));
+			float fV = sharedPreferences.getFloat(getString(R.string.pref_targetDistances), 7);
+			String fformat = "%.1f";
+			EditTextPreference editPref = (EditTextPreference)pref;
 			Resources res = getResources();
-			String[] planets = res.getStringArray(R.array.distance_unit);
+			String distance_unit[] = res.getStringArray(R.array.distance_unit);
+			if (isMetric) {
+				String st = String.format(fformat , fV);
+				editPref.setTitle(distance_unit[0]);
+				editPref.setSummary(st);
+				editPref.setText(st);
+			} else {
+				String st = String.format(fformat , Utilities.KM2MI(fV));
+				editPref.setTitle(distance_unit[1]);
+				editPref.setSummary(st);
+				editPref.setText(st);
+			}
 			
-			float distance = sharedPreferences.getFloat(getString(R.string.pref_targetDistances),Float.valueOf(getString(R.string.defalut_target_distances)));
-			String format = "%.1f";
 			
-			targetDistanceDisplayPref.setTitle(getString(R.string.distances)+"("+planets[1]+")");
-			String value = String.format(format,Utilities.KM2MI(distance));
-			targetDistanceDisplayPref.setSummary(value);
-			
-			SharedPreferences.Editor editor = sharedPreferences.edit();
-			editor.putString( value, getString(R.string.defalut_target_distances));
-			// Commit the edits!
-			editor.commit();
 			
 		}
-
-		private void convertMetricUnit() {
-			SharedPreferences sharedPreferences = PreferenceManager
-					.getDefaultSharedPreferences(this.getActivity());
-			// TODO Auto-generated method stub
-			Preference targetDistanceDisplayPref = findPreference(getString(R.string.pref_targetDistances_display));
-			
-			Resources res = getResources();
-			String[] planets = res.getStringArray(R.array.distance_unit);
-			float distance = sharedPreferences.getFloat(getString(R.string.pref_targetDistances),Float.valueOf(getString(R.string.defalut_target_distances)));
-			String format = ".1f%";
-			
-			targetDistanceDisplayPref.setTitle(getString(R.string.distances)+"("+planets[0]+")");
-			
-			String value = String.valueOf(distance);
-			targetDistanceDisplayPref.setSummary(value);
-			
-			SharedPreferences.Editor editor = sharedPreferences.edit();
-			editor.putString( value, getString(R.string.defalut_target_distances));
-			// Commit the edits!
-			editor.commit();
-
-			
-		}
+		
 	}
 }

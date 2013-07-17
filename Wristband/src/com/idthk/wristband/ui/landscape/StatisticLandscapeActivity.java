@@ -25,7 +25,7 @@ public class StatisticLandscapeActivity extends LandscapeActivity {
 		Bundle bundle = getIntent().getBundleExtra(
 				LandscapeActivity.LANDSCAPE_BUNDLE);
 		displayType = bundle.getString(StatisticLandscapeActivity.TYPE);
-		Log.v(TAG, displayType);
+		Utilities.getLog(TAG, displayType);
 
 		Utilities.publishGraph((Context)this , getWindow().getDecorView().getRootView(),
 				((ViewGroup) findViewById(R.id.graph1)),

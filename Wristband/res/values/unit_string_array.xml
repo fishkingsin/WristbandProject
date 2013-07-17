@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array
+        name="distance_unit">
+        <item>Distances(km)</item>
+        <item>Distances(mi)</item>
+    </string-array>
+    <string-array
+        name="weight_unit">
+        <item>Weight(kg)</item>
+        <item>Weight(lbs)</item>
+    </string-array>
+    <string-array
+        name="height_unit">
+        <item>Height(cm)</item>
+        <item>Height(inch)</item>
+    </string-array>
+</resources>

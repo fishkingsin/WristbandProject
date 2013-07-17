@@ -54,12 +54,12 @@
 
         <com.idthk.wristband.ui.preference.NumberPickerPreference
             android:defaultValue="178"
-            android:key="prefHeight"
-            android:title="@string/pref_user_height_title" />
+            android:key="@string/prefHeightDisplay"
+            />
         <com.idthk.wristband.ui.preference.NumberPickerPreference
             android:defaultValue="50"
-            android:key="prefWeight"
-            android:title="@string/pref_user_weight_title" />
+            android:key="@string/prefWeightDisplay"
+             />
     </PreferenceCategory>
 
 </PreferenceScreen>

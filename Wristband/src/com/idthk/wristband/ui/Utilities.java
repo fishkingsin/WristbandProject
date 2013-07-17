@@ -331,7 +331,7 @@ public class Utilities {
 					int hour = record.getCalendar().get(Calendar.HOUR_OF_DAY);
 
 					if (hour == i) {
-						// Log.v("ActivityStatisticTabFragment.TAB_DAY",
+						// Utilities.getLog("ActivityStatisticTabFragment.TAB_DAY",
 						// " hour int: "
 						// + hour);
 						ret = record.getActivityTime();
@@ -396,7 +396,7 @@ public class Utilities {
 							.get(Calendar.DAY_OF_WEEK);
 
 					if (weekday == Calendar.SUNDAY + i) {
-						// Log.v("ActivityStatisticTabFragment.TAB_WEEK",
+						// Utilities.getLog("ActivityStatisticTabFragment.TAB_WEEK",
 						// " weekday int: " + weekday);
 						Record record = records.get(r);
 						ret = record.getActivityTime();
@@ -438,7 +438,7 @@ public class Utilities {
 					int day = record.getCalendar().get(Calendar.DAY_OF_MONTH);
 
 					if (day == i) {
-						// Log.v("ActivityStatisticTabFragment.TAB_MONH",
+						// Utilities.getLog("ActivityStatisticTabFragment.TAB_MONH",
 						// " da int: "
 						// + day);
 						ret = record.getActivityTime();
@@ -493,7 +493,7 @@ public class Utilities {
 							.get(Calendar.MONTH);
 
 					if (month == i) {
-						// Log.v("ActivityStatisticTabFragment.TAB_YEAR",
+						// Utilities.getLog("ActivityStatisticTabFragment.TAB_YEAR",
 						// " month int: " + month);
 						Record record = records.get(r);
 						ret = record.getActivityTime();
@@ -549,7 +549,7 @@ public class Utilities {
 							Calendar.DAY_OF_WEEK);
 
 					if (weekday == Calendar.SUNDAY + i) {
-						// Log.v("SleepStatisticTabFragment.TAB_WEEK",
+						// Utilities.getLog("SleepStatisticTabFragment.TAB_WEEK",
 						// " weekday int: " + weekday);
 						ret = sleepRecord.getActualSleepTime();
 
@@ -939,5 +939,35 @@ public class Utilities {
 	public static float MI2KM(float distance) {
 		// TODO Auto-generated method stub
 		return (float) (distance * 1.60934);
+	}
+
+	public static float KG2LBS(int v) {
+		// TODO Auto-generated method stub
+		return (float) (v*2.20462);
+	}
+	public static float KG2LBS(Float v) {
+		// TODO Auto-generated method stub
+		return (float) (v*2.20462);
+	}
+
+	public static float CM2INCH(int v) {
+		// TODO Auto-generated method stub
+		return (float) (v*0.393701);
+	}
+
+	public static float CM2INCH(Float valueOf) {
+		// TODO Auto-generated method stub
+		return  (float) (valueOf*0.393701);
+	}
+
+	public static int LBS2KG(Float valueOf) {
+		// TODO Auto-generated method stub
+		
+		return (int)(valueOf*0.453592);
+	}
+
+	public static int INCH2CM(Float valueOf) {
+		// TODO Auto-generated method stub
+		return (int)(valueOf*2.54);
 	}
 }
