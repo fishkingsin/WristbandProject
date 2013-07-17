@@ -94,7 +94,7 @@
         <item>Weekend</item>
     </string-array> -->
     
-    <string-array name="distance_unit_value">
+   <!--  <string-array name="distance_unit_value">
         <item>km</item>
         <item>mile</item>
     </string-array>
@@ -107,7 +107,7 @@
     <string-array name="weight_unit_value">
         <item>kg</item>
         <item>lb</item>
-    </string-array>
+    </string-array> -->
     
     
 </resources>

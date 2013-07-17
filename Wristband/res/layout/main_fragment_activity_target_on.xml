@@ -120,10 +120,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/calories" />
-                <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="(kcal)" />
+                
                 
             </LinearLayout>
 
@@ -217,11 +214,12 @@
                 android:layout_height="match_parent"
                 android:paddingTop="3dp" >
                 <TextView
+                    android:id="@+id/distanceUnitTextView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 
                 android:text="@string/distances" />
-                <TextView
+                <!-- <TextView
                 android:id="@+id/TextView15"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -238,7 +236,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 
-                android:text=")" />
+                android:text=")" /> -->
             </LinearLayout>
 
             
