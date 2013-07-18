@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.Calendar;
 
 import org.bostonandroid.datepreference.DatePreference;
@@ -314,8 +315,7 @@ public class UserPreferencesActivity extends Activity {
 					(String) getResources().getText(R.string.take_picture),
 					(String) getResources().getText(
 							R.string.choose_from_library) };// ,
-			// (String)
-			// getResources().getText(R.string.restore_profile_picture)};
+
 
 			AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
 
@@ -329,10 +329,6 @@ public class UserPreferencesActivity extends Activity {
 						// we will handle the returned data in onActivityResult
 						startActivityForResult(captureIntent,
 								Main.TAKE_PHOTO_CODE);
-						// intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-						// intent.putExtra(MediaStore.EXTRA_OUTPUT,
-						// Uri.fromFile(getTempFile(mContext)));
-						// startActivityForResult(intent, Main.TAKE_PHOTO_CODE);
 						break;
 					case 1:
 						intent = new Intent(
@@ -417,57 +413,14 @@ public class UserPreferencesActivity extends Activity {
 					}
 
 					break;
-					
+
 				case Main.SELECT_IMAGE_CODE:
 					picUri = data.getData();
+					
+					Utilities.getLog(TAG, picUri.toString());
+					
 					performCrop(picUri);
-					/*String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-					Cursor cursor = mContext.getContentResolver().query(
-							selectedImageUri, filePathColumn, null, null, null);
-					cursor.moveToFirst();
-
-					int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-					String filePath = cursor.getString(columnIndex);
-					cursor.close();
-
-					// Bitmap selectedImage =
-					// BitmapFactory.decodeFile(filePath);
-					Bitmap selectedImage = Utilities.decodeFile(new File(
-							filePath), mContext);
-
-					FileOutputStream fos;
-					try {
-						fos = mContext.openFileOutput("DefaultProfile",
-								Context.MODE_PRIVATE);
-						selectedImage = getResizedBitmap(selectedImage, 300,
-								300);
-
-						selectedImage.compress(Bitmap.CompressFormat.PNG, 100,
-								fos);
-						Utilities.getLog(TAG, "Select photo path: " + filePath);
-						Preference fric = (Preference) findPreference(getString(R.string.pref_profile_pic));
-						ViewGroup v = (ViewGroup) fric.getView(null, null);
-						ImageView profilePicImageView = (ImageView) v
-								.findViewById(R.id.profile_picture_image_view);
-						profilePicImageView.setImageBitmap(selectedImage);
-						SharedPreferences prefs = PreferenceManager
-								.getDefaultSharedPreferences(mContext);
-
-						SharedPreferences.Editor editor = prefs.edit();
-						editor.putString(getString(R.string.pref_profile_pic),
-								filePath);
-						// Commit the edits!
-						editor.commit();
-						fos.close();
-					} catch (FileNotFoundException e) {
-						Utilities.getLog(TAG, e.toString());
-					} catch (IOException e) {
-						Utilities.getLog(TAG, e.toString());
-					} catch (Exception e) {
-						Utilities.getLog(TAG, e.toString());
-					}*/
-
+					
 					break;
 				}
 			}

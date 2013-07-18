@@ -103,8 +103,7 @@ public class MainFragmentPager extends Fragment implements
 				.getDefaultSharedPreferences(this.getActivity());
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 		// TODO Auto-generated method stub
-		String path = sharedPreferences.getString(
-				getString(R.string.pref_profile_pic), "");
+		
 		// Log.v(TAG, "profile path : " + path);
 
 		profilePic = ((ImageView) v.findViewById(R.id.profile_pic));
@@ -121,6 +120,8 @@ public class MainFragmentPager extends Fragment implements
 
 		});
 
+		String path = sharedPreferences.getString(
+				getString(R.string.pref_profile_pic), "");
 		if (path != "") {
 			Bitmap myBitmap = Utilities.decodeFile(new File(path),
 					this.getActivity());
@@ -149,9 +150,9 @@ public class MainFragmentPager extends Fragment implements
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		if (key.equals(getString(R.string.pref_profile_pic))) {
+			
 			String path = sharedPreferences.getString(
 					getString(R.string.pref_profile_pic), "");
-
 			if (path != "") {
 				Bitmap myBitmap = Utilities.decodeFile(new File(path),
 						this.getActivity());
@@ -168,7 +169,15 @@ public class MainFragmentPager extends Fragment implements
 	@Override
 	public void onResume() {
 		// mCallback.onPagerChangedCallback(mCurrentPage);
-
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this.getActivity());
+		String path = sharedPreferences.getString(
+				getString(R.string.pref_profile_pic), "");
+		if (path != "") {
+			Bitmap myBitmap = Utilities.decodeFile(new File(path),
+					this.getActivity());
+			profilePic.setImageBitmap(myBitmap);
+		}
 		super.onResume();
 
 	}
