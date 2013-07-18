@@ -70,10 +70,7 @@
     <string name="pref_sleep_duration">prefSleepDuration</string>
     <string name="prefDateOfBirth">prefDateOfBirth</string>
     <string name="prefUnit">prefUnit</string>
-    
-    
-    <string name="prefUnit">prefUnit</string>
-    
+    <string name="prefTestWeightUnit">prefTestWeightUnit</string>
     <string name="connecttomobile_content">Press and hold the button (for 5 seconds) until the LED indicator blink in blue.</string>
     <string name="connecttomobile">Connect to mobile:</string>
     <string name="instruction_page3_skip">Skip</string>

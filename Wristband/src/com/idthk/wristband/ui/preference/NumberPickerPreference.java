@@ -141,7 +141,7 @@ public class NumberPickerPreference extends DialogPreference implements
 	@Override 
 	public void setTitle(CharSequence title)
 	{
-		mDialogMessage = (String) title;
+//		mDialogMessage = (String) title;
 		super.setTitle(title);
 	}
 }

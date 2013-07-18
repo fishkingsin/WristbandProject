@@ -21,10 +21,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory android:title="@string/pref_user_profile" >
-        <Preference android:title="@string/profile_pic" 
-     	android:key="@string/pref_profile_pic" 
-     	 android:layout="@layout/image_preference_layout"/>
-     	         <EditTextPreference
+        <com.idthk.wristband.ui.preference.PorfilePicturePreference
+            android:key="@string/pref_profile_pic"
+            android:layout="@layout/image_preference_layout"
+            android:title="@string/profile_pic" />
+
+        <EditTextPreference
             android:defaultValue="User"
             android:key="@string/pref_user_name"
             android:summary="@string/pref_user_name_summary"
@@ -51,15 +53,18 @@
             android:entryValues="@array/pref_unit_entryvalues"
             android:key="prefUnit"
             android:title="@string/pref_unit_title" />
+        <ListPreference
+            android:defaultValue="5&apos;8&quot;"
+            android:dialogTitle="@string/height"
+            android:entries="@array/pref_user_height_metric_entries"
+            android:entryValues="@array/pref_user_height_metric_entriesvalues"
+            android:key="@string/prefHeightDisplay"
+            android:title="Test Height unit" />
 
         <com.idthk.wristband.ui.preference.NumberPickerPreference
-            android:defaultValue="178"
-            android:key="@string/prefHeightDisplay"
-            />
-        <com.idthk.wristband.ui.preference.NumberPickerPreference
             android:defaultValue="50"
-            android:key="@string/prefWeightDisplay"
-             />
+            android:dialogTitle="@string/height"
+            android:key="@string/prefWeightDisplay" />
     </PreferenceCategory>
 
 </PreferenceScreen>

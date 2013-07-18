@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Calendar;
 
 import org.bostonandroid.datepreference.DatePreference;
@@ -12,6 +13,7 @@ import com.idthk.wristband.ui.preference.NumberPickerPreference;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,17 +23,16 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Images.Media;
-import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
@@ -39,10 +40,11 @@ import android.widget.ImageView;
 public class UserPreferencesActivity extends Activity {
 	static final String TAG = "UserProfileActivity";
 	private Activity mContext;
-	
+
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,  R.layout.title_bar);
+		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,
+				R.layout.title_bar);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		mContext = this;
 		int targetPreferenceResource = R.xml.userprofile_preferences;
@@ -50,22 +52,24 @@ public class UserPreferencesActivity extends Activity {
 				.create(targetPreferenceResource);
 		getFragmentManager().beginTransaction()
 				.replace(android.R.id.content, fragment).commit();
-		
+
 	}
+
 	@Override
-	public void onBackPressed()
-	{
+	public void onBackPressed() {
 		super.onBackPressed();
 		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
-
 
 	public static class UserPrefsFragment extends PreferenceFragment implements
 			SharedPreferences.OnSharedPreferenceChangeListener {
 		static final String ARG_XML = "xml";
 		private int targetPreferenceFile;
 		private Context mContext;
-		ImageView profilePicImageView;
+		private View mRootView;
+		final int PIC_CROP = 2;
+		private Uri picUri;
+
 		public static UserPrefsFragment create(int targetPreferenceFile) {
 			UserPrefsFragment fragment = new UserPrefsFragment();
 			Bundle args = new Bundle();
@@ -95,21 +99,24 @@ public class UserPreferencesActivity extends Activity {
 			pref.setSummary(sharedPreferences.getString(
 					getString(R.string.pref_user_name),
 					getString(R.string.default_user_name)));
-			
+
 			pref = findPreference(getString(R.string.prefUserGender));
-			String gender = sharedPreferences.getString(getString(R.string.prefUserGender),
+			String gender = sharedPreferences.getString(
+					getString(R.string.prefUserGender),
 					getString(R.string.default_user_gender));
 			pref.setSummary(gender);
 
 			pref = findPreference(getString(R.string.prefUnit));
-			pref.setSummary(sharedPreferences.getString(getString(R.string.prefUnit), getString(R.string.default_unit)));
-			
+			pref.setSummary(sharedPreferences.getString(
+					getString(R.string.prefUnit),
+					getString(R.string.default_unit)));
+
 			covertUnit(sharedPreferences);
-			
+
 			pref = findPreference(getString(R.string.prefDateOfBirth));
-			DatePreference datePRef = ((DatePreference)pref); 
+			DatePreference datePRef = ((DatePreference) pref);
 			datePRef.setSummary();
-			
+
 			pref = findPreference(getString(R.string.pref_profile_pic));
 			pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 				@Override
@@ -122,21 +129,20 @@ public class UserPreferencesActivity extends Activity {
 					return true;
 				}
 			});
-			Preference fric = (Preference)findPreference(getString(R.string.pref_profile_pic));
+			Preference fric = (Preference) findPreference(getString(R.string.pref_profile_pic));
 			ViewGroup v = (ViewGroup) fric.getView(null, null);
+			ImageView profilePicImageView = (ImageView) v
+					.findViewById(R.id.profile_picture_image_view);
 
-			profilePicImageView = (ImageView)v.findViewById(R.id.profile_picture_image_view);
-			
 			String path = sharedPreferences.getString(
 					getString(R.string.pref_profile_pic), "");
 			Utilities.getLog(TAG, "profile path : " + path);
 			if (path != "") {
-				
-				Bitmap myBitmap = Utilities.decodeFile(new File(path),
-						mContext);
+
+				Bitmap myBitmap = Utilities
+						.decodeFile(new File(path), mContext);
 				profilePicImageView.setImageBitmap(myBitmap);
 			}
-
 
 		}
 
@@ -156,118 +162,153 @@ public class UserPreferencesActivity extends Activity {
 
 			Preference pref = findPreference(key);
 			if (key.equals(getString(R.string.prefUserGender))) {
-				
-				
-				String gender = sharedPreferences.getString(getString(R.string.prefUserGender),
+
+				String gender = sharedPreferences.getString(
+						getString(R.string.prefUserGender),
 						getString(R.string.default_user_gender));
 				pref.setSummary(gender);
-				
+
 			} else if (key.equals(getString(R.string.prefUnit))) {
 				pref.setSummary(sharedPreferences.getString(key, "Metric"));
-				
+
 				covertUnit(sharedPreferences);
-				
+
 			} else if (key.equals(getString(R.string.pref_user_name))) {
 				pref.setSummary(sharedPreferences.getString(key,
 						getString(R.string.default_user_name)));
-			}
-			else if(key.equals(getString(R.string.pref_profile_pic))){
+			} else if (key.equals(getString(R.string.pref_profile_pic))) {
 				String path = sharedPreferences.getString(
 						getString(R.string.pref_profile_pic), "");
 				Utilities.getLog(TAG, "profile path : " + path);
 				if (path != "") {
-					
+
 					Bitmap myBitmap = Utilities.decodeFile(new File(path),
 							mContext);
+					Preference fric = (Preference) findPreference(getString(R.string.pref_profile_pic));
+					ViewGroup v = (ViewGroup) fric.getView(null, null);
+					ImageView profilePicImageView = (ImageView) v
+							.findViewById(R.id.profile_picture_image_view);
 					profilePicImageView.setImageBitmap(myBitmap);
 				}
 			}
-			
-			else if (key
-					.equals(getString(R.string.prefWeightDisplay))) {
+
+			else if (key.equals(getString(R.string.prefWeightDisplay))) {
 
 				pref = findPreference(key);
-				int value = sharedPreferences.getInt(key, Integer.valueOf(getString(R.string.default_user_weight)));
+				int value = sharedPreferences.getInt(key, Integer
+						.valueOf(getString(R.string.default_user_weight)));
 				pref.setSummary(value);
-				//set distance and convert to km unit
+				// set distance and convert to km unit
 				SharedPreferences.Editor editor = sharedPreferences.edit();
-				String unitString = sharedPreferences.getString(getString(R.string.prefUnit), "Metric");
+				String unitString = sharedPreferences.getString(
+						getString(R.string.prefUnit), "Metric");
 				boolean isMetric = (unitString.equals("Metric")) ? true : false;
 				if (isMetric) {
 					editor.putInt(getString(R.string.prefWeight),
 							Integer.valueOf(value));
 				} else {
 					editor.putInt(getString(R.string.prefWeight),
-							(int)Utilities.LBS2KG(Float.valueOf(value)));
+							(int) Utilities.LBS2KG(Float.valueOf(value)));
 				}
 				// Commit the edits!
 				editor.commit();
 
-			} 
-			
-			else if (key
-					.equals(getString(R.string.prefHeightDisplay))) {
+			}
+			//
+			else if (key.equals(getString(R.string.prefHeightDisplay))) {
+				//
 
-				pref = findPreference(key);
-				int value = sharedPreferences.getInt(key, Integer.valueOf(getString(R.string.default_user_height)));
-				pref.setSummary(value);
-				//set distance and convert to km unit
+				String value = sharedPreferences.getString(key,
+						getString(R.string.default_user_height));
+				ListPreference ListPref = (ListPreference) findPreference(key);
+				ListPref.setSummary(ListPref.getEntry());
+				// // set distance and convert to km unit
 				SharedPreferences.Editor editor = sharedPreferences.edit();
-				String unitString = sharedPreferences.getString(getString(R.string.prefUnit), "Metric");
+				String unitString = sharedPreferences.getString(
+						getString(R.string.prefUnit), "Metric");
 				boolean isMetric = (unitString.equals("Metric")) ? true : false;
 				if (isMetric) {
+
 					editor.putInt(getString(R.string.prefHeight),
 							Integer.valueOf(value));
 				} else {
-					editor.putInt(getString(R.string.prefHeight),
-							(int)Utilities.INCH2CM(Float.valueOf(value)));
+					float v = Float.valueOf(value);
+					editor.putInt(getString(R.string.prefHeight), (int) v);
 				}
-				// Commit the edits!
+				// // Commit the edits!
 				editor.commit();
-
-			} 
-				
-				
+				//
+			}
 
 		}
-		private void covertUnit(SharedPreferences sharedPreferences)
-		{
-			String unitString = sharedPreferences.getString(getString(R.string.prefUnit),
-					"Metric");
+
+		private void covertUnit(SharedPreferences sharedPreferences) {
+			Resources res = getResources();
+			String unitString = sharedPreferences.getString(
+					getString(R.string.prefUnit), "Metric");
 			boolean isMetric = (unitString.equals("Metric")) ? true : false;
-			//set user weight unit
+
+			// set user weight unit
 			String fformat = "%.1f";
 			Preference pref = findPreference(getString(R.string.prefWeightDisplay));
-			NumberPickerPreference numPickPref = (NumberPickerPreference)pref; 
-			int  v = sharedPreferences.getInt(getString(R.string.prefWeight), Integer.valueOf(getString(R.string.default_user_weight)));
-			
-			Resources res = getResources();
+			NumberPickerPreference numPickPref = (NumberPickerPreference) pref;
+			int v = sharedPreferences.getInt(getString(R.string.prefWeight),
+					Integer.valueOf(getString(R.string.default_user_weight)));
+
 			String waray[] = res.getStringArray(R.array.weight_unit);
 			if (isMetric) {
-				numPickPref.setSummary(v , false);
+				numPickPref.setSummary(v, false);
 				numPickPref.setTitle(waray[0]);
-				
+				numPickPref.setDialogTitle(waray[0]);
+
 			} else {
 				numPickPref.setSummary((int) Utilities.KG2LBS(v), false);
 				numPickPref.setTitle(waray[1]);
-				
+				numPickPref.setDialogTitle(waray[1]);
 			}
-			
-			//set user height unit
-			pref = findPreference(getString(R.string.prefHeightDisplay));
-			numPickPref = (NumberPickerPreference)pref; 
-			 v = sharedPreferences.getInt(getString(R.string.prefHeight), Integer.valueOf(getString(R.string.default_user_height)));
-			 
-			 String haray[] = res.getStringArray(R.array.height_unit);
-			if (isMetric) {
-				numPickPref.setSummary(v, false);
-				numPickPref.setTitle(haray[0]);
-				
-			} else {
-				numPickPref.setSummary((int) Utilities.CM2INCH(v),false);
-				numPickPref.setTitle(haray[1]);
+
+			// set user height unit
+			String key = getString(R.string.prefHeightDisplay);
+			String defaultValue = getString(R.string.default_user_height);
+			ListPreference ListPref = (ListPreference) findPreference(key);
+			if (ListPref != null) {
+
+				String haray[] = res.getStringArray(R.array.height_unit);
+				if (isMetric) {
+
+					String[] pref_user_weight_metric_entries = res
+							.getStringArray(R.array.pref_user_height_metric_entries);
+					String[] pref_user_weight_metric_entriesvalue = res
+							.getStringArray(R.array.pref_user_height_metric_entriesvalues);
+
+					ListPref.setEntries(pref_user_weight_metric_entries);
+					ListPref.setEntryValues(pref_user_weight_metric_entriesvalue);
+
+					String value = sharedPreferences.getString(key,
+							defaultValue);
+					ListPref.setSummary(ListPref.getEntry());
+					ListPref.setTitle(haray[0]);
+					ListPref.setDialogTitle(haray[0]);
+
+				} else {
+
+					String[] pref_user_weight_impeiral_entries = res
+							.getStringArray(R.array.pref_user_height_impeiral_entries);
+					String[] pref_user_weight_impeiral_entriesvalue = res
+							.getStringArray(R.array.pref_user_height_impeiral_entriesvalues);
+
+					ListPref.setEntries(pref_user_weight_impeiral_entries);
+					ListPref.setEntryValues(pref_user_weight_impeiral_entriesvalue);
+					String value = sharedPreferences.getString(key,
+							defaultValue);
+					ListPref.setSummary(ListPref.getEntry());
+					ListPref.setTitle(haray[1]);
+					ListPref.setDialogTitle(haray[1]);
+
+				}
 			}
 		}
+
 		private void showDialog() {
 			final String[] list = {
 					(String) getResources().getText(R.string.take_picture),
@@ -283,10 +324,15 @@ public class UserPreferencesActivity extends Activity {
 					Intent intent;
 					switch (position) {
 					case 0:
-						intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-						intent.putExtra(MediaStore.EXTRA_OUTPUT,
-								Uri.fromFile(getTempFile(mContext)));
-						startActivityForResult(intent, Main.TAKE_PHOTO_CODE);
+						Intent captureIntent = new Intent(
+								MediaStore.ACTION_IMAGE_CAPTURE);
+						// we will handle the returned data in onActivityResult
+						startActivityForResult(captureIntent,
+								Main.TAKE_PHOTO_CODE);
+						// intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+						// intent.putExtra(MediaStore.EXTRA_OUTPUT,
+						// Uri.fromFile(getTempFile(mContext)));
+						// startActivityForResult(intent, Main.TAKE_PHOTO_CODE);
 						break;
 					case 1:
 						intent = new Intent(
@@ -311,59 +357,57 @@ public class UserPreferencesActivity extends Activity {
 			alertDialog.setNeutralButton("Cancel", cancelBtnOnClick);
 			alertDialog.show();
 		}
+
 		@Override
-		public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//			Utilities.getLog("resultCode", resultCode + "");
-			Utilities.getLog(TAG,"resultCode " + resultCode);
+		public void onActivityResult(int requestCode, int resultCode,
+				Intent data) {
+			// Utilities.getLog("resultCode", resultCode + "");
+			Utilities.getLog(TAG, "resultCode " + resultCode);
 
 			if (resultCode == RESULT_OK) {
 
 				switch (requestCode) {
 				case Main.TAKE_PHOTO_CODE:
-					final File file = getTempFile(mContext);
+					picUri = data.getData();
+					// carry out the crop operation
+					performCrop(picUri);
+					break;
+				case PIC_CROP:
 					try {
+						// // get the returned data
+						Bundle extras = data.getExtras();
+						// // get the cropped bitmap
+						Bitmap bmp = extras.getParcelable("data");
 						
-						ExifInterface exif = new ExifInterface(file.getPath());
+						OutputStream fOut = null;
+						File file = getTempFile(mContext);
 						
-				        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+						Utilities.getLog(TAG, file.toString());
+						fOut = new FileOutputStream(file);
+						bmp.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
+						fOut.flush();
+						fOut.close();
 
-				        int angle = 0;
-				        Utilities.getLog(TAG,"orientation: "+orientation);
-				        if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
-				            angle = 90;
-				        } 
-				        else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
-				            angle = 180;
-				        } 
-				        else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
-				            angle = 270;
-				        }
-						Bitmap captureBmp = Media.getBitmap(mContext.getContentResolver(),
-								Uri.fromFile(file));
-						captureBmp = Utilities.decodeFile(file, mContext);
-						captureBmp = getResizedBitmap(captureBmp, 300, 300);
-						FileOutputStream fos;
-						fos = mContext.openFileOutput("DefaultProfile", Context.MODE_PRIVATE);
+						MediaStore.Images.Media.insertImage(
+								mContext.getContentResolver(),
+								file.getAbsolutePath(), file.getName(),
+								file.getName());
 
-						
-				        Matrix mat = new Matrix();
-				        mat.postRotate(angle);
+						Preference fric = (Preference) findPreference(getString(R.string.pref_profile_pic));
+						ViewGroup v = (ViewGroup) fric.getView(null, null);
+						ImageView profilePicImageView = (ImageView) v
+								.findViewById(R.id.profile_picture_image_view);
+						profilePicImageView.setImageBitmap(bmp);
 
-				        captureBmp = Bitmap.createBitmap(captureBmp, 0, 0, captureBmp.getWidth(), captureBmp.getHeight(), mat, true);
-				        captureBmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
-						Utilities.getLog(TAG, "Take new photo path: " + file.getPath());
-						
-						profilePicImageView.setImageBitmap(captureBmp);
 						SharedPreferences prefs = PreferenceManager
 								.getDefaultSharedPreferences(mContext);
 
 						SharedPreferences.Editor editor = prefs.edit();
-						editor.putString(getString(R.string.pref_profile_pic),  file.getPath());
+						editor.putString(getString(R.string.pref_profile_pic),
+								file.getPath());
 						// Commit the edits!
 						editor.commit();
-						
-						
-						fos.close();
+
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
@@ -376,52 +420,94 @@ public class UserPreferencesActivity extends Activity {
 
 				case Main.SELECT_IMAGE_CODE:
 					Uri selectedImageUri = data.getData();
-					String[] filePathColumn = { MediaStore.Images.Media.DATA };
+					performCrop(selectedImageUri);
+					/*String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
-					Cursor cursor = mContext.getContentResolver().query(selectedImageUri,
-							filePathColumn, null, null, null);
+					Cursor cursor = mContext.getContentResolver().query(
+							selectedImageUri, filePathColumn, null, null, null);
 					cursor.moveToFirst();
 
 					int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
 					String filePath = cursor.getString(columnIndex);
 					cursor.close();
 
-					// Bitmap selectedImage = BitmapFactory.decodeFile(filePath);
-					Bitmap selectedImage = Utilities.decodeFile(new File(filePath),
-							mContext);
+					// Bitmap selectedImage =
+					// BitmapFactory.decodeFile(filePath);
+					Bitmap selectedImage = Utilities.decodeFile(new File(
+							filePath), mContext);
 
 					FileOutputStream fos;
 					try {
-						fos = mContext.openFileOutput("DefaultProfile", Context.MODE_PRIVATE);
-						selectedImage = getResizedBitmap(selectedImage, 300, 300);
+						fos = mContext.openFileOutput("DefaultProfile",
+								Context.MODE_PRIVATE);
+						selectedImage = getResizedBitmap(selectedImage, 300,
+								300);
 
-						selectedImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+						selectedImage.compress(Bitmap.CompressFormat.PNG, 100,
+								fos);
 						Utilities.getLog(TAG, "Select photo path: " + filePath);
+						Preference fric = (Preference) findPreference(getString(R.string.pref_profile_pic));
+						ViewGroup v = (ViewGroup) fric.getView(null, null);
+						ImageView profilePicImageView = (ImageView) v
+								.findViewById(R.id.profile_picture_image_view);
 						profilePicImageView.setImageBitmap(selectedImage);
 						SharedPreferences prefs = PreferenceManager
 								.getDefaultSharedPreferences(mContext);
 
 						SharedPreferences.Editor editor = prefs.edit();
-						editor.putString(getString(R.string.pref_profile_pic), filePath);
+						editor.putString(getString(R.string.pref_profile_pic),
+								filePath);
 						// Commit the edits!
 						editor.commit();
 						fos.close();
 					} catch (FileNotFoundException e) {
-						e.printStackTrace();
+						Utilities.getLog(TAG, e.toString());
 					} catch (IOException e) {
-						e.printStackTrace();
+						Utilities.getLog(TAG, e.toString());
 					} catch (Exception e) {
-						e.printStackTrace();
-					}
+						Utilities.getLog(TAG, e.toString());
+					}*/
 
 					break;
 				}
 			}
 			super.onActivityResult(requestCode, resultCode, data);
 		}
+
+		private void performCrop(Uri uri) {
+			// TODO Auto-generated method stub
+			try {
+				// call the standard crop action intent (the user device may not
+				// support it)
+				Intent cropIntent = new Intent("com.android.camera.action.CROP");
+				// indicate image type and Uri
+				cropIntent.setDataAndType(uri, "image/*");
+				// set crop properties
+				cropIntent.putExtra("crop", "true");
+				// indicate aspect of desired crop
+				cropIntent.putExtra("aspectX", 1);
+				cropIntent.putExtra("aspectY", 1);
+				// indicate output X and Y
+				cropIntent.putExtra("outputX", 256);
+				cropIntent.putExtra("outputY", 256);
+				// retrieve data on return
+				cropIntent.putExtra("return-data", true);
+				// start the activity - we handle returning in onActivityResult
+				startActivityForResult(cropIntent, PIC_CROP);
+			} catch (ActivityNotFoundException anfe) {
+				// display an error message
+				String errorMessage = "Whoops - your device doesn't support the crop action!";
+				Utilities.getLog(TAG, errorMessage);
+				// Toast toast = Toast.makeText(this, errorMessage,
+				// Toast.LENGTH_SHORT);
+				// toast.show();
+			}
+		}
+
 		static public File getTempFile(Context mContext) {
 			// TODO Auto-generated method stub
-			final File path = new File(Environment.getExternalStorageDirectory(),
+			final File path = new File(
+					Environment.getExternalStorageDirectory(),
 					mContext.getPackageName());
 			if (!path.exists()) {
 				path.mkdir();
@@ -432,7 +518,8 @@ public class UserPreferencesActivity extends Activity {
 			return new File(path, "image.png");
 		}
 
-		static public Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
+		static public Bitmap getResizedBitmap(Bitmap bm, int newHeight,
+				int newWidth) {
 			int width = bm.getWidth();
 			int height = bm.getHeight();
 			float scaleWidth = ((float) newWidth) / width;
@@ -448,9 +535,5 @@ public class UserPreferencesActivity extends Activity {
 			return resizedBitmap;
 		}
 	}
-
-	
-
-	
 
 }
