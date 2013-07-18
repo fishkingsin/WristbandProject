@@ -24,6 +24,8 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -41,7 +43,7 @@ import android.widget.ImageView;
 public class UserPreferencesActivity extends Activity {
 	static final String TAG = "UserProfileActivity";
 	private Activity mContext;
-
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,
@@ -70,6 +72,9 @@ public class UserPreferencesActivity extends Activity {
 		private View mRootView;
 		final int PIC_CROP = 2;
 		private Uri picUri;
+		private static String[] pref_user_height_metric_entries ;
+		private static String[] pref_user_height_entryvalues;
+		private static String[] pref_user_height_imperial_entries;
 
 		public static UserPrefsFragment create(int targetPreferenceFile) {
 			UserPrefsFragment fragment = new UserPrefsFragment();
@@ -87,6 +92,27 @@ public class UserPreferencesActivity extends Activity {
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
+			int start = 135;
+			String format = "%.1f";
+			pref_user_height_metric_entries = new String[66];
+			pref_user_height_entryvalues = new String[66];
+			pref_user_height_imperial_entries = new String[66];
+			for (int i = 0 ; i < 66 ; i++){
+				pref_user_height_metric_entries[i] = String.valueOf(start);
+				
+				
+				float v = (float) (start*0.393701);
+				int foot = (int) (v/12);
+				float inch = v%12;
+				String msg = String.valueOf(foot)+"'"+String.format(format,inch)+"\"";
+				Utilities.getLog(TAG, msg);
+				pref_user_height_imperial_entries[i] = msg;
+				
+				pref_user_height_entryvalues[i] = String.valueOf(start);
+				start++;
+			}
+			
+			
 			super.onCreate(savedInstanceState);
 			targetPreferenceFile = getArguments().getInt(ARG_XML);
 			// Load the preferences from an XML resource
@@ -273,36 +299,41 @@ public class UserPreferencesActivity extends Activity {
 			String defaultValue = getString(R.string.default_user_height);
 			ListPreference ListPref = (ListPreference) findPreference(key);
 			if (ListPref != null) {
+				int index = 0;
 
+				CharSequence[] entries = ListPref.getEntries();
+				CharSequence targetEntry = ListPref.getEntry();
+				if (targetEntry != null) {
+					for (CharSequence entry : entries) {
+						if (targetEntry.equals(entry)) {
+							break;
+						}
+						index++;
+					}
+				}
 				String haray[] = res.getStringArray(R.array.height_unit);
 				if (isMetric) {
 
-					String[] pref_user_weight_metric_entries = res
-							.getStringArray(R.array.pref_user_height_metric_entries);
-					String[] pref_user_weight_metric_entriesvalue = res
-							.getStringArray(R.array.pref_user_height_metric_entriesvalues);
-
-					ListPref.setEntries(pref_user_weight_metric_entries);
-					ListPref.setEntryValues(pref_user_weight_metric_entriesvalue);
 
 					String value = sharedPreferences.getString(key,
 							defaultValue);
-					ListPref.setSummary(ListPref.getEntry());
+					ListPref.setEntries(pref_user_height_metric_entries);
+					ListPref.setEntryValues(pref_user_height_entryvalues);
+					ListPref.setValueIndex(index);
+					
+					ListPref.setSummary(ListPref.getEntries()[index]);
 					ListPref.setTitle(haray[0]);
 					ListPref.setDialogTitle(haray[0]);
 
 				} else {
 
-					String[] pref_user_weight_impeiral_entries = res
-							.getStringArray(R.array.pref_user_height_impeiral_entries);
-					String[] pref_user_weight_impeiral_entriesvalue = res
-							.getStringArray(R.array.pref_user_height_impeiral_entriesvalues);
-
-					ListPref.setEntries(pref_user_weight_impeiral_entries);
-					ListPref.setEntryValues(pref_user_weight_impeiral_entriesvalue);
 					String value = sharedPreferences.getString(key,
 							defaultValue);
-					ListPref.setSummary(ListPref.getEntry());
+					ListPref.setEntries(pref_user_height_imperial_entries);
+					ListPref.setEntryValues(pref_user_height_entryvalues);
+					ListPref.setValueIndex(index);
+					
+					ListPref.setSummary(ListPref.getEntries()[index]);
 					ListPref.setTitle(haray[1]);
 					ListPref.setDialogTitle(haray[1]);
 
@@ -315,7 +346,6 @@ public class UserPreferencesActivity extends Activity {
 					(String) getResources().getText(R.string.take_picture),
 					(String) getResources().getText(
 							R.string.choose_from_library) };// ,
-
 
 			AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
 
@@ -373,11 +403,11 @@ public class UserPreferencesActivity extends Activity {
 						// // get the returned data
 						Bundle extras = data.getExtras();
 						// // get the cropped bitmap
-						Bitmap bmp = extras.getParcelable("data");
-						
+						final Bitmap bmp = extras.getParcelable("data");
+
 						OutputStream fOut = null;
 						File file = getTempFile(mContext);
-						
+
 						Utilities.getLog(TAG, file.toString());
 						fOut = new FileOutputStream(file);
 						bmp.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
@@ -388,12 +418,25 @@ public class UserPreferencesActivity extends Activity {
 								mContext.getContentResolver(),
 								file.getAbsolutePath(), file.getName(),
 								file.getName());
+						this.getActivity().runOnUiThread(new Runnable() {
+							public void run() {
 
-						Preference fric = (Preference) findPreference(getString(R.string.pref_profile_pic));
-						ViewGroup v = (ViewGroup) fric.getView(null, null);
-						ImageView profilePicImageView = (ImageView) v
-								.findViewById(R.id.profile_picture_image_view);
-						profilePicImageView.setImageBitmap(bmp);
+								try {
+									Preference fric = (Preference) findPreference(getString(R.string.pref_profile_pic));
+									ViewGroup v = (ViewGroup) fric.getView(
+											null, null);
+									ImageView profilePicImageView = (ImageView) v
+											.findViewById(R.id.profile_picture_image_view);
+									// profilePicImageView.setImageBitmap(bmp);
+									Drawable icon = new BitmapDrawable(
+											getResources(), bmp);
+									profilePicImageView.setImageDrawable(icon);
+
+								} catch (final Exception ex) {
+									Utilities.getLog(TAG, ex.toString());
+								}
+							}
+						});
 
 						SharedPreferences prefs = PreferenceManager
 								.getDefaultSharedPreferences(mContext);
@@ -416,11 +459,11 @@ public class UserPreferencesActivity extends Activity {
 
 				case Main.SELECT_IMAGE_CODE:
 					picUri = data.getData();
-					
+
 					Utilities.getLog(TAG, picUri.toString());
-					
+
 					performCrop(picUri);
-					
+
 					break;
 				}
 			}
