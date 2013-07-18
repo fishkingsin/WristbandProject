@@ -36,7 +36,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentRight="true"
-            android:src="@drawable/page_1_002" />
+            android:background="@drawable/page_1_002" />
 
     </RelativeLayout>
 
