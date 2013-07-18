@@ -21,7 +21,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory android:title="@string/pref_user_profile" >
-        <com.idthk.wristband.ui.preference.PorfilePicturePreference
+        <Preference
             android:key="@string/pref_profile_pic"
             android:layout="@layout/image_preference_layout"
             android:title="@string/profile_pic" />

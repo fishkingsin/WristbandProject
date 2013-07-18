@@ -417,10 +417,10 @@ public class UserPreferencesActivity extends Activity {
 					}
 
 					break;
-
+					
 				case Main.SELECT_IMAGE_CODE:
-					Uri selectedImageUri = data.getData();
-					performCrop(selectedImageUri);
+					picUri = data.getData();
+					performCrop(picUri);
 					/*String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
 					Cursor cursor = mContext.getContentResolver().query(
