@@ -1014,7 +1014,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	}
 
 	public void discover(boolean scan) {
-
+		mService.scan(scan);
 	}
 
 	// public void onDiscover()
