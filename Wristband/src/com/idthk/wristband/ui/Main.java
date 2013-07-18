@@ -587,7 +587,12 @@ public class Main extends BLEBaseFragmentActivity implements
 			(byte) 0x15, (byte) 0x32, (byte) 0x40, (byte) 0x0, (byte) 0xe,
 			(byte) 0x17, (byte) 0x10, (byte) 0x7e, (byte) 0x7e, (byte) 0x7e,
 			(byte) 0x7e, (byte) 0x7e, (byte) 0x7e };
-
+	private static final int[]wireleff_connection_icons={
+		R.drawable.wireless_connection_icon_0,
+		R.drawable.wireless_connection_icon_1,
+		R.drawable.wireless_connection_icon_2,
+		R.drawable.wireless_connection_icon_3,
+		R.drawable.wireless_connection_icon_4}; 
 	int mStartUpState = WristbandStartupConstant.DISCONNECT;
 
 	MainFragment mFrag = null;
@@ -826,7 +831,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		setContentView(R.layout.main);
 
 		connectivityAnnotation = (ImageView) findViewById(R.id.connectivity);
-		setConnectionAnimation(true, false);
+		setConnectionAnimation(true,0);
 
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
@@ -1266,7 +1271,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		super.onConnected();
 		showMessage("Connected");
 		setUiState();
-		setConnectionAnimation(false, true);
+		setConnectionAnimation(false,1);
 	}
 
 	@Override
@@ -1284,7 +1289,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 		showMessage("Disconnected");
 		setUiState();
-		setConnectionAnimation(false, false);
+		setConnectionAnimation(false,0);
 
 		if (!isInLandscapeActivity && !isInPreferenceActivity) {
 			connect();
@@ -1309,11 +1314,11 @@ public class Main extends BLEBaseFragmentActivity implements
 	public void onServiceDiscovered() {
 
 		super.onServiceDiscovered();
-		
+		discover(false);
 		setUiState();
 		showMessage("Service Discovered");
 
-		setConnectionAnimation(false, true);
+		setConnectionAnimation(false,2);
 
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
@@ -1711,14 +1716,14 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	private void checkState(int state) {
 		// every time call check stats restrat mSyncingTimeout
-		mSyncingTimeout.cancel();
-		mSyncingTimeout.start();
+		
 		switch (state) {
 		case WristbandStartupConstant.DISCONNECT:
 
 			break;
 		case WristbandStartupConstant.CONNECT: {
-
+			mSyncingTimeout.cancel();
+			mSyncingTimeout.start();
 			Utilities.getLog(TAG, "checkState set Profile");
 			try {
 				SharedPreferences sharedPreferences = PreferenceManager
@@ -1754,7 +1759,8 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 			break;
 		case WristbandStartupConstant.SYNC_USER_PROFILE:
-
+			mSyncingTimeout.cancel();
+			mSyncingTimeout.start();
 		{
 			try {
 				SharedPreferences sharedPreferences = PreferenceManager
@@ -1785,6 +1791,8 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 			break;
 		case WristbandStartupConstant.SYNC_DAILY_TARGET:
+			mSyncingTimeout.cancel();
+			mSyncingTimeout.start();
 		// daily target set going to set wake up time
 		{
 			try {
@@ -1822,6 +1830,8 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 			break;
 		case WristbandStartupConstant.SYNC_WAKE_UP_TIME: {
+			mSyncingTimeout.cancel();
+			mSyncingTimeout.start();
 			// SYNC_WAKE_UP_TIME target was set going to set wake up systemtime
 			try {
 				Calendar c = Calendar.getInstance();
@@ -1843,13 +1853,15 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 			break;
 		case WristbandStartupConstant.SYNC_TIME:
-
+			mSyncingTimeout.cancel();
+			mSyncingTimeout.start();
 			getVersion();
 			break;
 		case WristbandStartupConstant.GET_SOFTWARE_VERSION:
 			mSyncingTimeout.cancel();
+			
 			pd.dismiss();
-
+			setConnectionAnimation(false,2);
 			try {
 				new AlertDialog.Builder(this)
 						.setTitle(R.string.sync_history_data)
@@ -1862,6 +1874,7 @@ public class Main extends BLEBaseFragmentActivity implements
 											pd.setTitle(R.string.syncing_device);
 											pd.setMessage(getString(R.string.please_wait));
 											pd.show();
+											mSyncingTimeout.start();
 										} catch (Exception e) {
 											e.printStackTrace();
 										}
@@ -1874,7 +1887,7 @@ public class Main extends BLEBaseFragmentActivity implements
 											int which) {
 										mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
 										checkState(mStartUpState);
-										mSyncingTimeout.cancel();
+										
 										mSyncingTimeout.start();
 									}
 								}).show();
@@ -1892,8 +1905,9 @@ public class Main extends BLEBaseFragmentActivity implements
 					e.printStackTrace();
 				}
 				startStream();
-				setConnectionAnimation(false, true);
-
+				setConnectionAnimation(false,3);
+				mSyncingTimeout.cancel();
+				mSyncingTimeout.start();
 				mStartUpState = WristbandStartupConstant.START_STREAM;
 				checkState(mStartUpState);
 			} catch (Exception e) {
@@ -1909,7 +1923,9 @@ public class Main extends BLEBaseFragmentActivity implements
 			}
 			break;
 		case WristbandStartupConstant.START_STREAM:
+			setConnectionAnimation(false,4);
 			pd.dismiss();
+			
 			Utilities.getLog(TAG, "Woo hooo start Streaming now");
 			mStreamModeTimeout.start();
 			mSyncingTimeout.cancel();
@@ -2025,7 +2041,7 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	}
 
-	private void setConnectionAnimation(boolean start, boolean connected) {
+	private void setConnectionAnimation(boolean start, int index) {
 		if (start) {
 			connectivityAnnotation.clearAnimation();
 			connectivityAnnotation
@@ -2036,13 +2052,9 @@ public class Main extends BLEBaseFragmentActivity implements
 		} else {
 			connectivityAnnotation.clearAnimation();
 
-			if (connected) {
 				connectivityAnnotation
-						.setBackgroundResource(R.drawable.wireless_connection_icon_4);
-			} else {
-				connectivityAnnotation
-						.setBackgroundResource(R.drawable.wireless_connection_icon_0);
-			}
+						.setBackgroundResource(wireleff_connection_icons[index]);
+			
 		}
 
 	}
