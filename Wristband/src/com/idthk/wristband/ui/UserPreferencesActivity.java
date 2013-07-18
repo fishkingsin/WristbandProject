@@ -6,7 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import org.bostonandroid.datepreference.DatePreference;
 
@@ -43,7 +45,7 @@ import android.widget.ImageView;
 public class UserPreferencesActivity extends Activity {
 	static final String TAG = "UserProfileActivity";
 	private Activity mContext;
-	
+
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,
@@ -72,9 +74,10 @@ public class UserPreferencesActivity extends Activity {
 		private View mRootView;
 		final int PIC_CROP = 2;
 		private Uri picUri;
-		private static String[] pref_user_height_metric_entries ;
-		private static String[] pref_user_height_entryvalues;
-		private static String[] pref_user_height_imperial_entries;
+		private static List<CharSequence> pref_user_height_metric_entries;
+		private static List<CharSequence> pref_user_height_metric_entryvalues;
+		private static List<CharSequence> pref_user_height_imperial_entries;
+		private static List<CharSequence> pref_user_height_imperial_entryvalues;
 
 		public static UserPrefsFragment create(int targetPreferenceFile) {
 			UserPrefsFragment fragment = new UserPrefsFragment();
@@ -92,27 +95,36 @@ public class UserPreferencesActivity extends Activity {
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
-			int start = 135;
-			String format = "%.1f";
-			pref_user_height_metric_entries = new String[66];
-			pref_user_height_entryvalues = new String[66];
-			pref_user_height_imperial_entries = new String[66];
-			for (int i = 0 ; i < 66 ; i++){
-				pref_user_height_metric_entries[i] = String.valueOf(start);
-				
-				
-				float v = (float) (start*0.393701);
-				int foot = (int) (v/12);
-				float inch = v%12;
-				String msg = String.valueOf(foot)+"'"+String.format(format,inch)+"\"";
-				Utilities.getLog(TAG, msg);
-				pref_user_height_imperial_entries[i] = msg;
-				
-				pref_user_height_entryvalues[i] = String.valueOf(start);
-				start++;
+			int start = 69;
+
+			int range = 231 - 69;
+			int step = start;
+
+			pref_user_height_metric_entries = new ArrayList<CharSequence>();
+			pref_user_height_metric_entryvalues = new ArrayList<CharSequence>();
+			pref_user_height_imperial_entries = new ArrayList<CharSequence>();
+			pref_user_height_imperial_entryvalues = new ArrayList<CharSequence>();
+			for (int i = 0; i <= range; i++) {
+				pref_user_height_metric_entries.add(String.valueOf(step));
+				pref_user_height_metric_entryvalues.add(String.valueOf(step));
+				step++;
 			}
-			
-			
+
+			for (int foot = 3; foot <= 7; foot++) {
+				for (int inch = 1; inch <= 11; inch++) {
+					if (foot != 3 && foot != 2) {
+						String msg = String.valueOf(foot) + "'"
+								+ String.valueOf(inch) + "\"";
+						float v = (float) ((foot * 12 + inch) * 2.54);
+						Utilities.getLog(TAG, msg);
+						pref_user_height_imperial_entries.add(msg);
+						pref_user_height_imperial_entryvalues.add(String
+								.valueOf((int) v));
+					}
+
+				}
+			}
+
 			super.onCreate(savedInstanceState);
 			targetPreferenceFile = getArguments().getInt(ARG_XML);
 			// Load the preferences from an XML resource
@@ -248,20 +260,28 @@ public class UserPreferencesActivity extends Activity {
 				String value = sharedPreferences.getString(key,
 						getString(R.string.default_user_height));
 				ListPreference ListPref = (ListPreference) findPreference(key);
-				ListPref.setSummary(ListPref.getEntry());
+				if (ListPref.getEntry() != null)
+					ListPref.setSummary(ListPref.getEntry());
+				else {
+					ListPref.setSummary(getString(R.string.default_user_height));
+					ListPref.setValueIndex(0);
+				}
 				// // set distance and convert to km unit
 				SharedPreferences.Editor editor = sharedPreferences.edit();
 				String unitString = sharedPreferences.getString(
 						getString(R.string.prefUnit), "Metric");
-				boolean isMetric = (unitString.equals("Metric")) ? true : false;
-				if (isMetric) {
-
-					editor.putInt(getString(R.string.prefHeight),
-							Integer.valueOf(value));
-				} else {
-					float v = Float.valueOf(value);
-					editor.putInt(getString(R.string.prefHeight), (int) v);
-				}
+				
+				editor.putInt(getString(R.string.prefHeight),
+						Integer.valueOf(value));
+//				boolean isMetric = (unitString.equals("Metric")) ? true : false;
+//				if (isMetric) {
+//
+//					editor.putInt(getString(R.string.prefHeight),
+//							Integer.valueOf(value));
+//				} else {
+//					float v = Float.valueOf(value);
+//					editor.putInt(getString(R.string.prefHeight), (int) v);
+//				}
 				// // Commit the edits!
 				editor.commit();
 				//
@@ -274,7 +294,9 @@ public class UserPreferencesActivity extends Activity {
 			String unitString = sharedPreferences.getString(
 					getString(R.string.prefUnit), "Metric");
 			boolean isMetric = (unitString.equals("Metric")) ? true : false;
-
+			int height = sharedPreferences.getInt(
+					getString(R.string.prefHeight), 200);
+			
 			// set user weight unit
 			String fformat = "%.1f";
 			Preference pref = findPreference(getString(R.string.prefWeightDisplay));
@@ -299,46 +321,91 @@ public class UserPreferencesActivity extends Activity {
 			String defaultValue = getString(R.string.default_user_height);
 			ListPreference ListPref = (ListPreference) findPreference(key);
 			if (ListPref != null) {
-				int index = 0;
+//				int index = 0;
 
-				CharSequence[] entries = ListPref.getEntries();
-				CharSequence targetEntry = ListPref.getEntry();
-				if (targetEntry != null) {
-					for (CharSequence entry : entries) {
-						if (targetEntry.equals(entry)) {
+//				CharSequence[] entries = ListPref.getEntries();
+//				CharSequence targetEntry = ListPref.getEntry();
+//				if (targetEntry != null) {
+//					for (CharSequence entry : entries) {
+//						if (targetEntry.equals(entry)) {
+//							break;
+//						}
+//						index++;
+//					}
+//				}
+				String haray[] = res.getStringArray(R.array.height_unit);
+				if (isMetric) {
+
+					String value = sharedPreferences.getString(key,
+							defaultValue);
+
+					ListPref.setEntries(pref_user_height_metric_entries
+							.toArray(new CharSequence[pref_user_height_metric_entries
+									.size()]));
+
+					ListPref.setEntryValues(pref_user_height_metric_entryvalues
+							.toArray(new CharSequence[pref_user_height_metric_entryvalues
+									.size()]));
+					
+					int index = 0;
+					Utilities.getLog(TAG, "Height : "+height);
+					for(CharSequence c : pref_user_height_metric_entryvalues)
+					{
+						Utilities.getLog(TAG, "pref_user_height_metric_entryvalues : "+c);
+						if(height == Integer.valueOf((String) c))
+						{
+							
 							break;
 						}
 						index++;
 					}
-				}
-				String haray[] = res.getStringArray(R.array.height_unit);
-				if (isMetric) {
-
-
-					String value = sharedPreferences.getString(key,
-							defaultValue);
-					ListPref.setEntries(pref_user_height_metric_entries);
-					ListPref.setEntryValues(pref_user_height_entryvalues);
 					ListPref.setValueIndex(index);
+					if(index<pref_user_height_metric_entryvalues.size())ListPref.setSummary(pref_user_height_metric_entries.get(index));
 					
-					ListPref.setSummary(ListPref.getEntries()[index]);
 					ListPref.setTitle(haray[0]);
 					ListPref.setDialogTitle(haray[0]);
 
 				} else {
-
+					String oldEntry = ListPref.getValue();
 					String value = sharedPreferences.getString(key,
 							defaultValue);
-					ListPref.setEntries(pref_user_height_imperial_entries);
-					ListPref.setEntryValues(pref_user_height_entryvalues);
-					ListPref.setValueIndex(index);
-					
-					ListPref.setSummary(ListPref.getEntries()[index]);
+
+					ListPref.setEntries(pref_user_height_imperial_entries
+							.toArray(new CharSequence[pref_user_height_imperial_entries
+									.size()]));
+
+					ListPref.setEntryValues(pref_user_height_imperial_entryvalues
+							.toArray(new CharSequence[pref_user_height_imperial_entryvalues
+									.size()]));
+
+					int index = 0;
+					int closest = 0;
+					int targetIndex = 0;
+					Utilities.getLog(TAG, "Height : "+height);
+					for(CharSequence c : pref_user_height_imperial_entryvalues)
+					{
+						 if(Math.abs(closest - height) > Math.abs(Integer.valueOf((String) c)- height))
+						 {
+							 closest = Integer.valueOf((String) c);
+							 targetIndex = index;
+						 }
+						 index++;
+					}
+					ListPref.setValueIndex(targetIndex);
+					ListPref.setSummary(pref_user_height_imperial_entries.get(targetIndex));
 					ListPref.setTitle(haray[1]);
 					ListPref.setDialogTitle(haray[1]);
 
 				}
 			}
+		}
+		
+		public static int closest1(int find, int... values) {
+		    int closest = values[0];
+		    for(int i: values)
+		       if(Math.abs(closest - find) > Math.abs(i - find))
+		           closest = i;
+		    return closest;
 		}
 
 		private void showDialog() {

@@ -56,15 +56,14 @@
         <ListPreference
             android:defaultValue="5&apos;8&quot;"
             android:dialogTitle="@string/height"
-            android:entries="@array/pref_user_height_metric_entries"
-            android:entryValues="@array/pref_user_height_metric_entriesvalues"
             android:key="@string/prefHeightDisplay"
-            android:title="Test Height unit" />
+            android:title="@string/height" />
 
         <com.idthk.wristband.ui.preference.NumberPickerPreference
             android:defaultValue="50"
-            android:dialogTitle="@string/height"
-            android:key="@string/prefWeightDisplay" />
+            android:dialogTitle="@string/weight"
+            android:key="@string/prefWeightDisplay" 
+            android:title="@string/weight"/>
     </PreferenceCategory>
 
 </PreferenceScreen>
