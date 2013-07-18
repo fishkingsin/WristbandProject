@@ -176,7 +176,7 @@ public class MainFragmentPager extends Fragment implements
 		if (path != "") {
 			Bitmap myBitmap = Utilities.decodeFile(new File(path),
 					this.getActivity());
-			profilePic.setImageBitmap(myBitmap);
+			profilePic.setImageBitmap( Utilities.getRoundedCornerBitmap(myBitmap));
 		}
 		super.onResume();
 
