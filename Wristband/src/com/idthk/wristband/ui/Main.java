@@ -771,6 +771,10 @@ public class Main extends BLEBaseFragmentActivity implements
 
 	final static private long ONE_SECOND = 1000;
 	final static private long TWENTY_SECONDS = ONE_SECOND * 20;
+	public static final String TAG_STEPS = "tag_steps";
+	public static final String TAG_CALROIES = "tag_calories";
+	public static final String TAG_DISTANCE = "tag_distance";
+	public static final String TAG_ACTIVITYTIME = "tag_activitytime";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -997,9 +1001,11 @@ public class Main extends BLEBaseFragmentActivity implements
 		Bundle bundle = new Bundle();
 		if (mCurrentView.equals("Activity")) {
 			intent = new Intent(this, ActivityLandscapeActivity.class);
+			
 
 		} else if (mCurrentView.equals("Sleep")) {
 			intent = new Intent(this, SleepLandscapeActivity.class);
+
 
 		} else if (mCurrentView.equals("Activity Level")
 				|| mCurrentView.equals("Sleep Level")) {
@@ -1281,6 +1287,15 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onStreamMessage(int steps, int calories, float distance,
 			int activityTime, int batteryLevel) {
+		
+		Intent broadcast = new Intent();
+	    broadcast.setAction("android.intent.action.MAIN");
+	    broadcast.putExtra(TAG_STEPS, steps);
+	    broadcast.putExtra(TAG_CALROIES, calories);
+	    broadcast.putExtra(TAG_DISTANCE, distance);
+	    broadcast.putExtra(TAG_ACTIVITYTIME, activityTime);
+	    sendBroadcast(broadcast);
+		
 		if (!isStoringTimerStarted) {
 			isStoringTimerStarted = true;
 			mDBStoringTimer.start();

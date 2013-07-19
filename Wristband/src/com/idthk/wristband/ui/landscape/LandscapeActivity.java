@@ -1,7 +1,10 @@
 package com.idthk.wristband.ui.landscape;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -18,6 +21,7 @@ import com.idthk.wristband.ui.Utilities;
 
 public class LandscapeActivity extends Activity implements OnClickListener {
 	static final String TAG = "LandscapeActivity";
+	private BroadcastReceiver mReceiver;
 	public static final String LANDSCAPE_BUNDLE = "landscape_bundle";
 	OrientationEventListener orientationListener;
 	static final int THRESHOLD = 5;
@@ -71,6 +75,8 @@ public class LandscapeActivity extends Activity implements OnClickListener {
 		checkButtonVisible() ;
 
 	}
+	
+	
 	private boolean isLandscapeRight(int orientation){
         return orientation >= (90 - THRESHOLD) && orientation <= (90 + THRESHOLD);
     }
@@ -85,6 +91,25 @@ public class LandscapeActivity extends Activity implements OnClickListener {
 	public void onResume(){
 	    super.onResume();
 	    orientationListener.enable();
+	    
+        IntentFilter intentFilter = new IntentFilter(
+                "android.intent.action.MAIN");
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //extract our message from intent
+                int step = intent.getIntExtra(Main.TAG_STEPS,0);
+                int calories = intent.getIntExtra(Main.TAG_CALROIES,0);
+                float distance = intent.getIntExtra(Main.TAG_DISTANCE,0);
+                int activitytime = intent.getIntExtra(Main.TAG_ACTIVITYTIME,0);
+                //log our message value
+                Utilities.getLog(TAG,"step->"+step+" calories->"+calories+" distance->"+distance+" activitytime->"+activitytime);
+            }
+
+			
+        };
+        //registering our receiver
+        this.registerReceiver(mReceiver, intentFilter);
 	}
 
 	@Override
