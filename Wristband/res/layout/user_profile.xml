@@ -31,7 +31,7 @@
                     android:layout_column="4"
                     android:layout_gravity="right|bottom"
                     android:layout_row="0"
-                    android:src="@drawable/battery_0" />
+                    />
 
                 <LinearLayout
                     android:layout_column="1"
