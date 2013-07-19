@@ -92,9 +92,6 @@ public class NumberPickerPreference extends DialogPreference implements
 		else
 			mValue = (Integer) defaultValue;
 
-		if (mNumberPicker != null)
-			mNumberPicker.setValue(mValue);
-
 		if (shouldPersist()) {
 			persistInt(mValue);
 			notifyChanged();
