@@ -75,7 +75,7 @@ public class MainFragmentPager extends Fragment implements
 		// load user profile
 
 		publishUserProfile(v);
-
+		
 		mViewPager = (ViewPager) v.findViewById(R.id.pager);
 
 		mMyFragmentPagerAdapter = new MyFragmentPagerAdapter(
@@ -131,6 +131,7 @@ public class MainFragmentPager extends Fragment implements
 			battery_indicated_imageview = ((ImageView) v
 					.findViewById(R.id.battery_image));
 		}
+		updateBatteryLevel(-1); 
 
 		userNameTv = ((TextView) v.findViewById(R.id.userNameTv));
 		lastSyncTimeTv = ((TextView) v
@@ -176,7 +177,7 @@ public class MainFragmentPager extends Fragment implements
 		if (path != "") {
 			Bitmap myBitmap = Utilities.decodeFile(new File(path),
 					this.getActivity());
-			profilePic.setImageBitmap( Utilities.getRoundedCornerBitmap(myBitmap));
+			if(myBitmap!=null)profilePic.setImageBitmap( Utilities.getRoundedCornerBitmap(myBitmap));
 		}
 		super.onResume();
 
@@ -236,10 +237,11 @@ public class MainFragmentPager extends Fragment implements
 		return mCurrentPage;
 	}
 
-	public void updateBatteryLevet(int batteryLevel) {
+	public void updateBatteryLevel(int batteryLevel) {
 		// TODO Auto-generated method stub
 		if (battery_indicated_imageview != null) {
-			if (batteryLevel <= 33) {
+			
+			if (batteryLevel <= 33 && batteryLevel >=0) {
 				battery_indicated_imageview.setImageResource(battery_images[0]);
 			}
 			else if (batteryLevel > 33 && batteryLevel<=66) {
@@ -247,6 +249,10 @@ public class MainFragmentPager extends Fragment implements
 			}
 			else if (batteryLevel >66 ) {
 				battery_indicated_imageview.setImageResource(battery_images[2]);
+			}
+			else if (batteryLevel == -1)
+			{
+				battery_indicated_imageview.setImageResource(android.R.color.transparent); 
 			}
 		}
 	}

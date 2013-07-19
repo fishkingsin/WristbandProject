@@ -23,12 +23,13 @@ public class SleepLandscapeActivity extends LandscapeActivity {
 		
 		Random random = new Random();
 		int numBars = 100;
-		RoundBarGraphView mGraphView = new RoundBarGraphView(this, "");
-		mGraphView.setHorizontalLabels(new String[] {
-				getString(R.string.start), getString(R.string.end) });
-		mGraphView.setVerticalLabels(new String[] { getString(R.string.high),
-				getString(R.string.middle), getString(R.string.low) });
+//		RoundBarGraphView mGraphView = new RoundBarGraphView(this, "");
+//		mGraphView.setHorizontalLabels(new String[] {
+//				getString(R.string.start), getString(R.string.end) });
+//		mGraphView.setVerticalLabels(new String[] { getString(R.string.high),
+//				getString(R.string.middle), getString(R.string.low) });
 
+		
 		
 		displayType = SleepStatisticTabFragment.TAB_DAY;
 

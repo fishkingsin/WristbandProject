@@ -331,12 +331,9 @@ public class Utilities {
 
 			int r = 0;
 			for (int i = 0; i < PER_HOUR; i++) {
-				if(i==6 || i==12 || i==18)
-				{
+				if (i == 6 || i == 12 || i == 18) {
 					hStr[i] = String.format(format, i) + ":00";
-				}
-				else
-				{
+				} else {
 					hStr[i] = "|";
 				}
 				int ret = 0;
@@ -369,8 +366,8 @@ public class Utilities {
 
 			mGraphView.setManualYAxisBounds(60, 0);
 			mGraphView.setHorizontalLabels(hStr);
-			mGraphView.setVerticalLabels(new String[] { "60","55","50", "45", "40", "35",
-					"30", "25", "20", "15", "10", "5", "0" });
+			mGraphView.setVerticalLabels(new String[] { "60", "55", "50", "45",
+					"40", "35", "30", "25", "20", "15", "10", "5", "0" });
 			mGraphView.addSeries(series);
 
 			graph.addView(mGraphView);
@@ -467,12 +464,9 @@ public class Utilities {
 								Locale.getDefault()));
 					}
 				}
-				if(i==4 || i == 15 || i==25)
-				{
+				if (i == 4 || i == 15 || i == 25) {
 					hStr[i] = String.valueOf(i + 1);
-				}
-				else
-				{
+				} else {
 					hStr[i] = "|";
 				}
 				data[i] = new GraphViewData(i, ret);
@@ -521,12 +515,9 @@ public class Utilities {
 						r++;
 					}
 				}
-				if(i==2 || i==5 || i==8)
-				{
+				if (i == 2 || i == 5 || i == 8) {
 					hStr[i] = getMonth(i);
-				}
-				else
-				{
+				} else {
 					hStr[i] = "|";
 				}
 				data[i] = new GraphViewData(i, ret);
@@ -652,12 +643,9 @@ public class Utilities {
 
 				}
 
-				if(i==4 || i == 15 || i==25)
-				{
+				if (i == 4 || i == 15 || i == 25) {
 					hStr[i] = String.valueOf(i + 1);
-				}
-				else
-				{
+				} else {
 					hStr[i] = "|";
 				}
 				data[i] = new GraphViewData(i, ret);
@@ -704,12 +692,9 @@ public class Utilities {
 						r++;
 					}
 				}
-				if(i==2 || i==5 || i==8)
-				{
+				if (i == 2 || i == 5 || i == 8) {
 					hStr[i] = getMonth(i);
-				}
-				else
-				{
+				} else {
 					hStr[i] = "|";
 				}
 
@@ -861,10 +846,10 @@ public class Utilities {
 				.findViewById(R.id.sleep_duration_textfield));
 		if (sleepDurationTV != null)
 			sleepDurationTV.setText(inBedTime);
-
+		List<GraphViewData> data = new ArrayList<GraphViewData>();
+		List<String> hStr = new ArrayList<String>();
 		if (sleeprecord != null) {
 			List<SleepPattern> patterns = sleeprecord.getPatterns();
-			List<GraphViewData> data = new ArrayList<GraphViewData>();
 
 			int j = 0;
 			int xValue = 0;
@@ -886,19 +871,27 @@ public class Utilities {
 						break;
 					}
 					data.add(new GraphViewData(xValue, a));
+					hStr.add("|");
 					xValue++;
 				}
 
 			}
-
-			GraphViewData[] a = data.toArray(new GraphViewData[data.size()]);
-			GraphViewSeries series = new GraphViewSeries("Hour", style, a);
-
-			mGraphView.setManualYAxisBounds(3, 0);
-			mGraphView.addSeries(series);
-			// stuff that updates ui
-			graph.addView(mGraphView);
+		} else {
+			// dummy data
+			for (int i = 0; i < 8; i++) {
+				data.add(new GraphViewData(i, 0));
+				hStr.add("|");
+			}
 		}
+
+		GraphViewData[] a = data.toArray(new GraphViewData[data.size()]);
+		GraphViewSeries series = new GraphViewSeries("Hour", style, a);
+		mGraphView.setHorizontalLabels(hStr.toArray(new String[hStr.size()]));
+		mGraphView.setManualYAxisBounds(3, 0);
+		mGraphView.addSeries(series);
+		// stuff that updates ui
+		graph.addView(mGraphView);
+
 	}
 
 	public static int prevEntryDate(String displaytype) {
