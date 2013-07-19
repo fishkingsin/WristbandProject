@@ -95,7 +95,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_GO_TO_BED_TIME + " datetime , " + KEY_ACTUAL_WAKE_TIME
 				+ " datetime , " + KEY_PRESET_WAKE_UP_TIME + " datetime , "
 				+ KEY_SLEEP_EFFICIENCY + " INTEGER " + ")";
-		Log.v(TAG, "Create query " + CREATE_SLEEP_TABLE);
+		//Log.v(TAG, "Create query " + CREATE_SLEEP_TABLE);
 		db.execSQL(CREATE_SLEEP_TABLE);
 
 		String CREATE_SLEEPPATTERN_TABLE = "CREATE TABLE " + TABLE_SLEEPPATTERN
@@ -191,7 +191,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		String selectQuery = "SELECT * FROM " + TABLE_RECORDS + " WHERE  "
 				+ KEY_TIMESTAMP + "=" + String.valueOf(timestamp);
-		Log.v(TAG, "getRecord " + selectQuery);
+		//Log.v(TAG, "getRecord " + selectQuery);
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		if (cursor.moveToFirst()) {
@@ -223,7 +223,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		String selectQuery = "SELECT * FROM " + TABLE_RECORDS + " WHERE  "
 		// + KEY_TIMESTAMP + "=" + String.valueOf(timestamp);
 				+ KEY_DATE + "='" + sqlDateFormat.format(date) + "'";
-		Log.v(TAG, "getRecord " + selectQuery);
+		//Log.v(TAG, "getRecord " + selectQuery);
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		if (cursor.moveToFirst()) {
