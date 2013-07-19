@@ -331,7 +331,14 @@ public class Utilities {
 
 			int r = 0;
 			for (int i = 0; i < PER_HOUR; i++) {
-				hStr[i] = String.format(format, i) + ":00";
+				if(i==6 || i==12 || i==18)
+				{
+					hStr[i] = String.format(format, i) + ":00";
+				}
+				else
+				{
+					hStr[i] = "|";
+				}
 				int ret = 0;
 				if (r < records.size()) {
 					Record record = records.get(r);
@@ -362,7 +369,7 @@ public class Utilities {
 
 			mGraphView.setManualYAxisBounds(60, 0);
 			mGraphView.setHorizontalLabels(hStr);
-			mGraphView.setVerticalLabels(new String[] { "50", "45", "40", "35",
+			mGraphView.setVerticalLabels(new String[] { "60","55","50", "45", "40", "35",
 					"30", "25", "20", "15", "10", "5", "0" });
 			mGraphView.addSeries(series);
 
@@ -460,7 +467,14 @@ public class Utilities {
 								Locale.getDefault()));
 					}
 				}
-				hStr[i] = String.valueOf(i + 1);
+				if(i==4 || i == 15 || i==25)
+				{
+					hStr[i] = String.valueOf(i + 1);
+				}
+				else
+				{
+					hStr[i] = "|";
+				}
 				data[i] = new GraphViewData(i, ret);
 			}
 			((TextView) rootView.findViewById(R.id.graph_view_title_indicator))
@@ -507,7 +521,14 @@ public class Utilities {
 						r++;
 					}
 				}
-				hStr[i] = getMonth(i);
+				if(i==2 || i==5 || i==8)
+				{
+					hStr[i] = getMonth(i);
+				}
+				else
+				{
+					hStr[i] = "|";
+				}
 				data[i] = new GraphViewData(i, ret);
 			}
 			TextView tv = (TextView) rootView
@@ -631,7 +652,14 @@ public class Utilities {
 
 				}
 
-				hStr[i] = String.valueOf(i + 1);
+				if(i==4 || i == 15 || i==25)
+				{
+					hStr[i] = String.valueOf(i + 1);
+				}
+				else
+				{
+					hStr[i] = "|";
+				}
 				data[i] = new GraphViewData(i, ret);
 			}
 
@@ -676,8 +704,14 @@ public class Utilities {
 						r++;
 					}
 				}
-
-				hStr[i] = getMonth(i);
+				if(i==2 || i==5 || i==8)
+				{
+					hStr[i] = getMonth(i);
+				}
+				else
+				{
+					hStr[i] = "|";
+				}
 
 				data[i] = new GraphViewData(i, ret);
 			}

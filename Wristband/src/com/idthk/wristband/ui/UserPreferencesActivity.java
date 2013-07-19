@@ -273,15 +273,6 @@ public class UserPreferencesActivity extends Activity {
 				
 				editor.putInt(getString(R.string.prefHeight),
 						Integer.valueOf(value));
-//				boolean isMetric = (unitString.equals("Metric")) ? true : false;
-//				if (isMetric) {
-//
-//					editor.putInt(getString(R.string.prefHeight),
-//							Integer.valueOf(value));
-//				} else {
-//					float v = Float.valueOf(value);
-//					editor.putInt(getString(R.string.prefHeight), (int) v);
-//				}
 				// // Commit the edits!
 				editor.commit();
 				//
