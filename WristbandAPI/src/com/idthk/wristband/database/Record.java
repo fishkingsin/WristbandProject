@@ -134,7 +134,7 @@ public class Record {
 	public String toString()
 	{
 		
-		return "Timestamp: "+ String.valueOf(getTimeStamp())+ " Date : " +dateOnlyFormat.format(getCalendar().getTime()) + " - steps : " + getSteps()
+		return " Date : " +dateOnlyFormat.format(getCalendar().getTime()) + " - steps : " + getSteps()
 				+ " calories : " + getCalories()
 				+ " distance : " + getDistance()
 				+ " activity time : " + getActivityTime();
