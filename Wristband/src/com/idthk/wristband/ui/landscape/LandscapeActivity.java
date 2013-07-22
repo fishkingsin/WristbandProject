@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.View;
@@ -21,7 +22,7 @@ import com.idthk.wristband.ui.Utilities;
 
 public class LandscapeActivity extends Activity implements OnClickListener {
 	static final String TAG = "LandscapeActivity";
-	private BroadcastReceiver mReceiver;
+	
 	public static final String LANDSCAPE_BUNDLE = "landscape_bundle";
 	OrientationEventListener orientationListener;
 	static final int THRESHOLD = 5;
@@ -30,6 +31,13 @@ public class LandscapeActivity extends Activity implements OnClickListener {
 	protected View nextEntryButton = null;
 	protected View prevEntryButton = null;
 	protected String displayType;
+	protected int step;
+
+	protected int calories;
+
+	protected float distance;
+
+	protected int activitytime;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -87,38 +95,23 @@ public class LandscapeActivity extends Activity implements OnClickListener {
 	private boolean isPortrait(int orientation){
 		return (orientation >= (360 - THRESHOLD) && orientation <= 360) || (orientation >= 0 && orientation <= THRESHOLD);
 	}
+
+
+	public void onStreamMessage(int steps, int calories, float distance,
+			int activityTime) {
+		Utilities.getLog(TAG,"step->"+step+" calories->"+calories+" distance->"+distance+" activitytime->"+activitytime);
+	}
 	@Override
 	public void onResume(){
 	    super.onResume();
 	    orientationListener.enable();
-	    
-        IntentFilter intentFilter = new IntentFilter(
-                "android.intent.action.MAIN");
-        mReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                //extract our message from intent
-                int step = intent.getIntExtra(Main.TAG_STEPS,0);
-                int calories = intent.getIntExtra(Main.TAG_CALROIES,0);
-                float distance = intent.getIntExtra(Main.TAG_DISTANCE,0);
-                int activitytime = intent.getIntExtra(Main.TAG_ACTIVITYTIME,0);
-                //log our message value
-                Utilities.getLog(TAG,"step->"+step+" calories->"+calories+" distance->"+distance+" activitytime->"+activitytime);
-            }
-
-			
-        };
-        //registering our receiver
-        this.registerReceiver(mReceiver, intentFilter);
 	}
-
 	@Override
 	public void onPause(){
 	    super.onPause();
 	    orientationListener.disable();
 	}
-	@Override
-    public void onBackPressed() {
+	public void onBackPressed() {
 		//override and disable back button
 		Bundle conData = new Bundle();
 		   conData.putString(LANDSCAPE_ACTIVITY_TAG, FINISH_APP);
@@ -148,7 +141,7 @@ public class LandscapeActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		int ret = Utilities.prevEntryDate(displayType);
 		
-		if(ret==-1)
+		if(ret==-1 || ret == 0)
 		{
 			if(prevEntryButton!=null)prevEntryButton.setVisibility(View.INVISIBLE);
 		}
@@ -165,7 +158,7 @@ public class LandscapeActivity extends Activity implements OnClickListener {
 		int ret = Utilities.nextEntryDate(displayType);
 			
 
-		if(ret==1)
+		if(ret==1 || ret == 0)
 		{
 			if(nextEntryButton!=null)nextEntryButton.setVisibility(View.INVISIBLE);
 		}
