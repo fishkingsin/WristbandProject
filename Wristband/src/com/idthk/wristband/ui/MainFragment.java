@@ -404,7 +404,7 @@ public class MainFragment extends Fragment implements
 			Utilities.targetDate().setTime(now.getTime());
 			Utilities.publishGraph(getActivity(), mRootView,
 					((ViewGroup) mRootView.findViewById(R.id.graph1)),
-					SleepStatisticTabFragment.TAB_DAY);
+					TabFragmentSleepStatistic.TAB_DAY);
 		} else {
 			// TODO implement sleep patter graph view
 			Utilities.populateSleepPatternGraph(getActivity(), mRootView,((ViewGroup) mRootView
@@ -424,6 +424,7 @@ public class MainFragment extends Fragment implements
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
+		
 		if (mPageNumber == 0) {
 			if (key.equals(getString(R.string.pref_toggle_target))) {
 				boolean target = sharedPreferences.getBoolean(key, false);
@@ -435,10 +436,12 @@ public class MainFragment extends Fragment implements
 				targetSteps = Integer.valueOf(sharedPreferences.getString(
 						getString(R.string.pref_targetSteps), "0"));
 				goalStepsTv.setText(Integer.toString(targetSteps));
+				mStepsProgressBar.setMax(targetSteps);
 			} else if (key.equals(getString(R.string.pref_targetCalories))) {
 				targetCalories = Integer.valueOf(sharedPreferences.getString(
 						getString(R.string.pref_targetCalories), "0"));
 				goalCaloriesTv.setText(Integer.toString(targetCalories));
+				mCaloriesProgressBar.setMax(targetCalories);
 			} else if (key.equals(getString(R.string.pref_targetDistances_display))) {
 //				float value = Float.valueOf(sharedPreferences.getFloat(
 //						getString(R.string.pref_targetDistances), 7));
