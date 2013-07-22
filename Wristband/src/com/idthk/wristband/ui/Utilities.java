@@ -311,11 +311,6 @@ public class Utilities {
 		getLog(sTag, " publishGraph " + message);
 		DatabaseHandler db = new DatabaseHandler(context,
 				Main.TABLE_CONTENT, null, 1);
-		if(((DatabaseHandler) db).isLocked())
-		{
-			getLog(sTag, " publishGraph stoped cause by locked data base");
-			return;
-		}
 		graph.removeAllViews();
 		String hStr[] = null;
 		GraphViewSeriesStyle style = new GraphViewSeriesStyle();
