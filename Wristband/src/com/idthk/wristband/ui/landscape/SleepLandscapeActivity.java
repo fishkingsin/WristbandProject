@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import com.idthk.wristband.graphview.RoundBarGraphView;
 import com.idthk.wristband.ui.R;
-import com.idthk.wristband.ui.SleepStatisticTabFragment;
+import com.idthk.wristband.ui.TabFragmentSleepStatistic;
 import com.idthk.wristband.ui.Utilities;
 
 public class SleepLandscapeActivity extends LandscapeActivity {
@@ -31,7 +31,7 @@ public class SleepLandscapeActivity extends LandscapeActivity {
 
 		
 		
-		displayType = SleepStatisticTabFragment.TAB_DAY;
+		displayType = TabFragmentSleepStatistic.TAB_DAY;
 
 		Utilities.populateSleepPatternGraph((Context)this , getWindow().getDecorView().getRootView(),
 				((ViewGroup) findViewById(R.id.graph1)));

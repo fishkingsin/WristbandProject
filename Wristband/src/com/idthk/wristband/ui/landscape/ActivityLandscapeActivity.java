@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.idthk.wristband.ui.ActivityStatisticTabFragment;
+import com.idthk.wristband.ui.TabFragmentActivityStatistic;
 import com.idthk.wristband.ui.Main;
 import com.idthk.wristband.ui.R;
 import com.idthk.wristband.ui.Utilities;
@@ -67,7 +67,7 @@ public class ActivityLandscapeActivity extends LandscapeActivity {
 		Calendar now = Calendar.getInstance();
 
 		Utilities.targetDate().setTime(now.getTime());
-		displayType = ActivityStatisticTabFragment.TAB_DAY;
+		displayType = TabFragmentActivityStatistic.TAB_DAY;
 		Utilities.publishGraph((Context) this, getWindow().getDecorView()
 				.getRootView(), ((ViewGroup) findViewById(R.id.graph1)),
 				displayType);
@@ -93,7 +93,7 @@ public class ActivityLandscapeActivity extends LandscapeActivity {
 		{
 			Calendar now = Calendar.getInstance();
 			Utilities.targetDate().setTime(now.getTime());
-			displayType = ActivityStatisticTabFragment.TAB_DAY;
+			displayType = TabFragmentActivityStatistic.TAB_DAY;
 			Utilities.publishGraph((Context) this, getWindow().getDecorView()
 					.getRootView(), ((ViewGroup) findViewById(R.id.graph1)),
 					displayType);
