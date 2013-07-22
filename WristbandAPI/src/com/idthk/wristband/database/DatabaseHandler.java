@@ -61,8 +61,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(
 			SQL_DATEFORMAT);
 	String SQL_DATE_ONLY_FORMAT = "yyyy-MM-dd";
-	SimpleDateFormat dateOnlyFormat = new SimpleDateFormat(
-			SQL_DATE_ONLY_FORMAT);
+	SimpleDateFormat dateOnlyFormat = new SimpleDateFormat(SQL_DATE_ONLY_FORMAT);
 	String sql_num_format = "%1$02d";
 
 	public DatabaseHandler(Context context) {
@@ -95,7 +94,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_GO_TO_BED_TIME + " datetime , " + KEY_ACTUAL_WAKE_TIME
 				+ " datetime , " + KEY_PRESET_WAKE_UP_TIME + " datetime , "
 				+ KEY_SLEEP_EFFICIENCY + " INTEGER " + ")";
-		//Log.v(TAG, "Create query " + CREATE_SLEEP_TABLE);
+		// Log.v(TAG, "Create query " + CREATE_SLEEP_TABLE);
 		db.execSQL(CREATE_SLEEP_TABLE);
 
 		String CREATE_SLEEPPATTERN_TABLE = "CREATE TABLE " + TABLE_SLEEPPATTERN
@@ -120,7 +119,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// Adding new Record
 	public void addRecord(Record record) {
 		SQLiteDatabase db = this.getWritableDatabase();
-
+		db.enableWriteAheadLogging();
 		ContentValues values = new ContentValues();
 		values.put(KEY_TIMESTAMP, record.getTimeStamp());
 
@@ -139,7 +138,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// Adding new Record
 	public void addSleepRecord(SleepRecord sleepRecord) {
 		SQLiteDatabase db = this.getWritableDatabase();
-
+		db.enableWriteAheadLogging();
 		ContentValues values = new ContentValues();
 		values.put(KEY_TIMESTAMP, sleepRecord.getTimeStamp());
 		values.put(KEY_DATE, sqlDateFormat.format(sleepRecord.getTimeStamp()));
@@ -171,7 +170,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// Adding new pattern
 	private void addSleepPattern(SleepPattern sleepPattern) {
 		SQLiteDatabase db = this.getWritableDatabase();
-
+		db.enableWriteAheadLogging();
 		ContentValues values = new ContentValues();
 
 		values.put(KEY_TIMESTAMP,
@@ -191,7 +190,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		String selectQuery = "SELECT * FROM " + TABLE_RECORDS + " WHERE  "
 				+ KEY_TIMESTAMP + "=" + String.valueOf(timestamp);
-		//Log.v(TAG, "getRecord " + selectQuery);
+		// Log.v(TAG, "getRecord " + selectQuery);
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		if (cursor.moveToFirst()) {
@@ -223,7 +222,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		String selectQuery = "SELECT * FROM " + TABLE_RECORDS + " WHERE  "
 		// + KEY_TIMESTAMP + "=" + String.valueOf(timestamp);
 				+ KEY_DATE + "='" + sqlDateFormat.format(date) + "'";
-		//Log.v(TAG, "getRecord " + selectQuery);
+		// Log.v(TAG, "getRecord " + selectQuery);
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		if (cursor.moveToFirst()) {
@@ -316,8 +315,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	public List<SleepPattern> getAllSleepPatterns() {
 		// Log.v(TAG, record.toString());
-		String selectQuery = "SELECT  * FROM " + TABLE_SLEEPPATTERN + " ORDER BY "
-				+ KEY_DATE;
+		String selectQuery = "SELECT  * FROM " + TABLE_SLEEPPATTERN
+				+ " ORDER BY " + KEY_DATE;
 		return getSleepPatternsByRawQuery(selectQuery);
 	}
 
@@ -341,7 +340,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_DATE;
 
 		SQLiteDatabase db = this.getWritableDatabase();
-
+		db.enableWriteAheadLogging();
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		if (cursor.moveToFirst()) {
@@ -375,7 +374,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_DATE;
 
 		SQLiteDatabase db = this.getWritableDatabase();
-
+		db.enableWriteAheadLogging();
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		if (cursor.moveToFirst()) {
@@ -396,6 +395,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("yyyy-MM");
 		List<SleepRecord> recordList = new ArrayList<SleepRecord>();
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 		String selectQuery = "SELECT SUM(" + KEY_ACTUAL_SLEEP_TIME + ")"
 				+ " , " + KEY_DATE + " FROM " + TABLE_SLEEP
 				+ " WHERE strftime('%Y-%m'," + KEY_DATE + ")='"
@@ -422,6 +422,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			int whichyear) {
 		List<SleepRecord> recordList = new ArrayList<SleepRecord>();
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 		String selectQuery = "SELECT SUM(" + KEY_ACTUAL_SLEEP_TIME + ")" + ", "
 				+ KEY_DATE + ",strftime('%Y'," + KEY_DATE + ") as year"
 				+ ",strftime('%W'," + KEY_DATE + ") as weekofyear" + " FROM "
@@ -474,7 +475,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		Log.v("getSumOfRecordsByWeek", selectQuery);
 		SQLiteDatabase db = this.getWritableDatabase();
-
+		db.enableWriteAheadLogging();
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		if (cursor.moveToFirst()) {
@@ -510,7 +511,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		Log.v("getSumOfRecordsByYear", selectQuery);
 		SQLiteDatabase db = this.getWritableDatabase();
-
+		db.enableWriteAheadLogging();
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		if (cursor.moveToFirst()) {
@@ -530,35 +531,37 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.close();
 		return recordList;
 	}
+
 	public List<Record> getSumOfRecordByRange(Calendar start, Calendar end) {
 		List<Record> recordList = new ArrayList<Record>();
-		String selectQuery = "SELECT SUM(" + KEY_MINUTES + ") " 
-				+ " FROM "+ TABLE_RECORDS + " WHERE strftime('%Y-%m-%d', " + KEY_DATE
+		String selectQuery = "SELECT SUM(" + KEY_MINUTES + ") " + " FROM "
+				+ TABLE_RECORDS + " WHERE strftime('%Y-%m-%d', " + KEY_DATE
 				+ ") >='" + dateOnlyFormat.format(start.getTime()) + "'"
 				+ " AND strftime('%Y-%m-%d', " + KEY_DATE + ") <='"
 				+ dateOnlyFormat.format(end.getTime()) + "'";
-		Log.v(TAG,selectQuery);
+		Log.v(TAG, selectQuery);
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		if (cursor.moveToFirst()) {
 			do {
-				
+
 				Record record = new Record();
 
 				record.setDate(end);
 				record.setActivityTime(cursor.getInt(0));
 				recordList.add(record);
-				
-				
+
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
 		db.close();
 		return recordList;
-	
+
 	}
+
 	public List<Record> getSumOfRecordsByRange(Calendar start, Calendar end) {
 		List<Record> recordList = new ArrayList<Record>();
 		String selectQuery = "SELECT SUM(" + KEY_MINUTES + ")" + " , "
@@ -571,6 +574,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ " GROUP BY strftime('%d', " + KEY_DATE + ")" + " ORDER BY "
 				+ KEY_DATE;
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -591,18 +595,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.close();
 		return recordList;
 	}
-	public List<SleepRecord> getSumOfSleepTimeByRange(Calendar start, Calendar end) {
+
+	public List<SleepRecord> getSumOfSleepTimeByRange(Calendar start,
+			Calendar end) {
 		List<SleepRecord> recordList = new ArrayList<SleepRecord>();
-		String selectQuery = "SELECT SUM(" + KEY_ACTUAL_SLEEP_TIME + ")" + " , "
-				+ KEY_DATE + " , strftime('%H'," + KEY_DATE + ") as hour"
-				+ " , strftime('HH:mm'," + KEY_DATE + ") as time" + " FROM "
-				+ TABLE_SLEEP + " WHERE strftime('%Y-%m-%d', " + KEY_DATE
-				+ ") >='" + dateOnlyFormat.format(start.getTime()) + "'"
-				+ " AND strftime('%Y-%m-%d', " + KEY_DATE + ") <='"
+		String selectQuery = "SELECT SUM(" + KEY_ACTUAL_SLEEP_TIME + ")"
+				+ " , " + KEY_DATE + " , strftime('%H'," + KEY_DATE
+				+ ") as hour" + " , strftime('HH:mm'," + KEY_DATE + ") as time"
+				+ " FROM " + TABLE_SLEEP + " WHERE strftime('%Y-%m-%d', "
+				+ KEY_DATE + ") >='" + dateOnlyFormat.format(start.getTime())
+				+ "'" + " AND strftime('%Y-%m-%d', " + KEY_DATE + ") <='"
 				+ dateOnlyFormat.format(end.getTime()) + "'"
 				+ " GROUP BY strftime('%d', " + KEY_DATE + ")" + " ORDER BY "
 				+ KEY_DATE;
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -623,7 +630,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.close();
 		return recordList;
 	}
-	
+
 	public List<Record> getSumOfRecordsByHour(Calendar whichdate) {
 		// List<Record> recordList = new ArrayList<Record>();
 		String SQL_DATE_ONLY_FORMAT = "yyyy-MM-dd";
@@ -639,7 +646,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	public List<Record> getSumOfRecordsByDay(Calendar whichdate) {
 		List<Record> recordList = new ArrayList<Record>();
-		
 
 		String selectQuery = "SELECT SUM(" + KEY_MINUTES + ")" + " , "
 				+ KEY_DATE + " , strftime('%H'," + KEY_DATE + ") as hour"
@@ -651,6 +657,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		// Log.v(TAG, selectQuery);
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -674,6 +681,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		List<Record> recordList = new ArrayList<Record>();
 
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -698,6 +706,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		List<SleepRecord> recordList = new ArrayList<SleepRecord>();
 
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 
 		Cursor cursor = db.rawQuery(selectQuery, null);
 		if (cursor.moveToFirst()) {
@@ -734,6 +743,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		List<SleepPattern> recordList = new ArrayList<SleepPattern>();
 		// Log.v(TAG,"getSleepPatternsByRawQuery : " + selectQuery);
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 		Cursor cursor = db.rawQuery(selectQuery, null);
 
 		if (cursor.moveToFirst()) {
@@ -807,6 +817,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public int updateRecord(Record record) {
 
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 
 		ContentValues values = new ContentValues();
 		// values.put(KEY_TIMESTAMP, record.getTimeStamp());
@@ -833,10 +844,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public Record updateRecord(List<Record> records) {
 		Record lastRecord = null;
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 		try {
-			String sql = "INSERT OR REPLACE INTO "+TABLE_RECORDS+" (" + KEY_TIMESTAMP
-					+ ", " + KEY_DATE + "," + KEY_STEPS + "," + KEY_DISTANCE
-					+ ", " + KEY_CALORIES + "," + KEY_MINUTES
+			String sql = "INSERT OR REPLACE INTO " + TABLE_RECORDS + " ("
+					+ KEY_TIMESTAMP + ", " + KEY_DATE + "," + KEY_STEPS + ","
+					+ KEY_DISTANCE + ", " + KEY_CALORIES + "," + KEY_MINUTES
 					+ ") values(?,?,?,?,?,?)";
 			db.beginTransaction();
 			SQLiteStatement insert = db.compileStatement(sql);
@@ -854,7 +866,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				insert.bindLong(5, record.getCalories());
 				insert.bindLong(6, record.getActivityTime());
 				insert.execute();
-				
+
 			}
 
 			db.setTransactionSuccessful();
@@ -864,48 +876,48 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			db.endTransaction();
 			db.close();
 		}
-		
+
 		return lastRecord;
 	}
-	
+
 	// Updating bulk SleepRecord
 	public SleepRecord updateSleepRecord(List<SleepRecord> sleepRecords) {
 		SleepRecord lastRecord = null;
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 		try {
-			String sql = "INSERT OR REPLACE INTO "+TABLE_SLEEP+" (" 
-					+ KEY_TIMESTAMP + " , " 
-					+ KEY_DATE + " , " 
-					+ KEY_FALL_AS_SLEEP_DURATION + " , "
-					+ KEY_TIME_WAKEN + " , " 
-					+ KEY_IN_BED_TIME + " , " 
-					+ KEY_ACTUAL_SLEEP_TIME + " , "
-					+ KEY_GO_TO_BED_TIME + " , " 
-					+ KEY_ACTUAL_WAKE_TIME + " , " 
-					+ KEY_PRESET_WAKE_UP_TIME + " , "
-					+ KEY_SLEEP_EFFICIENCY 
-					+ ") values(?,?,?,?,?,?,?,?,?,?)";
+			String sql = "INSERT OR REPLACE INTO " + TABLE_SLEEP + " ("
+					+ KEY_TIMESTAMP + " , " + KEY_DATE + " , "
+					+ KEY_FALL_AS_SLEEP_DURATION + " , " + KEY_TIME_WAKEN
+					+ " , " + KEY_IN_BED_TIME + " , " + KEY_ACTUAL_SLEEP_TIME
+					+ " , " + KEY_GO_TO_BED_TIME + " , " + KEY_ACTUAL_WAKE_TIME
+					+ " , " + KEY_PRESET_WAKE_UP_TIME + " , "
+					+ KEY_SLEEP_EFFICIENCY + ") values(?,?,?,?,?,?,?,?,?,?)";
 			db.beginTransaction();
 			SQLiteStatement insert = db.compileStatement(sql);
 			int i = 0;
-			int numRow = sleepRecords.size();			
+			int numRow = sleepRecords.size();
 			for (SleepRecord sleepRecord : sleepRecords) {
 				if (i == numRow) {
 					lastRecord = sleepRecord;
 				}
 				insert.bindLong(1, sleepRecord.getTimeStamp());
-				insert.bindString(2, sqlDateFormat.format(sleepRecord.getTimeStamp()));
-				insert.bindLong(3, sleepRecord.getFallingAsleepDuration() );
-				insert.bindLong(4, sleepRecord.getNumberOfTimesWaken() );
+				insert.bindString(2,
+						sqlDateFormat.format(sleepRecord.getTimeStamp()));
+				insert.bindLong(3, sleepRecord.getFallingAsleepDuration());
+				insert.bindLong(4, sleepRecord.getNumberOfTimesWaken());
 				insert.bindLong(5, sleepRecord.getInBedTime());
-				insert.bindLong(6, sleepRecord.getActualSleepTime() );
-				insert.bindString(7, sqlDateFormat.format(sleepRecord.getGoToBedTime() ));
-				insert.bindString(8, sqlDateFormat.format(sleepRecord.getActualWakeupTime() ));
-				insert.bindString(9, sqlDateFormat.format(sleepRecord.getPresetWakeupTime() ));
+				insert.bindLong(6, sleepRecord.getActualSleepTime());
+				insert.bindString(7,
+						sqlDateFormat.format(sleepRecord.getGoToBedTime()));
+				insert.bindString(8,
+						sqlDateFormat.format(sleepRecord.getActualWakeupTime()));
+				insert.bindString(9,
+						sqlDateFormat.format(sleepRecord.getPresetWakeupTime()));
 				insert.bindLong(10, sleepRecord.getSleepEfficiency());
-				
+
 				insert.execute();
-				
+
 			}
 
 			db.setTransactionSuccessful();
@@ -915,46 +927,46 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			db.endTransaction();
 		}
 		db.close();
-		
+
 		for (SleepRecord sleepRecord : sleepRecords) {
 			updateSleepPattern(sleepRecord.getPatterns());
 		}
-		
+
 		return lastRecord;
 	}
-	
+
 	public SleepPattern updateSleepPattern(List<SleepPattern> sleepPatterns) {
 		SleepPattern lastRecord = null;
 		SQLiteDatabase db = this.getWritableDatabase();
-		
+		db.enableWriteAheadLogging();
+
 		String CREATE_SLEEPPATTERN_TABLE = "CREATE TABLE " + TABLE_SLEEPPATTERN
 				+ "(" + KEY_ID + " INTEGER  PRIMARY KEY , " + KEY_TIMESTAMP
 				+ " datetime ," + KEY_PATTERN_AMPLITUDE + " INTEGER , "
 				+ KEY_PATTERN_DURATION + " INTEGER , " + KEY_PATTERN_TIME
 				+ " INTEGER " + ")";
-		
+
 		try {
-			String sql = "INSERT OR REPLACE INTO "+TABLE_SLEEPPATTERN+" (" 
-					+ KEY_TIMESTAMP + " , " 
-					+ KEY_PATTERN_AMPLITUDE + " , " 
-					+ KEY_PATTERN_DURATION + " , "
-					+ KEY_PATTERN_TIME 
+			String sql = "INSERT OR REPLACE INTO " + TABLE_SLEEPPATTERN + " ("
+					+ KEY_TIMESTAMP + " , " + KEY_PATTERN_AMPLITUDE + " , "
+					+ KEY_PATTERN_DURATION + " , " + KEY_PATTERN_TIME
 					+ ") values(?,?,?,?)";
 			db.beginTransaction();
 			SQLiteStatement insert = db.compileStatement(sql);
 			int i = 0;
-			int numRow = sleepPatterns.size();			
+			int numRow = sleepPatterns.size();
 			for (SleepPattern sleepPattern : sleepPatterns) {
 				if (i == numRow) {
 					lastRecord = sleepPattern;
 				}
-				insert.bindLong(1, sleepPattern.getTimeStamp().getTimeInMillis());
-				insert.bindLong(2, sleepPattern.getAmplitude() );
-				insert.bindLong(3, sleepPattern.getDuration() );
-				insert.bindLong(4, sleepPattern.getTime() );
-				
+				insert.bindLong(1, sleepPattern.getTimeStamp()
+						.getTimeInMillis());
+				insert.bindLong(2, sleepPattern.getAmplitude());
+				insert.bindLong(3, sleepPattern.getDuration());
+				insert.bindLong(4, sleepPattern.getTime());
+
 				insert.execute();
-				
+
 			}
 
 			db.setTransactionSuccessful();
@@ -970,6 +982,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// Adding new Record
 	public int updateSleepRecord(SleepRecord sleepRecord) {
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 
 		ContentValues values = new ContentValues();
 		values.put(KEY_TIMESTAMP, sleepRecord.getTimeStamp());
@@ -1006,6 +1019,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	private int updateSleepPattern(SleepPattern sleepPattern) {
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 
 		ContentValues values = new ContentValues();
 
@@ -1026,6 +1040,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// Deleting single Record
 	public void deleteRecord(Record record) {
 		SQLiteDatabase db = this.getWritableDatabase();
+		db.enableWriteAheadLogging();
 		db.delete(TABLE_RECORDS, KEY_TIMESTAMP + " = ?",
 				new String[] { String.valueOf(record.getTimeStamp()) });
 		db.close();
