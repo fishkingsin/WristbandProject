@@ -117,9 +117,9 @@ public class StatisticFragmentPager extends Fragment {
 		@Override
 		public Fragment getItem(int index) {
 			if (index == 0) {
-				return new ActivityStatisticTabFragment();
+				return new TabFragmentActivityStatistic();
 			} else {
-				return new SleepStatisticTabFragment();
+				return new TabFragmentSleepStatistic();
 			}
 
 		}

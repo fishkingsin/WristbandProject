@@ -3,6 +3,8 @@ package com.idthk.wristband.ui;
 //import java.util.ArrayList;
 //import java.util.List;
 
+import java.util.Calendar;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,22 +18,23 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 public class StatisticFragment extends Fragment implements
-		LoaderCallbacks<Void> {
-	public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
+		LoaderCallbacks<Void> ,
+		OnClickListener{
+	public static final String EXTRA_DISPLAY_TYPE = "EXTRA_DISPLAY_TYPE";
 	private static final String TAG = "StatisticFragment";
 	private Button nextEntryButton;
 	private Button prevEntryButton;
 	View mRootView = null;
-	String message = null;
+	String displayType = null;
 
 	public interface OnRefreshListener {
 		public void onRefresh();
 	}
 
-	public static final StatisticFragment newInstance(String message) {
+	public static final StatisticFragment newInstance(String displayType) {
 		StatisticFragment f = new StatisticFragment();
 		Bundle bdl = new Bundle(1);
-		bdl.putString(EXTRA_MESSAGE, message);
+		bdl.putString(EXTRA_DISPLAY_TYPE, displayType);
 		f.setArguments(bdl);
 		return f;
 	}
@@ -39,88 +42,110 @@ public class StatisticFragment extends Fragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		message = getArguments().getString(EXTRA_MESSAGE);
+		displayType = getArguments().getString(EXTRA_DISPLAY_TYPE);
 		mRootView = inflater.inflate(R.layout.statistic_fragment, container,
 				false);
 		try {
 			nextEntryButton = (Button) mRootView
 					.findViewById(R.id.btn_next_entry);
-			nextEntryButton.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View arg0) {
-					int ret = Utilities.nextEntryDate(message);
-						
-						if(ret==1)
-						{
-							if(nextEntryButton!=null)nextEntryButton.setVisibility(View.INVISIBLE);
-							if(prevEntryButton!=null)prevEntryButton.setVisibility(View.VISIBLE);
-						}
-						else
-							
-						{
-							Utilities.publishGraph(getActivity(), mRootView,
-									((ViewGroup) mRootView
-											.findViewById(R.id.graph1)), message);
-							if(nextEntryButton!=null)nextEntryButton.setVisibility(View.VISIBLE);
-							if(prevEntryButton!=null)prevEntryButton.setVisibility(View.VISIBLE);
-						}
-				}
-			});
+			nextEntryButton.setOnClickListener(this);
 
 			prevEntryButton = (Button) mRootView
 					.findViewById(R.id.btn_prev_entry);
-			prevEntryButton.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View arg0) {
-					int ret = Utilities.prevEntryDate(message);
-
-						
-						if(ret==-1)
-						{
-							if(prevEntryButton!=null)prevEntryButton.setVisibility(View.INVISIBLE);
-							if(nextEntryButton!=null)nextEntryButton.setVisibility(View.VISIBLE);
-						}
-						else
-						{
-							Utilities.publishGraph(getActivity(), mRootView,
-									((ViewGroup) mRootView
-											.findViewById(R.id.graph1)), message);
-							if(prevEntryButton!=null)prevEntryButton.setVisibility(View.VISIBLE);
-							if(nextEntryButton!=null)nextEntryButton.setVisibility(View.VISIBLE);
-							
-						}
-				}
-
-			});
-			checkButtonVisible();
+			prevEntryButton.setOnClickListener(this);
+			Utilities.setTargetDate( Calendar.getInstance().getTime());
+			
+			this.checkButtonVisible();
 
 		} catch (Exception e) {
 			Utilities.getLog(TAG, e.getMessage());
 		}
 		Utilities.publishGraph(getActivity(), mRootView,
-				((ViewGroup) mRootView.findViewById(R.id.graph1)), message);
+				((ViewGroup) mRootView.findViewById(R.id.graph1)), displayType);
 		return mRootView;
 	}
+	
+	@Override
+	public void onClick(View arg0) {
+		
+		Utilities.getLog(TAG,arg0.toString());
+		
+		if(arg0.getId() == R.id.btn_next_entry)
+		{
+			loadNextEntry();
+			
+		}
+		else if(arg0.getId() == R.id.btn_prev_entry)
+		{
+			loadPrevEntry();	
+		}
+	}
+
+	private void loadPrevEntry() {
+		
+		int ret = Utilities.prevEntryDate(displayType);
+		
+		if(ret==-1 )
+		{
+			if(prevEntryButton!=null)prevEntryButton.setVisibility(View.INVISIBLE);
+			if(nextEntryButton!=null)nextEntryButton.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			Utilities.publishGraph(getActivity(), mRootView,
+					((ViewGroup) mRootView
+							.findViewById(R.id.graph1)), displayType);
+			if(nextEntryButton!=null)nextEntryButton.setVisibility(View.VISIBLE);
+			if(ret==0)
+			{
+				if(prevEntryButton!=null)prevEntryButton.setVisibility(View.INVISIBLE);
+			}
+			else
+			{
+				if(prevEntryButton!=null)prevEntryButton.setVisibility(View.VISIBLE);
+			}
+		}
+		
+		
+	}
+	private void loadNextEntry() {
+		int ret = Utilities.nextEntryDate(displayType);
+			
+
+		if(ret==1)
+		{
+			if(nextEntryButton!=null)nextEntryButton.setVisibility(View.INVISIBLE);
+			if(prevEntryButton!=null)prevEntryButton.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			Utilities.publishGraph(getActivity(), mRootView,
+					((ViewGroup) mRootView
+							.findViewById(R.id.graph1)), displayType);
+			if(prevEntryButton!=null)prevEntryButton.setVisibility(View.VISIBLE);
+			if(ret==0)
+			{
+				if(nextEntryButton!=null)nextEntryButton.setVisibility(View.INVISIBLE);
+			}
+			else
+			{
+				if(nextEntryButton!=null)nextEntryButton.setVisibility(View.VISIBLE);
+			}
+		}
+	}
+	
 	protected void checkButtonVisible() {
 
 		if (Utilities.targetDate().compareTo(Utilities.lastDate()) == 0 ) 
 		{
 			nextEntryButton.setVisibility(View.INVISIBLE);
-			prevEntryButton.setVisibility(View.VISIBLE);
-		}
-		else
-		{
-			prevEntryButton.setVisibility(View.VISIBLE);
-			nextEntryButton.setVisibility(View.VISIBLE);
+			//prevEntryButton.setVisibility(View.VISIBLE);
 		}
 		if (Utilities.targetDate().compareTo(Utilities.firstDate()) == 0 ) {
 			prevEntryButton.setVisibility(View.INVISIBLE);
-			nextEntryButton.setVisibility(View.VISIBLE);
-		} else {
-			prevEntryButton.setVisibility(View.VISIBLE);
-			nextEntryButton.setVisibility(View.VISIBLE);
+			//nextEntryButton.setVisibility(View.VISIBLE);
 		}
+		
 	}
 	@Override
 	public void onAttach(Activity activity) {
@@ -135,29 +160,29 @@ public class StatisticFragment extends Fragment implements
 		Utilities.getLog(TAG, "on publish graph");
 		super.onResume();
 		Utilities.publishGraph(getActivity(), mRootView,
-				((ViewGroup) mRootView.findViewById(R.id.graph1)), message);
+				((ViewGroup) mRootView.findViewById(R.id.graph1)), displayType);
 	}
 
 	@Override
 	public Loader<Void> onCreateLoader(int arg0, Bundle arg1) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Void> arg0, Void arg1) {
-		// TODO Auto-generated method stub
+		
 
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Void> arg0) {
-		// TODO Auto-generated method stub
+		
 
 	}
 
 	public void onRefresh() {
 		Utilities.publishGraph(getActivity(), mRootView,
-				((ViewGroup) mRootView.findViewById(R.id.graph1)), message);
+				((ViewGroup) mRootView.findViewById(R.id.graph1)), displayType);
 	}
 }
