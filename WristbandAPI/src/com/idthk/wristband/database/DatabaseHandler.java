@@ -565,10 +565,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public List<Record> getSumOfRecordByRange(Calendar start, Calendar end) {
 		List<Record> recordList = new ArrayList<Record>();
 		String selectQuery = "SELECT SUM(" + KEY_MINUTES + ") " + " FROM "
-				+ TABLE_RECORDS + " WHERE strftime('%Y-%m-%d', " + KEY_DATE
-				+ ") >='" + dateOnlyFormat.format(start.getTime()) + "'"
-				+ " AND strftime('%Y-%m-%d', " + KEY_DATE + ") <='"
-				+ dateOnlyFormat.format(end.getTime()) + "'";
+				+ TABLE_RECORDS + " WHERE strftime('%Y-%m-%d %H:%M:%S', " + KEY_DATE
+				+ ") >='" + sqlDateFormat.format(start.getTime()) + "'"
+				+ " AND strftime('%Y-%m-%d %H:%M:%S', " + KEY_DATE + ") <='"
+				+ sqlDateFormat.format(end.getTime()) + "'";
 		Log.v(TAG, selectQuery);
 		synchronized (Lock) {
 			SQLiteDatabase db = this.getWritableDatabase();
