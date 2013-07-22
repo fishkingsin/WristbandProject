@@ -926,6 +926,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		mStartUpState = WristbandStartupConstant.GET_SOFTWARE_VERSION;
 		pd.dismiss();
 		disconnect();
+		connect();
 
 		checkState(mStartUpState);
 	}
