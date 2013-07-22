@@ -77,6 +77,7 @@ public class ActivityLandscapeActivity extends LandscapeActivity {
 		mCaloriesIndicatedTV = ((TextView) findViewById(R.id.calories_indicated_textview));
 		mDistancesIndicatedTV = ((TextView) findViewById(R.id.distances_indicated_textview));
 		timeDiff = System.currentTimeMillis();
+		
 
 	}
 

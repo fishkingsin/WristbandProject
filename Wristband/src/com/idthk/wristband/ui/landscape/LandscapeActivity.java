@@ -1,5 +1,7 @@
 package com.idthk.wristband.ui.landscape;
 
+import java.util.Calendar;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -79,8 +81,11 @@ public class LandscapeActivity extends Activity implements OnClickListener {
 			
 		};
 		
+		Utilities.targetDate().setTime(Calendar.getInstance().getTime());
+		prevEntryButton.setVisibility(View.VISIBLE);
+		nextEntryButton.setVisibility(View.INVISIBLE);
+		//checkButtonVisible() ;
 		
-		checkButtonVisible() ;
 
 	}
 	
@@ -141,7 +146,7 @@ public class LandscapeActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		int ret = Utilities.prevEntryDate(displayType);
 		
-		if(ret==-1 || ret == 0)
+		if(ret==-1 )
 		{
 			if(prevEntryButton!=null)prevEntryButton.setVisibility(View.INVISIBLE);
 		}
@@ -149,16 +154,24 @@ public class LandscapeActivity extends Activity implements OnClickListener {
 		{
 			Utilities.publishGraph(this,  findViewById(android.R.id.content) ,
 					((ViewGroup) findViewById(R.id.graph1)), displayType);
-			if(prevEntryButton!=null)prevEntryButton.setVisibility(View.VISIBLE);
 			if(nextEntryButton!=null)nextEntryButton.setVisibility(View.VISIBLE);
+			if(ret==0)
+			{
+				if(prevEntryButton!=null)prevEntryButton.setVisibility(View.INVISIBLE);
+			}
+			else
+			{
+				if(prevEntryButton!=null)prevEntryButton.setVisibility(View.VISIBLE);
+			}
 		}
+		
 		
 	}
 	private void loadNextEntry() {
 		int ret = Utilities.nextEntryDate(displayType);
 			
 
-		if(ret==1 || ret == 0)
+		if(ret==1)
 		{
 			if(nextEntryButton!=null)nextEntryButton.setVisibility(View.INVISIBLE);
 		}
@@ -166,13 +179,21 @@ public class LandscapeActivity extends Activity implements OnClickListener {
 		{
 			Utilities.publishGraph(this,  findViewById(android.R.id.content) ,
 					((ViewGroup) findViewById(R.id.graph1)), displayType);
-			if(nextEntryButton!=null)nextEntryButton.setVisibility(View.VISIBLE);
 			if(prevEntryButton!=null)prevEntryButton.setVisibility(View.VISIBLE);
+			if(ret==0)
+			{
+				if(nextEntryButton!=null)nextEntryButton.setVisibility(View.INVISIBLE);
+			}
+			else
+			{
+				if(nextEntryButton!=null)nextEntryButton.setVisibility(View.VISIBLE);
+			}
 		}
 	}
 	
 	protected void checkButtonVisible() {
 
+		
 		if (Utilities.targetDate().compareTo(Utilities.lastDate()) == 0 ) 
 		{
 			nextEntryButton.setVisibility(View.INVISIBLE);

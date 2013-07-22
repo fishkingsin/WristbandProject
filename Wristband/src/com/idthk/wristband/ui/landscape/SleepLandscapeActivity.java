@@ -35,6 +35,7 @@ public class SleepLandscapeActivity extends LandscapeActivity {
 
 		Utilities.populateSleepPatternGraph((Context)this , getWindow().getDecorView().getRootView(),
 				((ViewGroup) findViewById(R.id.graph1)));
+		
 
 	}
 	

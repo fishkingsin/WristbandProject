@@ -31,6 +31,7 @@ public class StatisticLandscapeActivity extends LandscapeActivity {
 				((ViewGroup) findViewById(R.id.graph1)),
 				displayType);
 		
+		
 	}
 
 
