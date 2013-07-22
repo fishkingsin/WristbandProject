@@ -25,7 +25,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	// Database Name
 	private static final String DATABASE_NAME = "recordManager";
-
+	public static String Lock = "dblock";
 	// Record table name
 	String TABLE_RECORDS = "record";
 	String TABLE_SLEEP = "sleep";
@@ -118,45 +118,50 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	// Adding new Record
 	public void addRecord(Record record) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
-		ContentValues values = new ContentValues();
-		values.put(KEY_TIMESTAMP, record.getTimeStamp());
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
+			ContentValues values = new ContentValues();
+			values.put(KEY_TIMESTAMP, record.getTimeStamp());
 
-		values.put(KEY_MINUTES, record.getActivityTime());
-		values.put(KEY_DATE,
-				sqlDateFormat.format(record.getCalendar().getTime()));
-		values.put(KEY_STEPS, record.getSteps());
-		values.put(KEY_DISTANCE, record.getDistance());
-		values.put(KEY_CALORIES, record.getCalories());
+			values.put(KEY_MINUTES, record.getActivityTime());
+			values.put(KEY_DATE,
+					sqlDateFormat.format(record.getCalendar().getTime()));
+			values.put(KEY_STEPS, record.getSteps());
+			values.put(KEY_DISTANCE, record.getDistance());
+			values.put(KEY_CALORIES, record.getCalories());
 
-		// Inserting Row
-		db.insert(TABLE_RECORDS, null, values);
-		db.close(); // Closing database connection
+			// Inserting Row
+			db.insert(TABLE_RECORDS, null, values);
+			db.close();
+		} // Closing database connection
 	}
 
 	// Adding new Record
 	public void addSleepRecord(SleepRecord sleepRecord) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
-		ContentValues values = new ContentValues();
-		values.put(KEY_TIMESTAMP, sleepRecord.getTimeStamp());
-		values.put(KEY_DATE, sqlDateFormat.format(sleepRecord.getTimeStamp()));
-		values.put(KEY_FALL_AS_SLEEP_DURATION,
-				sleepRecord.getFallingAsleepDuration());
-		values.put(KEY_TIME_WAKEN, sleepRecord.getNumberOfTimesWaken());
-		values.put(KEY_IN_BED_TIME, sleepRecord.getInBedTime());
-		values.put(KEY_ACTUAL_SLEEP_TIME, sleepRecord.getActualSleepTime());
-		values.put(KEY_GO_TO_BED_TIME,
-				sqlDateFormat.format(sleepRecord.getGoToBedTime().getTime()));
-		values.put(KEY_ACTUAL_WAKE_TIME, sqlDateFormat.format(sleepRecord
-				.getActualWakeupTime().getTime()));
-		values.put(KEY_PRESET_WAKE_UP_TIME, sqlDateFormat.format(sleepRecord
-				.getPresetWakeupTime().getTime()));
-		values.put(KEY_SLEEP_EFFICIENCY, sleepRecord.getSleepEfficiency());
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
+			ContentValues values = new ContentValues();
+			values.put(KEY_TIMESTAMP, sleepRecord.getTimeStamp());
+			values.put(KEY_DATE,
+					sqlDateFormat.format(sleepRecord.getTimeStamp()));
+			values.put(KEY_FALL_AS_SLEEP_DURATION,
+					sleepRecord.getFallingAsleepDuration());
+			values.put(KEY_TIME_WAKEN, sleepRecord.getNumberOfTimesWaken());
+			values.put(KEY_IN_BED_TIME, sleepRecord.getInBedTime());
+			values.put(KEY_ACTUAL_SLEEP_TIME, sleepRecord.getActualSleepTime());
+			values.put(KEY_GO_TO_BED_TIME, sqlDateFormat.format(sleepRecord
+					.getGoToBedTime().getTime()));
+			values.put(KEY_ACTUAL_WAKE_TIME, sqlDateFormat.format(sleepRecord
+					.getActualWakeupTime().getTime()));
+			values.put(KEY_PRESET_WAKE_UP_TIME, sqlDateFormat
+					.format(sleepRecord.getPresetWakeupTime().getTime()));
+			values.put(KEY_SLEEP_EFFICIENCY, sleepRecord.getSleepEfficiency());
 
-		db.insert(TABLE_SLEEP, null, values);
-		db.close(); // Closing database connection
+			db.insert(TABLE_SLEEP, null, values);
+			db.close();
+		} // Closing database connection
 
 		List<SleepPattern> sleeppatterns = sleepRecord.getPatterns();
 		// Log.v(TAG,"sleeppattern timetamp : "+String.valueOf(sleepRecord.getGoToBedTime().getTimeInMillis()));
@@ -169,132 +174,143 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	// Adding new pattern
 	private void addSleepPattern(SleepPattern sleepPattern) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
-		ContentValues values = new ContentValues();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
+			ContentValues values = new ContentValues();
 
-		values.put(KEY_TIMESTAMP,
-				sqlDateFormat.format(sleepPattern.getTimeStamp().getTime()));
-		values.put(KEY_PATTERN_AMPLITUDE, sleepPattern.getAmplitude());
-		values.put(KEY_PATTERN_DURATION, sleepPattern.getDuration());
-		values.put(KEY_PATTERN_TIME, sleepPattern.getTime());
+			values.put(KEY_TIMESTAMP,
+					sqlDateFormat.format(sleepPattern.getTimeStamp().getTime()));
+			values.put(KEY_PATTERN_AMPLITUDE, sleepPattern.getAmplitude());
+			values.put(KEY_PATTERN_DURATION, sleepPattern.getDuration());
+			values.put(KEY_PATTERN_TIME, sleepPattern.getTime());
 
-		// Inserting Row
-		db.insert(TABLE_SLEEPPATTERN, null, values);
-		db.close(); // Closing database connection
+			// Inserting Row
+			db.insert(TABLE_SLEEPPATTERN, null, values);
+			db.close();
+		} // Closing database connection
 	}
 
 	public Record getRecord(long timestamp) {
 
-		SQLiteDatabase db = this.getReadableDatabase();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getReadableDatabase();
 
-		String selectQuery = "SELECT * FROM " + TABLE_RECORDS + " WHERE  "
-				+ KEY_TIMESTAMP + "=" + String.valueOf(timestamp);
-		// Log.v(TAG, "getRecord " + selectQuery);
-		Cursor cursor = db.rawQuery(selectQuery, null);
+			String selectQuery = "SELECT * FROM " + TABLE_RECORDS + " WHERE  "
+					+ KEY_TIMESTAMP + "=" + String.valueOf(timestamp);
+			// Log.v(TAG, "getRecord " + selectQuery);
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToFirst()) {
-			do {
+			if (cursor.moveToFirst()) {
+				do {
 
-				Record record = new Record(Long.parseLong(cursor
-						.getString(cursor.getColumnIndex(KEY_TIMESTAMP))),
-						Integer.parseInt(cursor.getString(cursor
-								.getColumnIndex(KEY_MINUTES))),
-						Integer.parseInt(cursor.getString(cursor
-								.getColumnIndex(KEY_STEPS))),
-						Integer.parseInt(cursor.getString(cursor
-								.getColumnIndex(KEY_CALORIES))),
-						Float.parseFloat(cursor.getString(cursor
-								.getColumnIndex(KEY_DISTANCE))));
-				cursor.close();
-				db.close();
-				return record;
-			} while (cursor.moveToNext());
+					Record record = new Record(Long.parseLong(cursor
+							.getString(cursor.getColumnIndex(KEY_TIMESTAMP))),
+							Integer.parseInt(cursor.getString(cursor
+									.getColumnIndex(KEY_MINUTES))),
+							Integer.parseInt(cursor.getString(cursor
+									.getColumnIndex(KEY_STEPS))),
+							Integer.parseInt(cursor.getString(cursor
+									.getColumnIndex(KEY_CALORIES))),
+							Float.parseFloat(cursor.getString(cursor
+									.getColumnIndex(KEY_DISTANCE))));
+					cursor.close();
+					db.close();
+					return record;
+				} while (cursor.moveToNext());
+			}
+			db.close();
 		}
-		db.close();
 		return null;
 	}
 
 	public Record getRecord(Date date) {
 
-		SQLiteDatabase db = this.getReadableDatabase();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getReadableDatabase();
 
-		String selectQuery = "SELECT * FROM " + TABLE_RECORDS + " WHERE  "
-		// + KEY_TIMESTAMP + "=" + String.valueOf(timestamp);
-				+ KEY_DATE + "='" + sqlDateFormat.format(date) + "'";
-		// Log.v(TAG, "getRecord " + selectQuery);
-		Cursor cursor = db.rawQuery(selectQuery, null);
+			String selectQuery = "SELECT * FROM " + TABLE_RECORDS + " WHERE  "
+			// + KEY_TIMESTAMP + "=" + String.valueOf(timestamp);
+					+ KEY_DATE + "='" + sqlDateFormat.format(date) + "'";
+			// Log.v(TAG, "getRecord " + selectQuery);
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToFirst()) {
-			do {
+			if (cursor.moveToFirst()) {
+				do {
 
-				Record record = new Record(Long.parseLong(cursor
-						.getString(cursor.getColumnIndex(KEY_TIMESTAMP))),
-						Integer.parseInt(cursor.getString(cursor
-								.getColumnIndex(KEY_MINUTES))),
-						Integer.parseInt(cursor.getString(cursor
-								.getColumnIndex(KEY_STEPS))),
-						Integer.parseInt(cursor.getString(cursor
-								.getColumnIndex(KEY_CALORIES))),
-						Float.parseFloat(cursor.getString(cursor
-								.getColumnIndex(KEY_DISTANCE))));
-				cursor.close();
-				db.close();
-				return record;
-			} while (cursor.moveToNext());
+					Record record = new Record(Long.parseLong(cursor
+							.getString(cursor.getColumnIndex(KEY_TIMESTAMP))),
+							Integer.parseInt(cursor.getString(cursor
+									.getColumnIndex(KEY_MINUTES))),
+							Integer.parseInt(cursor.getString(cursor
+									.getColumnIndex(KEY_STEPS))),
+							Integer.parseInt(cursor.getString(cursor
+									.getColumnIndex(KEY_CALORIES))),
+							Float.parseFloat(cursor.getString(cursor
+									.getColumnIndex(KEY_DISTANCE))));
+					cursor.close();
+					db.close();
+					return record;
+				} while (cursor.moveToNext());
+			}
+			db.close();
 		}
-		db.close();
 		return null;
 	}
 
 	public List<SleepRecord> getSleepRecord(Date gotobadtime) {
 
-		SQLiteDatabase db = this.getReadableDatabase();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getReadableDatabase();
 
-		String selectQuery = "SELECT  * FROM " + TABLE_SLEEP + " WHERE "
-				+ KEY_GO_TO_BED_TIME + "='" + sqlDateFormat.format(gotobadtime)
-				+ "'";
+			String selectQuery = "SELECT  * FROM " + TABLE_SLEEP + " WHERE "
+					+ KEY_GO_TO_BED_TIME + "='"
+					+ sqlDateFormat.format(gotobadtime) + "'";
 
-		return getSleepRecordsByRawQuery(selectQuery);
+			return getSleepRecordsByRawQuery(selectQuery);
+		}
 	}
 
 	public SleepRecord getLastSleepRecord() {
 
-		SQLiteDatabase db = this.getReadableDatabase();
-		// String selectQuery = "SELECT * FROM " + TABLE_SLEEP + " WHERE  "
-		// + KEY_GO_TO_BED_TIME + " = (SELECT LAST( " + KEY_GO_TO_BED_TIME
-		// + " )  FROM " + TABLE_SLEEP + ")";
-		String selectQuery = "SELECT * FROM " + TABLE_SLEEP;
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getReadableDatabase();
+			// String selectQuery = "SELECT * FROM " + TABLE_SLEEP + " WHERE  "
+			// + KEY_GO_TO_BED_TIME + " = (SELECT LAST( " + KEY_GO_TO_BED_TIME
+			// + " )  FROM " + TABLE_SLEEP + ")";
+			String selectQuery = "SELECT * FROM " + TABLE_SLEEP;
 
-		Cursor cursor = db.rawQuery(selectQuery, null);
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToLast()) {
-			do {
+			if (cursor.moveToLast()) {
+				do {
 
-				SleepRecord sleepRecord = new SleepRecord(
-						// cursor.getLong(cursor.getColumnIndex(KEY_TIMESTAMP)),
-						cursor.getInt(cursor
-								.getColumnIndex(KEY_FALL_AS_SLEEP_DURATION)),
-						cursor.getInt(cursor.getColumnIndex(KEY_TIME_WAKEN)),
-						cursor.getInt(cursor.getColumnIndex(KEY_IN_BED_TIME)),
-						cursor.getInt(cursor
-								.getColumnIndex(KEY_ACTUAL_SLEEP_TIME)),
-						stringToDate(cursor.getString(cursor
-								.getColumnIndex(KEY_GO_TO_BED_TIME))),
-						stringToDate(cursor.getString(cursor
-								.getColumnIndex(KEY_ACTUAL_WAKE_TIME))),
-						stringToDate(cursor.getString(cursor
-								.getColumnIndex(KEY_PRESET_WAKE_UP_TIME))),
-						cursor.getInt(cursor
-								.getColumnIndex(KEY_SLEEP_EFFICIENCY)));
-				sleepRecord.setPatterns(getSleepPatterns(sleepRecord
-						.getGoToBedTime().getTime()));
-				cursor.close();
-				db.close();
-				return sleepRecord;
-			} while (cursor.moveToNext());
+					SleepRecord sleepRecord = new SleepRecord(
+							// cursor.getLong(cursor.getColumnIndex(KEY_TIMESTAMP)),
+							cursor.getInt(cursor
+									.getColumnIndex(KEY_FALL_AS_SLEEP_DURATION)),
+							cursor.getInt(cursor.getColumnIndex(KEY_TIME_WAKEN)),
+							cursor.getInt(cursor
+									.getColumnIndex(KEY_IN_BED_TIME)),
+							cursor.getInt(cursor
+									.getColumnIndex(KEY_ACTUAL_SLEEP_TIME)),
+							stringToDate(cursor.getString(cursor
+									.getColumnIndex(KEY_GO_TO_BED_TIME))),
+							stringToDate(cursor.getString(cursor
+									.getColumnIndex(KEY_ACTUAL_WAKE_TIME))),
+							stringToDate(cursor.getString(cursor
+									.getColumnIndex(KEY_PRESET_WAKE_UP_TIME))),
+							cursor.getInt(cursor
+									.getColumnIndex(KEY_SLEEP_EFFICIENCY)));
+					sleepRecord.setPatterns(getSleepPatterns(sleepRecord
+							.getGoToBedTime().getTime()));
+					cursor.close();
+					db.close();
+					return sleepRecord;
+				} while (cursor.moveToNext());
+			}
+			db.close();
 		}
-		db.close();
 		return null;
 		// return getSleepRecordsByRawQuery(selectQuery);
 	}
@@ -339,28 +355,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ " GROUP BY strftime('%m', " + KEY_DATE + ")" + " ORDER BY "
 				+ KEY_DATE;
 
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
-		Cursor cursor = db.rawQuery(selectQuery, null);
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToFirst()) {
-			do {
-				Record record = new Record();
+			if (cursor.moveToFirst()) {
+				do {
+					Record record = new Record();
 
-				Calendar _calendar = Calendar.getInstance();
-				_calendar.setTime(stringToDate(cursor.getString(1)));
+					Calendar _calendar = Calendar.getInstance();
+					_calendar.setTime(stringToDate(cursor.getString(1)));
 
-				record.setDate(_calendar);
+					record.setDate(_calendar);
 
-				record.setActivityTime(cursor.getInt(0));
-				// Log.v("getSumOfRecordsByYear", " Minutes " + cursor.getInt(0)
-				// + "\n date " + cursor.getString(1) + "\n month "
-				// + cursor.getInt(2));
-				recordList.add(record);
-			} while (cursor.moveToNext());
+					record.setActivityTime(cursor.getInt(0));
+					// Log.v("getSumOfRecordsByYear", " Minutes " +
+					// cursor.getInt(0)
+					// + "\n date " + cursor.getString(1) + "\n month "
+					// + cursor.getInt(2));
+					recordList.add(record);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			db.close();
 		}
-		cursor.close();
-		db.close();
 		return recordList;
 	}
 
@@ -373,77 +392,84 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ " GROUP BY strftime('%m', " + KEY_DATE + ")" + " ORDER BY "
 				+ KEY_DATE;
 
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
-		Cursor cursor = db.rawQuery(selectQuery, null);
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToFirst()) {
-			do {
-				SleepRecord sleepRecord = new SleepRecord();
-				Date ts = stringToDate(cursor.getString(1));
-				sleepRecord.setGoToBedTime(ts);
-				sleepRecord.setActualSleepTime(cursor.getInt(0));
-				recordList.add(sleepRecord);
-			} while (cursor.moveToNext());
+			if (cursor.moveToFirst()) {
+				do {
+					SleepRecord sleepRecord = new SleepRecord();
+					Date ts = stringToDate(cursor.getString(1));
+					sleepRecord.setGoToBedTime(ts);
+					sleepRecord.setActualSleepTime(cursor.getInt(0));
+					recordList.add(sleepRecord);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			db.close();
 		}
-		cursor.close();
-		db.close();
 		return recordList;
 	}
 
 	public List<SleepRecord> getSumOfSleepTimeByMonth(Date whichMonth) {
 		SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("yyyy-MM");
 		List<SleepRecord> recordList = new ArrayList<SleepRecord>();
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
-		String selectQuery = "SELECT SUM(" + KEY_ACTUAL_SLEEP_TIME + ")"
-				+ " , " + KEY_DATE + " FROM " + TABLE_SLEEP
-				+ " WHERE strftime('%Y-%m'," + KEY_DATE + ")='"
-				+ dateOnlyFormat.format(whichMonth.getTime()) + "'"
-				+ " GROUP BY strftime('%j', " + KEY_DATE + ")" + " ORDER BY "
-				+ KEY_DATE;
-		Cursor cursor = db.rawQuery(selectQuery, null);
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
+			String selectQuery = "SELECT SUM(" + KEY_ACTUAL_SLEEP_TIME + ")"
+					+ " , " + KEY_DATE + " FROM " + TABLE_SLEEP
+					+ " WHERE strftime('%Y-%m'," + KEY_DATE + ")='"
+					+ dateOnlyFormat.format(whichMonth.getTime()) + "'"
+					+ " GROUP BY strftime('%j', " + KEY_DATE + ")"
+					+ " ORDER BY " + KEY_DATE;
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToFirst()) {
-			do {
-				SleepRecord sleepRecord = new SleepRecord();
-				Date ts = stringToDate(cursor.getString(1));
-				sleepRecord.setGoToBedTime(ts);
-				sleepRecord.setActualSleepTime(cursor.getInt(0));
-				recordList.add(sleepRecord);
-			} while (cursor.moveToNext());
+			if (cursor.moveToFirst()) {
+				do {
+					SleepRecord sleepRecord = new SleepRecord();
+					Date ts = stringToDate(cursor.getString(1));
+					sleepRecord.setGoToBedTime(ts);
+					sleepRecord.setActualSleepTime(cursor.getInt(0));
+					recordList.add(sleepRecord);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			db.close();
 		}
-		cursor.close();
-		db.close();
 		return recordList;
 	}
 
 	public List<SleepRecord> getSumOfSleepTimeByWeek(int whichweek,
 			int whichyear) {
 		List<SleepRecord> recordList = new ArrayList<SleepRecord>();
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
-		String selectQuery = "SELECT SUM(" + KEY_ACTUAL_SLEEP_TIME + ")" + ", "
-				+ KEY_DATE + ",strftime('%Y'," + KEY_DATE + ") as year"
-				+ ",strftime('%W'," + KEY_DATE + ") as weekofyear" + " FROM "
-				+ TABLE_SLEEP + " WHERE weekofyear='"
-				+ String.format(sql_num_format, whichweek) + "'"
-				+ " AND year='" + String.format(sql_num_format, whichyear)
-				+ "'" + " GROUP BY strftime('%j', " + KEY_DATE + ")"
-				+ " ORDER BY " + KEY_DATE;
-		Cursor cursor = db.rawQuery(selectQuery, null);
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
+			String selectQuery = "SELECT SUM(" + KEY_ACTUAL_SLEEP_TIME + ")"
+					+ ", " + KEY_DATE + ",strftime('%Y'," + KEY_DATE
+					+ ") as year" + ",strftime('%W'," + KEY_DATE
+					+ ") as weekofyear" + " FROM " + TABLE_SLEEP
+					+ " WHERE weekofyear='"
+					+ String.format(sql_num_format, whichweek) + "'"
+					+ " AND year='" + String.format(sql_num_format, whichyear)
+					+ "'" + " GROUP BY strftime('%j', " + KEY_DATE + ")"
+					+ " ORDER BY " + KEY_DATE;
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToFirst()) {
-			do {
-				SleepRecord sleepRecord = new SleepRecord();
-				Date ts = stringToDate(cursor.getString(1));
-				sleepRecord.setGoToBedTime(ts);
-				sleepRecord.setActualSleepTime(cursor.getInt(0));
-				recordList.add(sleepRecord);
-			} while (cursor.moveToNext());
+			if (cursor.moveToFirst()) {
+				do {
+					SleepRecord sleepRecord = new SleepRecord();
+					Date ts = stringToDate(cursor.getString(1));
+					sleepRecord.setGoToBedTime(ts);
+					sleepRecord.setActualSleepTime(cursor.getInt(0));
+					recordList.add(sleepRecord);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			db.close();
 		}
-		cursor.close();
-		db.close();
 		return recordList;
 	}
 
@@ -474,25 +500,27 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ " ORDER BY " + KEY_DATE;
 
 		Log.v("getSumOfRecordsByWeek", selectQuery);
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
-		Cursor cursor = db.rawQuery(selectQuery, null);
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToFirst()) {
-			do {
-				Record record = new Record();
-				Calendar _calendar = Calendar.getInstance();
+			if (cursor.moveToFirst()) {
+				do {
+					Record record = new Record();
+					Calendar _calendar = Calendar.getInstance();
 
-				_calendar.setTime(stringToDate(cursor.getString(1)));
+					_calendar.setTime(stringToDate(cursor.getString(1)));
 
-				record.setDate(_calendar);
-				record.setActivityTime(cursor.getInt(0));
+					record.setDate(_calendar);
+					record.setActivityTime(cursor.getInt(0));
 
-				recordList.add(record);
-			} while (cursor.moveToNext());
+					recordList.add(record);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			db.close();
 		}
-		cursor.close();
-		db.close();
 		return recordList;
 	}
 
@@ -510,25 +538,27 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_DATE;
 
 		Log.v("getSumOfRecordsByYear", selectQuery);
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
-		Cursor cursor = db.rawQuery(selectQuery, null);
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToFirst()) {
-			do {
-				Record record = new Record();
-				Calendar _calendar = Calendar.getInstance();
+			if (cursor.moveToFirst()) {
+				do {
+					Record record = new Record();
+					Calendar _calendar = Calendar.getInstance();
 
-				_calendar.setTime(stringToDate(cursor.getString(1)));
+					_calendar.setTime(stringToDate(cursor.getString(1)));
 
-				record.setDate(_calendar);
-				record.setActivityTime(cursor.getInt(0));
+					record.setDate(_calendar);
+					record.setActivityTime(cursor.getInt(0));
 
-				recordList.add(record);
-			} while (cursor.moveToNext());
+					recordList.add(record);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			db.close();
 		}
-		cursor.close();
-		db.close();
 		return recordList;
 	}
 
@@ -540,24 +570,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ " AND strftime('%Y-%m-%d', " + KEY_DATE + ") <='"
 				+ dateOnlyFormat.format(end.getTime()) + "'";
 		Log.v(TAG, selectQuery);
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
 
-		Cursor cursor = db.rawQuery(selectQuery, null);
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToFirst()) {
-			do {
+			if (cursor.moveToFirst()) {
+				do {
 
-				Record record = new Record();
+					Record record = new Record();
 
-				record.setDate(end);
-				record.setActivityTime(cursor.getInt(0));
-				recordList.add(record);
+					record.setDate(end);
+					record.setActivityTime(cursor.getInt(0));
+					recordList.add(record);
 
-			} while (cursor.moveToNext());
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			db.close();
 		}
-		cursor.close();
-		db.close();
 		return recordList;
 
 	}
@@ -573,26 +605,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ dateOnlyFormat.format(end.getTime()) + "'"
 				+ " GROUP BY strftime('%d', " + KEY_DATE + ")" + " ORDER BY "
 				+ KEY_DATE;
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
 
-		Cursor cursor = db.rawQuery(selectQuery, null);
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToFirst()) {
-			do {
-				Record record = new Record();
-				Calendar _calendar = Calendar.getInstance();
+			if (cursor.moveToFirst()) {
+				do {
+					Record record = new Record();
+					Calendar _calendar = Calendar.getInstance();
 
-				_calendar.setTime(stringToDate(cursor.getString(1)));
+					_calendar.setTime(stringToDate(cursor.getString(1)));
 
-				record.setDate(_calendar);
-				record.setActivityTime(cursor.getInt(0));
+					record.setDate(_calendar);
+					record.setActivityTime(cursor.getInt(0));
 
-				recordList.add(record);
-			} while (cursor.moveToNext());
+					recordList.add(record);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			db.close();
 		}
-		cursor.close();
-		db.close();
 		return recordList;
 	}
 
@@ -608,26 +642,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ dateOnlyFormat.format(end.getTime()) + "'"
 				+ " GROUP BY strftime('%d', " + KEY_DATE + ")" + " ORDER BY "
 				+ KEY_DATE;
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
 
-		Cursor cursor = db.rawQuery(selectQuery, null);
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToFirst()) {
-			do {
-				SleepRecord sleepRecord = new SleepRecord();
-				Calendar _calendar = Calendar.getInstance();
+			if (cursor.moveToFirst()) {
+				do {
+					SleepRecord sleepRecord = new SleepRecord();
+					Calendar _calendar = Calendar.getInstance();
 
-				_calendar.setTime(stringToDate(cursor.getString(1)));
+					_calendar.setTime(stringToDate(cursor.getString(1)));
 
-				sleepRecord.setGoToBedTime(_calendar);
-				sleepRecord.setActualSleepTime(cursor.getInt(0));
+					sleepRecord.setGoToBedTime(_calendar);
+					sleepRecord.setActualSleepTime(cursor.getInt(0));
 
-				recordList.add(sleepRecord);
-			} while (cursor.moveToNext());
+					recordList.add(sleepRecord);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			db.close();
 		}
-		cursor.close();
-		db.close();
 		return recordList;
 	}
 
@@ -656,225 +692,243 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_DATE;
 
 		// Log.v(TAG, selectQuery);
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
 
-		Cursor cursor = db.rawQuery(selectQuery, null);
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToFirst()) {
-			do {
-				Record record = new Record();
-				Calendar _calendar = Calendar.getInstance();
-				_calendar.setTime(stringToDate(cursor.getString(1)));
-				record.setDate(_calendar);
-				record.setActivityTime(cursor.getInt(0));
+			if (cursor.moveToFirst()) {
+				do {
+					Record record = new Record();
+					Calendar _calendar = Calendar.getInstance();
+					_calendar.setTime(stringToDate(cursor.getString(1)));
+					record.setDate(_calendar);
+					record.setActivityTime(cursor.getInt(0));
 
-				recordList.add(record);
-			} while (cursor.moveToNext());
+					recordList.add(record);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			db.close();
 		}
-		cursor.close();
-		db.close();
 		return recordList;
 	}
 
 	public List<Record> getRecordsByRawQuery(String selectQuery) {
 		List<Record> recordList = new ArrayList<Record>();
 
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
 
-		Cursor cursor = db.rawQuery(selectQuery, null);
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToFirst()) {
-			do {
+			if (cursor.moveToFirst()) {
+				do {
 
-				Record Record = new Record(cursor.getLong(cursor
-						.getColumnIndex(KEY_TIMESTAMP)), cursor.getInt(cursor
-						.getColumnIndex(KEY_MINUTES)), cursor.getInt(cursor
-						.getColumnIndex(KEY_STEPS)), cursor.getInt(cursor
-						.getColumnIndex(KEY_CALORIES)), cursor.getFloat(cursor
-						.getColumnIndex(KEY_DISTANCE)));
-				recordList.add(Record);
-			} while (cursor.moveToNext());
+					Record Record = new Record(
+							cursor.getLong(cursor.getColumnIndex(KEY_TIMESTAMP)),
+							cursor.getInt(cursor.getColumnIndex(KEY_MINUTES)),
+							cursor.getInt(cursor.getColumnIndex(KEY_STEPS)),
+							cursor.getInt(cursor.getColumnIndex(KEY_CALORIES)),
+							cursor.getFloat(cursor.getColumnIndex(KEY_DISTANCE)));
+					recordList.add(Record);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			db.close();
 		}
-		cursor.close();
-		db.close();
 		return recordList;
 	}
 
 	public List<SleepRecord> getSleepRecordsByRawQuery(String selectQuery) {
 		List<SleepRecord> recordList = new ArrayList<SleepRecord>();
 
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
 
-		Cursor cursor = db.rawQuery(selectQuery, null);
-		if (cursor.moveToFirst()) {
-			do {
+			Cursor cursor = db.rawQuery(selectQuery, null);
+			if (cursor.moveToFirst()) {
+				do {
 
-				SleepRecord sleepRecord = new SleepRecord(
-						// cursor.getLong(cursor.getColumnIndex(KEY_TIMESTAMP)),
-						cursor.getInt(cursor
-								.getColumnIndex(KEY_FALL_AS_SLEEP_DURATION)),
-						cursor.getInt(cursor.getColumnIndex(KEY_TIME_WAKEN)),
-						cursor.getInt(cursor.getColumnIndex(KEY_IN_BED_TIME)),
-						cursor.getInt(cursor
-								.getColumnIndex(KEY_ACTUAL_SLEEP_TIME)),
-						stringToDate(cursor.getString(cursor
-								.getColumnIndex(KEY_GO_TO_BED_TIME))),
-						stringToDate(cursor.getString(cursor
-								.getColumnIndex(KEY_ACTUAL_WAKE_TIME))),
-						stringToDate(cursor.getString(cursor
-								.getColumnIndex(KEY_PRESET_WAKE_UP_TIME))),
-						cursor.getInt(cursor
-								.getColumnIndex(KEY_SLEEP_EFFICIENCY)));
-				sleepRecord.setPatterns(getSleepPatterns(sleepRecord
-						.getGoToBedTime().getTime()));
-				recordList.add(sleepRecord);
+					SleepRecord sleepRecord = new SleepRecord(
+							// cursor.getLong(cursor.getColumnIndex(KEY_TIMESTAMP)),
+							cursor.getInt(cursor
+									.getColumnIndex(KEY_FALL_AS_SLEEP_DURATION)),
+							cursor.getInt(cursor.getColumnIndex(KEY_TIME_WAKEN)),
+							cursor.getInt(cursor
+									.getColumnIndex(KEY_IN_BED_TIME)),
+							cursor.getInt(cursor
+									.getColumnIndex(KEY_ACTUAL_SLEEP_TIME)),
+							stringToDate(cursor.getString(cursor
+									.getColumnIndex(KEY_GO_TO_BED_TIME))),
+							stringToDate(cursor.getString(cursor
+									.getColumnIndex(KEY_ACTUAL_WAKE_TIME))),
+							stringToDate(cursor.getString(cursor
+									.getColumnIndex(KEY_PRESET_WAKE_UP_TIME))),
+							cursor.getInt(cursor
+									.getColumnIndex(KEY_SLEEP_EFFICIENCY)));
+					sleepRecord.setPatterns(getSleepPatterns(sleepRecord
+							.getGoToBedTime().getTime()));
+					recordList.add(sleepRecord);
 
-			} while (cursor.moveToNext());
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			db.close();
 		}
-		cursor.close();
-		db.close();
 		return recordList;
 	}
 
 	public List<SleepPattern> getSleepPatternsByRawQuery(String selectQuery) {
 		List<SleepPattern> recordList = new ArrayList<SleepPattern>();
 		// Log.v(TAG,"getSleepPatternsByRawQuery : " + selectQuery);
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
-		Cursor cursor = db.rawQuery(selectQuery, null);
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
+			Cursor cursor = db.rawQuery(selectQuery, null);
 
-		if (cursor.moveToFirst()) {
-			do {
-				SleepPattern pattern;
+			if (cursor.moveToFirst()) {
+				do {
+					SleepPattern pattern;
 
-				pattern = new SleepPattern(cursor.getInt(cursor
-						.getColumnIndex(KEY_ID)),
-						stringToDate(cursor.getString(cursor
-								.getColumnIndex(KEY_TIMESTAMP))),
-						cursor.getInt(cursor.getColumnIndex(KEY_PATTERN_TIME)),
-						cursor.getInt(cursor
-								.getColumnIndex(KEY_PATTERN_DURATION)),
-						cursor.getInt(cursor
-								.getColumnIndex(KEY_PATTERN_AMPLITUDE))
+					pattern = new SleepPattern(cursor.getInt(cursor
+							.getColumnIndex(KEY_ID)),
+							stringToDate(cursor.getString(cursor
+									.getColumnIndex(KEY_TIMESTAMP))),
+							cursor.getInt(cursor
+									.getColumnIndex(KEY_PATTERN_TIME)),
+							cursor.getInt(cursor
+									.getColumnIndex(KEY_PATTERN_DURATION)),
+							cursor.getInt(cursor
+									.getColumnIndex(KEY_PATTERN_AMPLITUDE))
 
-				);
-				recordList.add(pattern);
+					);
+					recordList.add(pattern);
 
-			} while (cursor.moveToNext());
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+			db.close();
 		}
-		cursor.close();
-		db.close();
 		return recordList;
 	}
 
 	// Getting Records Count
 	public int getRecordsCount() {
 		String countQuery = "SELECT  * FROM " + TABLE_RECORDS;
-		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.rawQuery(countQuery, null);
-		cursor.close();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getReadableDatabase();
+			Cursor cursor = db.rawQuery(countQuery, null);
+			cursor.close();
 
-		// return count
-		db.close();
-		return cursor.getCount();
+			// return count
+			db.close();
+			return cursor.getCount();
+		}
 	}
 
 	public List<String> getRecordRange() {
 		String countQuery = "SELECT MIN (" + KEY_DATE
 				+ ") AS OldestOrder ,MAX(" + KEY_DATE
 				+ ") AS LastestOrder FROM " + TABLE_RECORDS;
-		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.rawQuery(countQuery, null);
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getReadableDatabase();
+			Cursor cursor = db.rawQuery(countQuery, null);
 
-		List<String> dateRange = new ArrayList<String>();
-		Calendar date = Calendar.getInstance();
-		if (cursor.getColumnCount() > 0) {
-			if (cursor.moveToFirst()) {
-				do {
-					try {
-						if (cursor.getString(0) != null)
-							dateRange.add(cursor.getString(0));
+			List<String> dateRange = new ArrayList<String>();
+			Calendar date = Calendar.getInstance();
+			if (cursor.getColumnCount() > 0) {
+				if (cursor.moveToFirst()) {
+					do {
+						try {
+							if (cursor.getString(0) != null)
+								dateRange.add(cursor.getString(0));
 
-						if (cursor.getString(1) != null)
-							dateRange.add(cursor.getString(1));
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				} while (cursor.moveToNext());
+							if (cursor.getString(1) != null)
+								dateRange.add(cursor.getString(1));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					} while (cursor.moveToNext());
+				}
 			}
-		}
-		cursor.close();
-		db.close();
+			cursor.close();
+			db.close();
 
-		return dateRange;
+			return dateRange;
+		}
 
 	}
 
 	// Updating single Record
 	public int updateRecord(Record record) {
 
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
 
-		ContentValues values = new ContentValues();
-		// values.put(KEY_TIMESTAMP, record.getTimeStamp());
-		// values.put(KEY_MINUTES, record.getActivityTime());
-		// values.put(KEY_DATE,
-		// sqlDateFormat.format(record.getCalendar().getTime()));
+			ContentValues values = new ContentValues();
+			// values.put(KEY_TIMESTAMP, record.getTimeStamp());
+			// values.put(KEY_MINUTES, record.getActivityTime());
+			// values.put(KEY_DATE,
+			// sqlDateFormat.format(record.getCalendar().getTime()));
 
-		values.put(KEY_TIMESTAMP, record.getTimeStamp());
+			values.put(KEY_TIMESTAMP, record.getTimeStamp());
 
-		values.put(KEY_MINUTES, record.getActivityTime());
-		values.put(KEY_DATE,
-				sqlDateFormat.format(record.getCalendar().getTime()));
-		values.put(KEY_STEPS, record.getSteps());
-		values.put(KEY_DISTANCE, record.getDistance());
-		values.put(KEY_CALORIES, record.getCalories());
-		int ret = db.update(TABLE_RECORDS, values, KEY_TIMESTAMP + " = ?",
-				new String[] { String.valueOf(record.getTimeStamp()) });
-		// updating row;
-		db.close();
-		return ret;
+			values.put(KEY_MINUTES, record.getActivityTime());
+			values.put(KEY_DATE,
+					sqlDateFormat.format(record.getCalendar().getTime()));
+			values.put(KEY_STEPS, record.getSteps());
+			values.put(KEY_DISTANCE, record.getDistance());
+			values.put(KEY_CALORIES, record.getCalories());
+			int ret = db.update(TABLE_RECORDS, values, KEY_TIMESTAMP + " = ?",
+					new String[] { String.valueOf(record.getTimeStamp()) });
+			// updating row;
+			db.close();
+			return ret;
+		}
 	}
 
 	// Updating bulk Record
 	public Record updateRecord(List<Record> records) {
 		Record lastRecord = null;
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
-		try {
-			String sql = "INSERT OR REPLACE INTO " + TABLE_RECORDS + " ("
-					+ KEY_TIMESTAMP + ", " + KEY_DATE + "," + KEY_STEPS + ","
-					+ KEY_DISTANCE + ", " + KEY_CALORIES + "," + KEY_MINUTES
-					+ ") values(?,?,?,?,?,?)";
-			db.beginTransaction();
-			SQLiteStatement insert = db.compileStatement(sql);
-			int i = 0;
-			int numRow = records.size();
-			for (Record record : records) {
-				if (i == numRow) {
-					lastRecord = record;
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
+			try {
+				String sql = "INSERT OR REPLACE INTO " + TABLE_RECORDS + " ("
+						+ KEY_TIMESTAMP + ", " + KEY_DATE + "," + KEY_STEPS
+						+ "," + KEY_DISTANCE + ", " + KEY_CALORIES + ","
+						+ KEY_MINUTES + ") values(?,?,?,?,?,?)";
+				db.beginTransaction();
+				SQLiteStatement insert = db.compileStatement(sql);
+				int i = 0;
+				int numRow = records.size();
+				for (Record record : records) {
+					if (i == numRow) {
+						lastRecord = record;
+					}
+					insert.bindLong(1, record.getTimeStamp());
+					insert.bindString(2, sqlDateFormat.format(record
+							.getCalendar().getTime()));
+					insert.bindLong(3, record.getSteps());
+					insert.bindDouble(4, record.getDistance());
+					insert.bindLong(5, record.getCalories());
+					insert.bindLong(6, record.getActivityTime());
+					insert.execute();
+
 				}
-				insert.bindLong(1, record.getTimeStamp());
-				insert.bindString(2,
-						sqlDateFormat.format(record.getCalendar().getTime()));
-				insert.bindLong(3, record.getSteps());
-				insert.bindDouble(4, record.getDistance());
-				insert.bindLong(5, record.getCalories());
-				insert.bindLong(6, record.getActivityTime());
-				insert.execute();
 
+				db.setTransactionSuccessful();
+			} catch (Exception e) {
+				Log.w("Exception : ", e);
+			} finally {
+				db.endTransaction();
+				db.close();
 			}
-
-			db.setTransactionSuccessful();
-		} catch (Exception e) {
-			Log.w("Exception : ", e);
-		} finally {
-			db.endTransaction();
-			db.close();
 		}
 
 		return lastRecord;
@@ -883,167 +937,183 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// Updating bulk SleepRecord
 	public SleepRecord updateSleepRecord(List<SleepRecord> sleepRecords) {
 		SleepRecord lastRecord = null;
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
-		try {
-			String sql = "INSERT OR REPLACE INTO " + TABLE_SLEEP + " ("
-					+ KEY_TIMESTAMP + " , " + KEY_DATE + " , "
-					+ KEY_FALL_AS_SLEEP_DURATION + " , " + KEY_TIME_WAKEN
-					+ " , " + KEY_IN_BED_TIME + " , " + KEY_ACTUAL_SLEEP_TIME
-					+ " , " + KEY_GO_TO_BED_TIME + " , " + KEY_ACTUAL_WAKE_TIME
-					+ " , " + KEY_PRESET_WAKE_UP_TIME + " , "
-					+ KEY_SLEEP_EFFICIENCY + ") values(?,?,?,?,?,?,?,?,?,?)";
-			db.beginTransaction();
-			SQLiteStatement insert = db.compileStatement(sql);
-			int i = 0;
-			int numRow = sleepRecords.size();
-			for (SleepRecord sleepRecord : sleepRecords) {
-				if (i == numRow) {
-					lastRecord = sleepRecord;
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
+			try {
+				String sql = "INSERT OR REPLACE INTO " + TABLE_SLEEP + " ("
+						+ KEY_TIMESTAMP + " , " + KEY_DATE + " , "
+						+ KEY_FALL_AS_SLEEP_DURATION + " , " + KEY_TIME_WAKEN
+						+ " , " + KEY_IN_BED_TIME + " , "
+						+ KEY_ACTUAL_SLEEP_TIME + " , " + KEY_GO_TO_BED_TIME
+						+ " , " + KEY_ACTUAL_WAKE_TIME + " , "
+						+ KEY_PRESET_WAKE_UP_TIME + " , "
+						+ KEY_SLEEP_EFFICIENCY
+						+ ") values(?,?,?,?,?,?,?,?,?,?)";
+				db.beginTransaction();
+				SQLiteStatement insert = db.compileStatement(sql);
+				int i = 0;
+				int numRow = sleepRecords.size();
+				for (SleepRecord sleepRecord : sleepRecords) {
+					if (i == numRow) {
+						lastRecord = sleepRecord;
+					}
+					insert.bindLong(1, sleepRecord.getTimeStamp());
+					insert.bindString(2,
+							sqlDateFormat.format(sleepRecord.getTimeStamp()));
+					insert.bindLong(3, sleepRecord.getFallingAsleepDuration());
+					insert.bindLong(4, sleepRecord.getNumberOfTimesWaken());
+					insert.bindLong(5, sleepRecord.getInBedTime());
+					insert.bindLong(6, sleepRecord.getActualSleepTime());
+					insert.bindString(7,
+							sqlDateFormat.format(sleepRecord.getGoToBedTime()));
+					insert.bindString(8, sqlDateFormat.format(sleepRecord
+							.getActualWakeupTime()));
+					insert.bindString(9, sqlDateFormat.format(sleepRecord
+							.getPresetWakeupTime()));
+					insert.bindLong(10, sleepRecord.getSleepEfficiency());
+
+					insert.execute();
+
 				}
-				insert.bindLong(1, sleepRecord.getTimeStamp());
-				insert.bindString(2,
-						sqlDateFormat.format(sleepRecord.getTimeStamp()));
-				insert.bindLong(3, sleepRecord.getFallingAsleepDuration());
-				insert.bindLong(4, sleepRecord.getNumberOfTimesWaken());
-				insert.bindLong(5, sleepRecord.getInBedTime());
-				insert.bindLong(6, sleepRecord.getActualSleepTime());
-				insert.bindString(7,
-						sqlDateFormat.format(sleepRecord.getGoToBedTime()));
-				insert.bindString(8,
-						sqlDateFormat.format(sleepRecord.getActualWakeupTime()));
-				insert.bindString(9,
-						sqlDateFormat.format(sleepRecord.getPresetWakeupTime()));
-				insert.bindLong(10, sleepRecord.getSleepEfficiency());
 
-				insert.execute();
+				db.setTransactionSuccessful();
+			} catch (Exception e) {
+				Log.w("Exception : ", e);
+			} finally {
+				db.endTransaction();
+			}
+			db.close();
 
+			for (SleepRecord sleepRecord : sleepRecords) {
+				updateSleepPattern(sleepRecord.getPatterns());
 			}
 
-			db.setTransactionSuccessful();
-		} catch (Exception e) {
-			Log.w("Exception : ", e);
-		} finally {
-			db.endTransaction();
+			return lastRecord;
 		}
-		db.close();
-
-		for (SleepRecord sleepRecord : sleepRecords) {
-			updateSleepPattern(sleepRecord.getPatterns());
-		}
-
-		return lastRecord;
 	}
 
 	public SleepPattern updateSleepPattern(List<SleepPattern> sleepPatterns) {
 		SleepPattern lastRecord = null;
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
 
-		String CREATE_SLEEPPATTERN_TABLE = "CREATE TABLE " + TABLE_SLEEPPATTERN
-				+ "(" + KEY_ID + " INTEGER  PRIMARY KEY , " + KEY_TIMESTAMP
-				+ " datetime ," + KEY_PATTERN_AMPLITUDE + " INTEGER , "
-				+ KEY_PATTERN_DURATION + " INTEGER , " + KEY_PATTERN_TIME
-				+ " INTEGER " + ")";
+			String CREATE_SLEEPPATTERN_TABLE = "CREATE TABLE "
+					+ TABLE_SLEEPPATTERN + "(" + KEY_ID
+					+ " INTEGER  PRIMARY KEY , " + KEY_TIMESTAMP
+					+ " datetime ," + KEY_PATTERN_AMPLITUDE + " INTEGER , "
+					+ KEY_PATTERN_DURATION + " INTEGER , " + KEY_PATTERN_TIME
+					+ " INTEGER " + ")";
 
-		try {
-			String sql = "INSERT OR REPLACE INTO " + TABLE_SLEEPPATTERN + " ("
-					+ KEY_TIMESTAMP + " , " + KEY_PATTERN_AMPLITUDE + " , "
-					+ KEY_PATTERN_DURATION + " , " + KEY_PATTERN_TIME
-					+ ") values(?,?,?,?)";
-			db.beginTransaction();
-			SQLiteStatement insert = db.compileStatement(sql);
-			int i = 0;
-			int numRow = sleepPatterns.size();
-			for (SleepPattern sleepPattern : sleepPatterns) {
-				if (i == numRow) {
-					lastRecord = sleepPattern;
+			try {
+				String sql = "INSERT OR REPLACE INTO " + TABLE_SLEEPPATTERN
+						+ " (" + KEY_TIMESTAMP + " , " + KEY_PATTERN_AMPLITUDE
+						+ " , " + KEY_PATTERN_DURATION + " , "
+						+ KEY_PATTERN_TIME + ") values(?,?,?,?)";
+				db.beginTransaction();
+				SQLiteStatement insert = db.compileStatement(sql);
+				int i = 0;
+				int numRow = sleepPatterns.size();
+				for (SleepPattern sleepPattern : sleepPatterns) {
+					if (i == numRow) {
+						lastRecord = sleepPattern;
+					}
+					insert.bindLong(1, sleepPattern.getTimeStamp()
+							.getTimeInMillis());
+					insert.bindLong(2, sleepPattern.getAmplitude());
+					insert.bindLong(3, sleepPattern.getDuration());
+					insert.bindLong(4, sleepPattern.getTime());
+
+					insert.execute();
+
 				}
-				insert.bindLong(1, sleepPattern.getTimeStamp()
-						.getTimeInMillis());
-				insert.bindLong(2, sleepPattern.getAmplitude());
-				insert.bindLong(3, sleepPattern.getDuration());
-				insert.bindLong(4, sleepPattern.getTime());
 
-				insert.execute();
-
+				db.setTransactionSuccessful();
+			} catch (Exception e) {
+				Log.w("Exception : ", e);
+			} finally {
+				db.endTransaction();
 			}
-
-			db.setTransactionSuccessful();
-		} catch (Exception e) {
-			Log.w("Exception : ", e);
-		} finally {
-			db.endTransaction();
+			db.close();
+			return lastRecord;
 		}
-		db.close();
-		return lastRecord;
 	}
 
 	// Adding new Record
 	public int updateSleepRecord(SleepRecord sleepRecord) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
 
-		ContentValues values = new ContentValues();
-		values.put(KEY_TIMESTAMP, sleepRecord.getTimeStamp());
-		values.put(KEY_DATE, sqlDateFormat.format(sleepRecord.getTimeStamp()));
-		values.put(KEY_FALL_AS_SLEEP_DURATION,
-				sleepRecord.getFallingAsleepDuration());
-		values.put(KEY_TIME_WAKEN, sleepRecord.getNumberOfTimesWaken());
-		values.put(KEY_IN_BED_TIME, sleepRecord.getInBedTime());
-		values.put(KEY_ACTUAL_SLEEP_TIME, sleepRecord.getActualSleepTime());
-		values.put(KEY_GO_TO_BED_TIME,
-				sqlDateFormat.format(sleepRecord.getGoToBedTime().getTime()));
-		values.put(KEY_ACTUAL_WAKE_TIME, sqlDateFormat.format(sleepRecord
-				.getActualWakeupTime().getTime()));
-		values.put(KEY_PRESET_WAKE_UP_TIME, sqlDateFormat.format(sleepRecord
-				.getPresetWakeupTime().getTime()));
-		values.put(KEY_SLEEP_EFFICIENCY, sleepRecord.getSleepEfficiency());
+			ContentValues values = new ContentValues();
+			values.put(KEY_TIMESTAMP, sleepRecord.getTimeStamp());
+			values.put(KEY_DATE,
+					sqlDateFormat.format(sleepRecord.getTimeStamp()));
+			values.put(KEY_FALL_AS_SLEEP_DURATION,
+					sleepRecord.getFallingAsleepDuration());
+			values.put(KEY_TIME_WAKEN, sleepRecord.getNumberOfTimesWaken());
+			values.put(KEY_IN_BED_TIME, sleepRecord.getInBedTime());
+			values.put(KEY_ACTUAL_SLEEP_TIME, sleepRecord.getActualSleepTime());
+			values.put(KEY_GO_TO_BED_TIME, sqlDateFormat.format(sleepRecord
+					.getGoToBedTime().getTime()));
+			values.put(KEY_ACTUAL_WAKE_TIME, sqlDateFormat.format(sleepRecord
+					.getActualWakeupTime().getTime()));
+			values.put(KEY_PRESET_WAKE_UP_TIME, sqlDateFormat
+					.format(sleepRecord.getPresetWakeupTime().getTime()));
+			values.put(KEY_SLEEP_EFFICIENCY, sleepRecord.getSleepEfficiency());
 
-		// updating row
-		int ret = db.update(TABLE_SLEEP, values, KEY_TIMESTAMP + " = ?",
-				new String[] { String.valueOf(sleepRecord.getTimeStamp()) });
-		if (ret > 0) {
-			List<SleepPattern> sleeppatterns = sleepRecord.getPatterns();
+			// updating row
+			int ret = db
+					.update(TABLE_SLEEP, values, KEY_TIMESTAMP + " = ?",
+							new String[] { String.valueOf(sleepRecord
+									.getTimeStamp()) });
+			if (ret > 0) {
+				List<SleepPattern> sleeppatterns = sleepRecord.getPatterns();
 
-			for (SleepPattern pattern : sleeppatterns) {
+				for (SleepPattern pattern : sleeppatterns) {
 
-				updateSleepPattern(pattern);
+					updateSleepPattern(pattern);
+				}
 			}
+			// Log.v(TAG,"Update Sleep Record : " +
+			// sqlDateFormat.format(sleepRecord.getTimeStamp()));
+			db.close();
+			return ret;
 		}
-		// Log.v(TAG,"Update Sleep Record : " +
-		// sqlDateFormat.format(sleepRecord.getTimeStamp()));
-		db.close();
-		return ret;
 	}
 
 	private int updateSleepPattern(SleepPattern sleepPattern) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
 
-		ContentValues values = new ContentValues();
+			ContentValues values = new ContentValues();
 
-		values.put(KEY_TIMESTAMP,
-				sqlDateFormat.format(sleepPattern.getTimeStamp().getTime()));
-		values.put(KEY_PATTERN_AMPLITUDE, sleepPattern.getAmplitude());
-		values.put(KEY_PATTERN_DURATION, sleepPattern.getDuration());
-		values.put(KEY_PATTERN_TIME, sleepPattern.getTime());
+			values.put(KEY_TIMESTAMP,
+					sqlDateFormat.format(sleepPattern.getTimeStamp().getTime()));
+			values.put(KEY_PATTERN_AMPLITUDE, sleepPattern.getAmplitude());
+			values.put(KEY_PATTERN_DURATION, sleepPattern.getDuration());
+			values.put(KEY_PATTERN_TIME, sleepPattern.getTime());
 
-		int ret = db.update(TABLE_SLEEPPATTERN, values, KEY_ID + " = ?",
-				new String[] { String.valueOf(sleepPattern.getId()) });
+			int ret = db.update(TABLE_SLEEPPATTERN, values, KEY_ID + " = ?",
+					new String[] { String.valueOf(sleepPattern.getId()) });
 
-		// Log.v(TAG,"Update SleepPattern ID : " + sleepPattern.getId());
-		db.close();
-		return ret;
+			// Log.v(TAG,"Update SleepPattern ID : " + sleepPattern.getId());
+			db.close();
+			return ret;
+		}
 	}
 
 	// Deleting single Record
 	public void deleteRecord(Record record) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.enableWriteAheadLogging();
-		db.delete(TABLE_RECORDS, KEY_TIMESTAMP + " = ?",
-				new String[] { String.valueOf(record.getTimeStamp()) });
-		db.close();
+		synchronized (Lock) {
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.enableWriteAheadLogging();
+			db.delete(TABLE_RECORDS, KEY_TIMESTAMP + " = ?",
+					new String[] { String.valueOf(record.getTimeStamp()) });
+			db.close();
+		}
 	}
 
 }
