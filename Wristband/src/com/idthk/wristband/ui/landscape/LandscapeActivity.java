@@ -81,7 +81,7 @@ public class LandscapeActivity extends Activity implements OnClickListener {
 			
 		};
 		
-		Utilities.targetDate().setTime(Calendar.getInstance().getTime());
+		Utilities.setTargetDate( Calendar.getInstance().getTime());
 		prevEntryButton.setVisibility(View.VISIBLE);
 		nextEntryButton.setVisibility(View.INVISIBLE);
 		//checkButtonVisible() ;

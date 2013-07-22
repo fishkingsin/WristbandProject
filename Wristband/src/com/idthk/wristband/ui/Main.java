@@ -52,8 +52,8 @@ public class Main extends BLEBaseFragmentActivity implements
 		StatisticFragmentPager.StatisticPagerChangedCallback,
 		MainFragment.OnShareButtonClickedListener,
 		TabsFragment.OnFragmentTabbedListener,
-		ActivityStatisticTabFragment.OnFragmentTabbedListener,
-		SleepStatisticTabFragment.OnFragmentTabbedListener,
+		TabFragmentActivityStatistic.OnFragmentTabbedListener,
+		TabFragmentSleepStatistic.OnFragmentTabbedListener,
 		SharedPreferences.OnSharedPreferenceChangeListener {
 	class WristbandStartupConstant {
 		static final int DISCONNECT = 0x210;
@@ -339,24 +339,13 @@ public class Main extends BLEBaseFragmentActivity implements
 								+ Utilities.getSimpleDateForamt().parse(
 										cal.get(1)));
 				Calendar _cal = Calendar.getInstance();
+				
 				_cal.setTime(Utilities.getSimpleDateForamt().parse(cal.get(0)));
-				_cal.set(Calendar.HOUR_OF_DAY, 0);
-				_cal.set(Calendar.MINUTE, 0);
-				_cal.set(Calendar.SECOND, 0);
-				_cal.set(Calendar.MILLISECOND, 0);
 				Utilities.setFirstdate(_cal);
 				
 				_cal.setTime(Utilities.getSimpleDateForamt().parse(cal.get(1)));
-				_cal.set(Calendar.HOUR_OF_DAY, 0);
-				_cal.set(Calendar.MINUTE, 0);
-				_cal.set(Calendar.SECOND, 0);
-				_cal.set(Calendar.MILLISECOND, 0);
 				Utilities.setLastdate(_cal);
 				
-				_cal.set(Calendar.HOUR_OF_DAY, 0);
-				_cal.set(Calendar.MINUTE, 0);
-				_cal.set(Calendar.SECOND, 0);
-				_cal.set(Calendar.MILLISECOND, 0);
 				Utilities.setTargetdate(Utilities.lastDate());
 				
 

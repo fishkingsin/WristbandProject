@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -102,6 +103,10 @@ public class Utilities {
 
 	public static void setLastdate(Calendar cal) {
 		_lastDate.setTimeInMillis(cal.getTimeInMillis());
+		_lastDate.set(Calendar.HOUR_OF_DAY, 0);
+		_lastDate.set(Calendar.MINUTE, 0);
+		_lastDate.set(Calendar.SECOND, 0);
+		_lastDate.set(Calendar.MILLISECOND, 0);
 	}
 
 	private static Calendar _firstDate = Calendar.getInstance();
@@ -112,6 +117,10 @@ public class Utilities {
 
 	public static void setFirstdate(Calendar cal) {
 		_firstDate.setTimeInMillis(cal.getTimeInMillis());
+		_firstDate.set(Calendar.HOUR_OF_DAY, 0);
+		_firstDate.set(Calendar.MINUTE, 0);
+		_firstDate.set(Calendar.SECOND, 0);
+		_firstDate.set(Calendar.MILLISECOND, 0);
 	}
 
 	private static Calendar _targetDate = Calendar.getInstance();
@@ -122,6 +131,17 @@ public class Utilities {
 
 	public static void setTargetdate(Calendar cal) {
 		_targetDate.setTimeInMillis(cal.getTimeInMillis());
+		_targetDate.set(Calendar.HOUR_OF_DAY, 0);
+		_targetDate.set(Calendar.MINUTE, 0);
+		_targetDate.set(Calendar.SECOND, 0);
+		_targetDate.set(Calendar.MILLISECOND, 0);
+	}
+	public static void setTargetDate(Date date) {
+		_targetDate.setTime(date);
+		_targetDate.set(Calendar.HOUR_OF_DAY, 0);
+		_targetDate.set(Calendar.MINUTE, 0);
+		_targetDate.set(Calendar.SECOND, 0);
+		_targetDate.set(Calendar.MILLISECOND, 0);
 	}
 
 	public static void showAlert(String msg, Context context) {
@@ -321,7 +341,7 @@ public class Utilities {
 		int PER_MONTH = 31;
 		int PER_YEAR = 12;
 		
-		if (message.equals(ActivityStatisticTabFragment.TAB_DAY)) {
+		if (message.equals(TabFragmentActivityStatistic.TAB_DAY)) {
 			LineGraphView mGraphView = new LineGraphView(context, "");
 			
 
@@ -373,7 +393,7 @@ public class Utilities {
 
 			graph.addView(mGraphView);
 
-		} else if (message.equals(ActivityStatisticTabFragment.TAB_WEEK)) {
+		} else if (message.equals(TabFragmentActivityStatistic.TAB_WEEK)) {
 
 			BarGraphView mGraphView = new BarGraphView(context, "");
 
@@ -429,7 +449,7 @@ public class Utilities {
 			mGraphView.addSeries(series);
 			graph.addView(mGraphView);
 
-		} else if (message.equals(ActivityStatisticTabFragment.TAB_MONTH)) {
+		} else if (message.equals(TabFragmentActivityStatistic.TAB_MONTH)) {
 			BarGraphView mGraphView = new BarGraphView(context, "");
 
 			List<Record> records = db.getSumOfRecordsByMonth(targetDate());
@@ -484,7 +504,7 @@ public class Utilities {
 			mGraphView.addSeries(series);
 			graph.addView(mGraphView);
 
-		} else if (message.equals(ActivityStatisticTabFragment.TAB_YEAR)) {
+		} else if (message.equals(TabFragmentActivityStatistic.TAB_YEAR)) {
 			BarGraphView mGraphView = new BarGraphView(context, "");
 
 			List<Record> records = db.getSumOfRecordsByYear(targetDate().get(
@@ -531,7 +551,7 @@ public class Utilities {
 
 			mGraphView.addSeries(series);
 			graph.addView(mGraphView);
-		} else if (message.equals(SleepStatisticTabFragment.TAB_WEEK)) {
+		} else if (message.equals(TabFragmentSleepStatistic.TAB_WEEK)) {
 			BarGraphView mGraphView = new BarGraphView(context, "");
 
 			Calendar sunday = Calendar.getInstance();
@@ -609,7 +629,7 @@ public class Utilities {
 			mGraphView.setVerticalLabels(new String[] { "High", "Mid", "Low" });
 			mGraphView.addSeries(series);
 			graph.addView(mGraphView);
-		} else if (message.equals(SleepStatisticTabFragment.TAB_MONTH)) {
+		} else if (message.equals(TabFragmentSleepStatistic.TAB_MONTH)) {
 			BarGraphView mGraphView = new BarGraphView(context, "");
 
 			List<SleepRecord> sleepRecords = db
@@ -658,7 +678,7 @@ public class Utilities {
 			mGraphView.setVerticalLabels(new String[] { "High", "Mid", "Low" });
 			mGraphView.addSeries(series);
 			graph.addView(mGraphView);
-		} else if (message.equals(SleepStatisticTabFragment.TAB_YEAR)) {
+		} else if (message.equals(TabFragmentSleepStatistic.TAB_YEAR)) {
 			BarGraphView mGraphView = new BarGraphView(context, "");
 
 			List<SleepRecord> sleepRecords = db
@@ -836,6 +856,21 @@ public class Utilities {
 				.findViewById(R.id.sleep_duration_textfield));
 		if (sleepDurationTV != null)
 			sleepDurationTV.setText(inBedTime);
+		try{
+			String dayString = String.valueOf(targetDate().get(
+					Calendar.DAY_OF_MONTH))
+					+ " "
+					+ targetDate().getDisplayName(Calendar.MONTH,
+							Calendar.LONG, Locale.getDefault())
+					+ " "
+					+ String.valueOf(targetDate().get(Calendar.YEAR));
+			((TextView) rootView.findViewById(R.id.graph_view_title_indicator)).setText(dayString);
+		}
+		catch(Exception e)
+		{
+			getLog(sTag,e.toString());
+		}
+		
 		List<GraphViewData> data = new ArrayList<GraphViewData>();
 		List<String> hStr = new ArrayList<String>();
 		if (sleeprecord != null) {
@@ -887,33 +922,39 @@ public class Utilities {
 	public static int prevEntryDate(String displaytype) {
 		int ret = 0;
 		int type = 0;
-		if (displaytype.equals(SleepStatisticTabFragment.TAB_WEEK)) {
+		if (displaytype.equals(TabFragmentSleepStatistic.TAB_WEEK)) {
 			targetDate().add(Calendar.WEEK_OF_YEAR, -1);
 			type = Calendar.WEEK_OF_YEAR;
-		} else if (displaytype.equals(SleepStatisticTabFragment.TAB_MONTH)) {
+		} else if (displaytype.equals(TabFragmentSleepStatistic.TAB_MONTH)) {
 			targetDate().add(Calendar.MONTH, -1);
 			type = Calendar.MONTH;
-		} else if (displaytype.equals(SleepStatisticTabFragment.TAB_YEAR)) {
+		} else if (displaytype.equals(TabFragmentSleepStatistic.TAB_YEAR)) {
 			targetDate().add(Calendar.YEAR, -1);
 			type = Calendar.YEAR;
-		} else if (displaytype.equals(ActivityStatisticTabFragment.TAB_DAY)) {
+		} else if (displaytype.equals(TabFragmentActivityStatistic.TAB_DAY)) {
 			targetDate().add(Calendar.DAY_OF_YEAR, -1);
 			type = Calendar.DAY_OF_YEAR;
-		} else if (displaytype.equals(ActivityStatisticTabFragment.TAB_WEEK)) {
+		} else if (displaytype.equals(TabFragmentActivityStatistic.TAB_WEEK)) {
 			targetDate().add(Calendar.WEEK_OF_YEAR, -1);
 			type = Calendar.WEEK_OF_YEAR;
-		} else if (displaytype.equals(ActivityStatisticTabFragment.TAB_MONTH)) {
+		} else if (displaytype.equals(TabFragmentActivityStatistic.TAB_MONTH)) {
 			targetDate().add(Calendar.MONTH, -1);
 			type = Calendar.MONTH;
-		} else if (displaytype.equals(ActivityStatisticTabFragment.TAB_YEAR)) {
+		} else if (displaytype.equals(TabFragmentActivityStatistic.TAB_YEAR)) {
 			targetDate().add(Calendar.YEAR, -1);
 			type = Calendar.YEAR;
 		}
-
+		
+		String SQL_DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
+		final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(
+				SQL_DATEFORMAT);
+		
+		getLog(sTag,"Target Date : "+sqlDateFormat.format(targetDate().getTime()));
+		getLog(sTag,"First Date : "+sqlDateFormat.format(firstDate().getTime()));
 		ret = Utilities.targetDate().compareTo(Utilities.firstDate());
 		if (targetDate().get(type) == firstDate().get(type)
 				|| Utilities.targetDate().compareTo(Utilities.firstDate()) == -1) {
-			Utilities.targetDate().setTime(firstDate().getTime());
+			Utilities.setTargetDate(firstDate().getTime());
 		}
 		return ret;
 	}
@@ -921,35 +962,41 @@ public class Utilities {
 	public static int nextEntryDate(String displaytype) {
 		int ret = 0;
 		int type = 0;
-		if (displaytype.equals(SleepStatisticTabFragment.TAB_WEEK)) {
+		if (displaytype.equals(TabFragmentSleepStatistic.TAB_WEEK)) {
 			targetDate().add(Calendar.WEEK_OF_YEAR, 1);
 			type = Calendar.WEEK_OF_YEAR;
-		} else if (displaytype.equals(SleepStatisticTabFragment.TAB_MONTH)) {
+		} else if (displaytype.equals(TabFragmentSleepStatistic.TAB_MONTH)) {
 			targetDate().add(Calendar.MONTH, 1);
 			type = Calendar.MONTH;
-		} else if (displaytype.equals(SleepStatisticTabFragment.TAB_YEAR)) {
+		} else if (displaytype.equals(TabFragmentSleepStatistic.TAB_YEAR)) {
 			targetDate().add(Calendar.YEAR, 1);
 			type = Calendar.YEAR;
 
-		} else if (displaytype.equals(ActivityStatisticTabFragment.TAB_DAY)) {
+		} else if (displaytype.equals(TabFragmentActivityStatistic.TAB_DAY)) {
 			targetDate().add(Calendar.DAY_OF_YEAR, 1);
 			type = Calendar.DAY_OF_YEAR;
-		} else if (displaytype.equals(ActivityStatisticTabFragment.TAB_WEEK)) {
+		} else if (displaytype.equals(TabFragmentActivityStatistic.TAB_WEEK)) {
 			targetDate().add(Calendar.WEEK_OF_YEAR, 1);
 			type = Calendar.WEEK_OF_YEAR;
-		} else if (displaytype.equals(ActivityStatisticTabFragment.TAB_MONTH)) {
+		} else if (displaytype.equals(TabFragmentActivityStatistic.TAB_MONTH)) {
 			targetDate().add(Calendar.MONTH, 1);
 			type = Calendar.MONTH;
-		} else if (displaytype.equals(ActivityStatisticTabFragment.TAB_YEAR)) {
+		} else if (displaytype.equals(TabFragmentActivityStatistic.TAB_YEAR)) {
 			targetDate().add(Calendar.YEAR, 1);
 			type = Calendar.YEAR;
 
 		}
 
 		ret = Utilities.targetDate().compareTo(Utilities.lastDate());
+		
+		String SQL_DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
+		final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(
+				SQL_DATEFORMAT);
+		getLog(sTag,"Target Date : "+sqlDateFormat.format(targetDate().getTime()));
+		getLog(sTag,"lastDate Date : "+sqlDateFormat.format(lastDate().getTime()));
 		if (targetDate().get(type) == lastDate().get(type)
 				|| Utilities.targetDate().compareTo(Utilities.lastDate()) == 1) {
-			Utilities.targetDate().setTime(lastDate().getTime());
+			Utilities.setTargetDate( lastDate().getTime());
 
 		}
 		return ret;
