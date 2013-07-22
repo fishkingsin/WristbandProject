@@ -25,7 +25,6 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.OrientationEventListener;
@@ -106,8 +105,6 @@ public class Main extends BLEBaseFragmentActivity implements
 	private int incomingActivityTime = 0;
 	private int incomingSteps = 0;
 	private int incomingCalories = 0;
-	private float incomingDistance = 0;
-
 	AlertDialog syncHistoryDialog;
 
 	private CountDownTimer mBackgroundTimer = new CountDownTimer(1000 * 60 * 5,
@@ -191,7 +188,6 @@ public class Main extends BLEBaseFragmentActivity implements
 				int currentActivityTime = 0;
 				int currentSteps = 0;
 				int currentCalories = 0;
-				float currentDistance = 0;
 				if (lastrecords.size() > 0) {
 					Record lastrecord = lastrecords.get(0);
 					Utilities.getLog(TAG, "mDBStoringTimer : lastRecord : "
@@ -202,15 +198,14 @@ public class Main extends BLEBaseFragmentActivity implements
 					currentSteps = incomingSteps - lastrecord.getSteps();
 					currentCalories = incomingCalories
 							- lastrecord.getCalories();
-					currentDistance = incomingDistance
-							- lastrecord.getDistance();
+					// incomingDistance
+					// - lastrecord.getDistance();
 				} else {
+					Utilities.getLog(TAG, "mDBStoringTimer : lastRecord NOT FOUND !!! ");
 					currentActivityTime = incomingActivityTime;
 					currentSteps = incomingSteps;
 					currentCalories = incomingCalories;
-					currentDistance = incomingDistance;
 				}
-
 				Record currentRecord = new Record(
 						currentHour.getTimeInMillis(), currentActivityTime,
 						currentSteps, currentCalories, currentCalories);
@@ -243,8 +238,8 @@ public class Main extends BLEBaseFragmentActivity implements
 			Utilities.getLog(TAG, "mSyncingTimeout");
 			pd.dismiss();
 
-			// disconnect();
-			// connect();
+			disconnect();
+			connect();
 
 		}
 
@@ -264,12 +259,9 @@ public class Main extends BLEBaseFragmentActivity implements
 	private boolean isInPreferenceActivity;
 	// private boolean canRotateView;
 
-	private SleepRecord sleepRecord = null;
 	private boolean isStoringTimerStarted = false;
 	private boolean timerStarted = true;
 
-	final static private long ONE_SECOND = 1000;
-	final static private long TWENTY_SECONDS = ONE_SECOND * 20;
 	public static final String TAG_STEPS = "tag_steps";
 	public static final String TAG_CALROIES = "tag_calories";
 	public static final String TAG_DISTANCE = "tag_distance";
@@ -348,10 +340,25 @@ public class Main extends BLEBaseFragmentActivity implements
 										cal.get(1)));
 				Calendar _cal = Calendar.getInstance();
 				_cal.setTime(Utilities.getSimpleDateForamt().parse(cal.get(0)));
+				_cal.set(Calendar.HOUR_OF_DAY, 0);
+				_cal.set(Calendar.MINUTE, 0);
+				_cal.set(Calendar.SECOND, 0);
+				_cal.set(Calendar.MILLISECOND, 0);
 				Utilities.setFirstdate(_cal);
+				
 				_cal.setTime(Utilities.getSimpleDateForamt().parse(cal.get(1)));
+				_cal.set(Calendar.HOUR_OF_DAY, 0);
+				_cal.set(Calendar.MINUTE, 0);
+				_cal.set(Calendar.SECOND, 0);
+				_cal.set(Calendar.MILLISECOND, 0);
 				Utilities.setLastdate(_cal);
+				
+				_cal.set(Calendar.HOUR_OF_DAY, 0);
+				_cal.set(Calendar.MINUTE, 0);
+				_cal.set(Calendar.SECOND, 0);
+				_cal.set(Calendar.MILLISECOND, 0);
 				Utilities.setTargetdate(Utilities.lastDate());
+				
 
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
@@ -428,11 +435,9 @@ public class Main extends BLEBaseFragmentActivity implements
 		Bundle bundle = new Bundle();
 		if (mCurrentView.equals("Activity")) {
 			intent = new Intent(this, ActivityLandscapeActivity.class);
-			
 
 		} else if (mCurrentView.equals("Sleep")) {
 			intent = new Intent(this, SleepLandscapeActivity.class);
-
 
 		} else if (mCurrentView.equals("Activity Level")
 				|| mCurrentView.equals("Sleep Level")) {
@@ -652,7 +657,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		super.onDisconnected();
 		MainFragmentPager mainfragmentPager = (MainFragmentPager) getSupportFragmentManager()
 				.findFragmentByTag(TabsFragment.TAB_MAIN);
-		mainfragmentPager.updateBatteryLevel(-1);
+		if(mainfragmentPager!=null)mainfragmentPager.updateBatteryLevel(-1);
 		if (inBackground) {
 			finish();
 			return;
@@ -714,15 +719,16 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	public void onStreamMessage(int steps, int calories, float distance,
 			int activityTime, int batteryLevel) {
-		
+
 		Intent broadcast = new Intent();
-	    broadcast.setAction("android.intent.action.MAIN");
-	    broadcast.putExtra(TAG_STEPS, steps);
-	    broadcast.putExtra(TAG_CALROIES, calories);
-	    broadcast.putExtra(TAG_DISTANCE, distance);
-	    broadcast.putExtra(TAG_ACTIVITYTIME, activityTime);
-	    sendBroadcast(broadcast);
-		
+		broadcast.setAction("android.intent.action.MAIN");
+		broadcast.putExtra(TAG_STEPS, steps);
+		broadcast.putExtra(TAG_CALROIES, calories);
+		broadcast.putExtra(TAG_DISTANCE, distance);
+		broadcast.putExtra(TAG_ACTIVITYTIME, activityTime);
+
+		sendBroadcast(broadcast);
+
 		if (!isStoringTimerStarted) {
 			isStoringTimerStarted = true;
 			mDBStoringTimer.start();
@@ -732,18 +738,9 @@ public class Main extends BLEBaseFragmentActivity implements
 			this.mSyncingTimeout.cancel();
 		this.mStreamModeTimeout.cancel();
 		this.mStreamModeTimeout.start();
-		// TODO Auto-generated method stub
-		String s = "";
-		s += "Wristband Stream :\n";
-		s += "steps : " + steps + "\n";
-		s += "calories : " + calories + "\n";
-		s += "distance : " + distance + "\n";
-		s += "activityTime : " + activityTime + "\n";
-		s += "batteryLevel : " + batteryLevel + "\n";
 		incomingActivityTime = activityTime;
 		incomingSteps = steps;
 		incomingCalories = calories;
-		incomingDistance = distance;
 		try {
 			mFrag.onStreamMessage(steps, calories, distance, activityTime,
 					batteryLevel);
@@ -867,9 +864,7 @@ public class Main extends BLEBaseFragmentActivity implements
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		String _msg = "";
 		for (int i = 0; i < value.length; i++) {
-			_msg += value[i] + " , ";
 		}
 		showMessage("Unknown Message");
 		printByteArray(value);
