@@ -309,6 +309,13 @@ public class Utilities {
 	public static void publishGraph(Context context, View rootView,
 			ViewGroup graph, String message) {
 		getLog(sTag, " publishGraph " + message);
+		DatabaseHandler db = new DatabaseHandler(context,
+				Main.TABLE_CONTENT, null, 1);
+		if(((DatabaseHandler) db).isLocked())
+		{
+			getLog(sTag, " publishGraph stoped cause by locked data base");
+			return;
+		}
 		graph.removeAllViews();
 		String hStr[] = null;
 		GraphViewSeriesStyle style = new GraphViewSeriesStyle();
@@ -318,11 +325,10 @@ public class Utilities {
 		int PER_WEEK = 7;
 		int PER_MONTH = 31;
 		int PER_YEAR = 12;
-
+		
 		if (message.equals(ActivityStatisticTabFragment.TAB_DAY)) {
 			LineGraphView mGraphView = new LineGraphView(context, "");
-			DatabaseHandler db = new DatabaseHandler(context,
-					Main.TABLE_CONTENT, null, 1);
+			
 
 			List<Record> records = db.getSumOfRecordsByDay(targetDate());
 			GraphViewData[] data = new GraphViewData[PER_HOUR];
@@ -375,8 +381,7 @@ public class Utilities {
 		} else if (message.equals(ActivityStatisticTabFragment.TAB_WEEK)) {
 
 			BarGraphView mGraphView = new BarGraphView(context, "");
-			DatabaseHandler db = new DatabaseHandler(context,
-					Main.TABLE_CONTENT, null, 1);
+
 
 			Calendar sunday = Calendar.getInstance();
 			sunday.setTime(targetDate().getTime());
@@ -431,8 +436,7 @@ public class Utilities {
 
 		} else if (message.equals(ActivityStatisticTabFragment.TAB_MONTH)) {
 			BarGraphView mGraphView = new BarGraphView(context, "");
-			DatabaseHandler db = new DatabaseHandler(context,
-					Main.TABLE_CONTENT, null, 1);
+
 			List<Record> records = db.getSumOfRecordsByMonth(targetDate());
 			PER_MONTH = targetDate().getActualMaximum(Calendar.DAY_OF_MONTH);
 			GraphViewData[] data = new GraphViewData[PER_MONTH];
@@ -488,9 +492,6 @@ public class Utilities {
 		} else if (message.equals(ActivityStatisticTabFragment.TAB_YEAR)) {
 			BarGraphView mGraphView = new BarGraphView(context, "");
 
-			DatabaseHandler db = new DatabaseHandler(context,
-					Main.TABLE_CONTENT, null, 1);
-
 			List<Record> records = db.getSumOfRecordsByYear(targetDate().get(
 					Calendar.YEAR));
 			GraphViewData[] data = new GraphViewData[PER_YEAR];
@@ -537,8 +538,6 @@ public class Utilities {
 			graph.addView(mGraphView);
 		} else if (message.equals(SleepStatisticTabFragment.TAB_WEEK)) {
 			BarGraphView mGraphView = new BarGraphView(context, "");
-			DatabaseHandler db = new DatabaseHandler(context,
-					Main.TABLE_CONTENT, null, 1);
 
 			Calendar sunday = Calendar.getInstance();
 			sunday.setTime(targetDate().getTime());
@@ -617,8 +616,7 @@ public class Utilities {
 			graph.addView(mGraphView);
 		} else if (message.equals(SleepStatisticTabFragment.TAB_MONTH)) {
 			BarGraphView mGraphView = new BarGraphView(context, "");
-			DatabaseHandler db = new DatabaseHandler(context,
-					Main.TABLE_CONTENT, null, 1);
+
 			List<SleepRecord> sleepRecords = db
 					.getSumOfSleepTimeByMonth(targetDate().getTime());
 			PER_MONTH = targetDate().getActualMaximum(Calendar.DAY_OF_MONTH);
@@ -667,9 +665,6 @@ public class Utilities {
 			graph.addView(mGraphView);
 		} else if (message.equals(SleepStatisticTabFragment.TAB_YEAR)) {
 			BarGraphView mGraphView = new BarGraphView(context, "");
-
-			DatabaseHandler db = new DatabaseHandler(context,
-					Main.TABLE_CONTENT, null, 1);
 
 			List<SleepRecord> sleepRecords = db
 					.getSumOfSleepTimeByYear(targetDate().get(Calendar.YEAR));
