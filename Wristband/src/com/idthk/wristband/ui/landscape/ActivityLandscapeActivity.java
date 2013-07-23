@@ -21,44 +21,40 @@ public class ActivityLandscapeActivity extends LandscapeActivity {
 	TextView mCaloriesIndicatedTV;
 	TextView mDistancesIndicatedTV;
 	TextView mActivityIndicatedTV;
-	private long timeDiff  = 0;
-	IntentFilter intentFilter = new IntentFilter(
-            "android.intent.action.MAIN");
+	private long timeDiff = 0;
+	IntentFilter intentFilter = new IntentFilter("android.intent.action.MAIN");
 
-	
 	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //extract our message from intent
-            step = intent.getIntExtra(Main.TAG_STEPS,0);
-            calories = intent.getIntExtra(Main.TAG_CALROIES,0);
-            distance = intent.getFloatExtra(Main.TAG_DISTANCE,0);
-            activitytime = intent.getIntExtra(Main.TAG_ACTIVITYTIME,0);
-            //log our message value
-            
-            runOnUiThread(new Runnable() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// extract our message from intent
+			step = intent.getIntExtra(Main.TAG_STEPS, 0);
+			calories = intent.getIntExtra(Main.TAG_CALROIES, 0);
+			distance = intent.getFloatExtra(Main.TAG_DISTANCE, 0);
+			activitytime = intent.getIntExtra(Main.TAG_ACTIVITYTIME, 0);
+			// log our message value
+
+			runOnUiThread(new Runnable() {
 				public void run() {
-					onStreamMessage(step , calories , distance , activitytime);
+					onStreamMessage(step, calories, distance, activitytime);
 				}
-            });
-        }
+			});
+		}
 
-		
-    };
+	};
 
-    
-    @Override
-	public void onResume(){
-	    super.onResume();
-	    this.registerReceiver(mReceiver, intentFilter);
+	@Override
+	public void onResume() {
+		super.onResume();
+		this.registerReceiver(mReceiver, intentFilter);
 	}
 
 	@Override
-	public void onPause(){
-	    super.onPause();
-	    this.unregisterReceiver(mReceiver);
+	public void onPause() {
+		super.onPause();
+		this.unregisterReceiver(mReceiver);
 	}
-    
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.landsape_main_activity);
@@ -77,7 +73,6 @@ public class ActivityLandscapeActivity extends LandscapeActivity {
 		mCaloriesIndicatedTV = ((TextView) findViewById(R.id.calories_indicated_textview));
 		mDistancesIndicatedTV = ((TextView) findViewById(R.id.distances_indicated_textview));
 		timeDiff = System.currentTimeMillis();
-		
 
 	}
 
@@ -88,16 +83,18 @@ public class ActivityLandscapeActivity extends LandscapeActivity {
 		mStepIndicatedTV.setText(String.valueOf(steps));
 		mCaloriesIndicatedTV.setText(String.valueOf(calories));
 		mDistancesIndicatedTV.setText(String.valueOf(distance));
-		long curr =  System.currentTimeMillis() - timeDiff; 
-		if(curr>7000)
-		{
-			Calendar now = Calendar.getInstance();
-			Utilities.targetDate().setTime(now.getTime());
-			displayType = TabFragmentActivityStatistic.TAB_DAY;
-			Utilities.publishGraph((Context) this, getWindow().getDecorView()
-					.getRootView(), ((ViewGroup) findViewById(R.id.graph1)),
-					displayType);
-			timeDiff = System.currentTimeMillis();
+
+		if (Utilities.targetDate().compareTo(Utilities.lastDate()) == 0) {
+			long curr = System.currentTimeMillis() - timeDiff;
+			if (curr > 7000) {
+				Calendar now = Calendar.getInstance();
+				Utilities.targetDate().setTime(now.getTime());
+				displayType = TabFragmentActivityStatistic.TAB_DAY;
+				Utilities.publishGraph((Context) this, getWindow()
+						.getDecorView().getRootView(),
+						((ViewGroup) findViewById(R.id.graph1)), displayType);
+				timeDiff = System.currentTimeMillis();
+			}
 		}
 	}
 
