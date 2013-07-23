@@ -32,6 +32,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -156,26 +157,6 @@ public class UserPreferencesActivity extends Activity {
 			pref = findPreference(getString(R.string.prefDateOfBirth));
 			DatePreference datePRef = ((DatePreference) pref);
 			datePRef.setSummary();
-			
-			this.findPreference(getString(R.string.pref_targetSteps))
-					.setSummary(
-							sharedPreferences.getString(
-									getString(R.string.pref_targetSteps), "0"));
-
-			this.findPreference(getString(R.string.pref_targetCalories))
-					.setSummary(
-							sharedPreferences.getString(
-									getString(R.string.pref_targetCalories),
-									"0"));
-
-			this.findPreference(
-					getString(R.string.pref_targetDistances_display))
-					.setSummary(
-							sharedPreferences
-									.getString(
-											getString(R.string.pref_targetDistances_display),
-											"0"));
-
 		}
 
 		@Override
@@ -268,21 +249,7 @@ public class UserPreferencesActivity extends Activity {
 							android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
 					startActivityForResult(intent, Main.SELECT_IMAGE_CODE);
 				}
-			} else if (key.equals(getString(R.string.pref_targetSteps))) {
-
-				this.findPreference(key).setSummary(
-						sharedPreferences.getString(key, "0"));
-			} else if (key.equals(getString(R.string.pref_targetCalories))) {
-
-				this.findPreference(key).setSummary(
-						sharedPreferences.getString(key, "0"));
-
-			} else if (key
-					.equals(getString(R.string.pref_targetDistances_display))) {
-				this.findPreference(key).setSummary(
-						sharedPreferences.getString(key, "0"));
-
-			}
+			} 
 
 		}
 

@@ -74,11 +74,24 @@ public class PreferencesActivity extends Activity {
 					getString(R.string.pref_targetActivity), "0"));
 
 			// set target distance
-			String key = getString(R.string.pref_targetDistances);
-			pref = findPreference(getString(R.string.pref_targetDistances_display));
-			float value = sharedPreferences.getFloat(key, 0);
-			String format = "%.1f";
-			pref.setSummary(String.format(format, value));
+//			String key = getString(R.string.pref_targetDistances);
+//			pref = findPreference(getString(R.string.pref_targetDistances_display));
+//			float value = sharedPreferences.getFloat(key, 0);
+//			String format = "%.1f";
+//			pref.setSummary(String.format(format, value));
+			
+			EditTextPreference editTextPref = (EditTextPreference) findPreference(getString(R.string.pref_targetSteps));
+			editTextPref.setSummary(sharedPreferences.getString(
+					getString(R.string.pref_targetSteps), "0"));
+
+			editTextPref = (EditTextPreference) findPreference(getString(R.string.pref_targetCalories));
+			editTextPref.setSummary(sharedPreferences.getString(
+					getString(R.string.pref_targetCalories), "0"));
+
+			editTextPref = (EditTextPreference) findPreference(getString(R.string.pref_targetDistances_display));
+			editTextPref.setSummary(sharedPreferences.getString(
+					getString(R.string.pref_targetDistances_display), "0"));
+			
 
 			pref = findPreference(getString(R.string.pref_user_manual));
 			pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
