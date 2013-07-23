@@ -101,9 +101,9 @@ public class PhotoPickerPreference extends DialogPreference implements
 		Bitmap myBitmap = Utilities.decodeFile(new File(imagePath),
 				mCtx );
 		myBitmap =  Utilities.getRoundedCornerBitmap(myBitmap);
-		Drawable icon = new BitmapDrawable(
-				mCtx.getResources(), myBitmap);
-		this.setIcon(icon);
+		
+		
+		
 	}
 	@Override
 	public void onClick(View v) {

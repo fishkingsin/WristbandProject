@@ -134,13 +134,17 @@ public class MainFragment extends Fragment implements
 	public void onResume() {
 		Utilities.getLog(TAG, "onResume");
 		super.onResume();
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this.getActivity());
+		publishSettings(sharedPreferences);
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mPageNumber = getArguments().getInt(ARG_PAGE);
-
+		
+		
 	}
 
 	@Override
@@ -199,7 +203,7 @@ public class MainFragment extends Fragment implements
 			mDistancesIndicatedTV = ((TextView) mRootView
 					.findViewById(R.id.distances_indicated_textview));
 
-			publishSettings(sharedPreferences);
+			//publishSettings(sharedPreferences);
 
 			if (mRootView.findViewById(R.id.button_facebook_share) != null) {
 				((Button) mRootView.findViewById(R.id.button_facebook_share))
@@ -248,7 +252,7 @@ public class MainFragment extends Fragment implements
 						}
 					});
 
-			publishSettings(sharedPreferences);
+			//publishSettings(sharedPreferences);
 			populateGraph(mRootView);
 		}
 

@@ -34,7 +34,7 @@ public class PreferencesActivity extends Activity {
 		getFragmentManager()
 				.beginTransaction()
 				.replace(android.R.id.content,
-						UserPrefsFragment.create(targetPreferenceResource))
+						PrefsFragment.create(targetPreferenceResource))
 				.commit();
 
 		mContext = this;
@@ -46,13 +46,13 @@ public class PreferencesActivity extends Activity {
 		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 
-	public static class UserPrefsFragment extends PreferenceFragment implements
+	public static class PrefsFragment extends PreferenceFragment implements
 			SharedPreferences.OnSharedPreferenceChangeListener {
 		static final String ARG_XML = "xml";
 		private int targetPreferenceFile;
 
-		public static UserPrefsFragment create(int targetPreferenceFile) {
-			UserPrefsFragment fragment = new UserPrefsFragment();
+		public static PrefsFragment create(int targetPreferenceFile) {
+			PrefsFragment fragment = new PrefsFragment();
 			Bundle args = new Bundle();
 			args.putInt(ARG_XML, targetPreferenceFile);
 			fragment.setArguments(args);

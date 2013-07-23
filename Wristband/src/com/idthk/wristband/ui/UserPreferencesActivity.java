@@ -157,6 +157,7 @@ public class UserPreferencesActivity extends Activity {
 			pref = findPreference(getString(R.string.prefDateOfBirth));
 			DatePreference datePRef = ((DatePreference) pref);
 			datePRef.setSummary();
+			
 		}
 
 		@Override
