@@ -123,6 +123,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 	};
 
+	
 	private CountDownTimer mStreamModeTimeout = new CountDownTimer(1000 * 5,
 			1000) {
 
@@ -1356,19 +1357,11 @@ public class Main extends BLEBaseFragmentActivity implements
 		});
 
 	}
-
-	private class DeviceSyncTask extends AsyncTask<Integer, Integer, Integer> {
-		protected Integer doInBackground(Integer... progress) {
-			return 0;
-
-		}
-
-		protected void onProgressUpdate(Integer... progress) {
-
-		}
-
-		protected void onPostExecute(Integer... progress) {
-
-		}
+	
+	@Override
+	public void disconnect()
+	{
+		setConnectionAnimation(false,0);
+		super.disconnect();
 	}
 }
