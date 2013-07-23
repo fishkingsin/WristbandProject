@@ -98,6 +98,10 @@ public class Utilities {
 	}
 
 	public static Calendar lastDate() {
+		_lastDate.set(Calendar.HOUR_OF_DAY, 0);
+		_lastDate.set(Calendar.MINUTE, 0);
+		_lastDate.set(Calendar.SECOND, 0);
+		_lastDate.set(Calendar.MILLISECOND, 0);
 		return _lastDate;
 	}
 
@@ -126,6 +130,10 @@ public class Utilities {
 	private static Calendar _targetDate = Calendar.getInstance();
 
 	public static Calendar targetDate() {
+		_targetDate.set(Calendar.HOUR_OF_DAY, 0);
+		_targetDate.set(Calendar.MINUTE, 0);
+		_targetDate.set(Calendar.SECOND, 0);
+		_targetDate.set(Calendar.MILLISECOND, 0);
 		return _targetDate;
 	}
 
