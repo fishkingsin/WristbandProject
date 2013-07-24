@@ -1,14 +1,22 @@
 package com.idthk.wristband.ui;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
 import com.idthk.wristband.ui.preference.NumberPickerPreference;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -73,12 +81,6 @@ public class PreferencesActivity extends Activity {
 			pref.setSummary(sharedPreferences.getString(
 					getString(R.string.pref_targetActivity), "0"));
 
-			// set target distance
-//			String key = getString(R.string.pref_targetDistances);
-//			pref = findPreference(getString(R.string.pref_targetDistances_display));
-//			float value = sharedPreferences.getFloat(key, 0);
-//			String format = "%.1f";
-//			pref.setSummary(String.format(format, value));
 			
 			EditTextPreference editTextPref = (EditTextPreference) findPreference(getString(R.string.pref_targetSteps));
 			editTextPref.setSummary(sharedPreferences.getString(
@@ -97,6 +99,26 @@ public class PreferencesActivity extends Activity {
 			pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
+//					Intent intents = new Intent(getActivity(),MyWebView.class);
+//					getActivity().startActivity(intents);
+					
+					/*Intent intent = new Intent(Intent.ACTION_VIEW,
+					        Uri.parse("file:///android_assets/manual.pdf"));
+					intent.setType("application/pdf");
+					PackageManager pm = getActivity().getPackageManager();
+					List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
+					if (activities.size() > 0) {
+					    startActivity(intent);
+					} else {
+					    // Do something else here. Maybe pop up a Dialog or Toast
+					}*/
+					Uri path = Uri.parse("file:///android:asset/manual.pdf");
+					Log.v(TAG,path.toString());
+					   Intent intent  = new Intent(Intent.ACTION_VIEW);
+					   intent.setDataAndType(path, "application/pdf");
+					   intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					   startActivity(intent);
+					
 					return false;
 				}
 			});

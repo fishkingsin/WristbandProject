@@ -105,13 +105,13 @@ public class Utilities {
 		return _lastDate;
 	}
 
-	public static void setLastdate(Calendar cal) {
-		_lastDate.setTimeInMillis(cal.getTimeInMillis());
-		_lastDate.set(Calendar.HOUR_OF_DAY, 0);
-		_lastDate.set(Calendar.MINUTE, 0);
-		_lastDate.set(Calendar.SECOND, 0);
-		_lastDate.set(Calendar.MILLISECOND, 0);
-	}
+//	public static void setLastdate(Calendar cal) {
+//		_lastDate.setTimeInMillis(cal.getTimeInMillis());
+//		_lastDate.set(Calendar.HOUR_OF_DAY, 0);
+//		_lastDate.set(Calendar.MINUTE, 0);
+//		_lastDate.set(Calendar.SECOND, 0);
+//		_lastDate.set(Calendar.MILLISECOND, 0);
+//	}
 
 	private static Calendar _firstDate = Calendar.getInstance();
 

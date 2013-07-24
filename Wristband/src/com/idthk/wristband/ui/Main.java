@@ -20,6 +20,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.drawable.AnimationDrawable;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
@@ -272,7 +273,8 @@ public class Main extends BLEBaseFragmentActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
+		Resources res = getResources();
+		
 		mContext = this;
 
 		pd = new ProgressDialog(mContext);
@@ -344,8 +346,8 @@ public class Main extends BLEBaseFragmentActivity implements
 				_cal.setTime(Utilities.getSimpleDateForamt().parse(cal.get(0)));
 				Utilities.setFirstdate(_cal);
 				
-				_cal.setTime(Utilities.getSimpleDateForamt().parse(cal.get(1)));
-				Utilities.setLastdate(_cal);
+//				_cal.setTime(Utilities.getSimpleDateForamt().parse(cal.get(1)));
+//				Utilities.setLastdate(_cal);
 				
 				Utilities.setTargetdate(Utilities.lastDate());
 				

@@ -130,10 +130,10 @@
         <PreferenceScreen
             android:key="@string/pref_user_manual"
             android:title="@string/user_manual" >
-            <intent
+<!--            <intent
                 android:action="android.intent.action.VIEW"
-                android:data="file://com.idthk.wristband.ui/assets/manual.pdf"
-                android:mimeType="application/pdf" />
+                android:data="android.resource://com.idthk.wristband.ui/raw/manual.pdf"
+                android:mimeType="application/pdf" /> -->
             <!--
                  <intent
                 android:action="android.intent.action.VIEW"
