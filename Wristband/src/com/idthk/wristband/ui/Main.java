@@ -967,7 +967,8 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	protected void onReadActivityHistoryData(List<Record> pedometerData) {
 
-		SyncingTimerRestart("functionName");
+		Utilities.getLog(TAG,"onReadActivityHistoryData - cancel timer");
+		this.mSyncingTimeout.cancel();
 		super.onReadActivityHistoryData(pedometerData);
 
 	}
@@ -1201,16 +1202,16 @@ public class Main extends BLEBaseFragmentActivity implements
 			break;
 		case WristbandStartupConstant.GET_HISTORY_DATA:
 			try {
-
+				mSyncingTimeout.cancel();
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(2000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				startStream();
 
-				mSyncingTimeout.cancel();
+				
 				mStartUpState = WristbandStartupConstant.START_STREAM;
 				checkState(mStartUpState);
 
@@ -1223,16 +1224,17 @@ public class Main extends BLEBaseFragmentActivity implements
 		case WristbandStartupConstant.START_STREAM:
 			setConnectionAnimation(false, 4);
 			pd.dismiss();
-
-			Utilities.getLog(TAG, "Woo hooo start Streaming now");
-			mStreamModeTimeout.start();
 			if (!timerStarted) {
 				mSyncingTimeout.cancel();
 
 			}
+			Utilities.getLog(TAG, "Woo hooo start Streaming now");
+			mStreamModeTimeout.start();
+
 			break;
 		}
 	}
+
 
 	@Override
 	public void onBackPressed() {

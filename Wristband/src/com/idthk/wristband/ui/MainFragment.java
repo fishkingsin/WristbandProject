@@ -22,10 +22,12 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
+import android.view.MotionEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,8 +36,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import com.idthk.wristband.ui.preference.TimePreference;
-
 
 /**
  * A fragment representing a single step in a wizard. The fragment shows a dummy
@@ -47,7 +47,7 @@ import com.idthk.wristband.ui.preference.TimePreference;
  * </p>
  */
 public class MainFragment extends Fragment implements
-		SharedPreferences.OnSharedPreferenceChangeListener {
+		SharedPreferences.OnSharedPreferenceChangeListener, OnGestureListener {
 	public static final String FACEBOOK = "Facebook";
 	public static final String TWITTER = "Twitter";
 	/**
@@ -76,7 +76,7 @@ public class MainFragment extends Fragment implements
 	private TextView mStepIndicatedTV = null;
 	private TextView mCaloriesIndicatedTV = null;
 	private TextView mDistancesIndicatedTV = null;
-	
+
 	public interface OnShareButtonClickedListener {
 		public void onShareButtonClicked(String s);
 
@@ -98,6 +98,9 @@ public class MainFragment extends Fragment implements
 	private Integer currentCalories = 0;
 	private Integer currentSteps = 0;
 	private boolean isMetric = true;
+
+	GestureDetector gestureDetector;
+
 	/**
 	 * Factory method for this fragment class. Constructs a new fragment for the
 	 * given page number.
@@ -144,7 +147,7 @@ public class MainFragment extends Fragment implements
 		super.onCreate(savedInstanceState);
 		mPageNumber = getArguments().getInt(ARG_PAGE);
 		
-		
+
 	}
 
 	@Override
@@ -159,7 +162,8 @@ public class MainFragment extends Fragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-
+		gestureDetector = new GestureDetector(getActivity(), this);
+		
 		// Utilities.getLog(TAG,"Tag : "+getTag());
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this.getActivity());
@@ -203,7 +207,7 @@ public class MainFragment extends Fragment implements
 			mDistancesIndicatedTV = ((TextView) mRootView
 					.findViewById(R.id.distances_indicated_textview));
 
-			//publishSettings(sharedPreferences);
+			// publishSettings(sharedPreferences);
 
 			if (mRootView.findViewById(R.id.button_facebook_share) != null) {
 				((Button) mRootView.findViewById(R.id.button_facebook_share))
@@ -252,7 +256,7 @@ public class MainFragment extends Fragment implements
 						}
 					});
 
-			//publishSettings(sharedPreferences);
+			// publishSettings(sharedPreferences);
 			populateGraph(mRootView);
 		}
 
@@ -284,19 +288,18 @@ public class MainFragment extends Fragment implements
 			int targetActivity = Integer.valueOf(prefs.getString(
 					getString(R.string.pref_targetActivity), "30"));
 
-			targetSteps = Integer.valueOf(prefs.getString(getString(R.string.pref_targetSteps),
+			targetSteps = Integer.valueOf(prefs.getString(
+					getString(R.string.pref_targetSteps),
 					getString(R.string.defalut_target_steps)));
-			targetCalories = Integer.valueOf(prefs
-					.getString(getString(R.string.pref_targetCalories),
-							getString(R.string.defalut_target_calories)));
-			
-			
+			targetCalories = Integer.valueOf(prefs.getString(
+					getString(R.string.pref_targetCalories),
+					getString(R.string.defalut_target_calories)));
+
 			String value = prefs.getString(
-					getString(R.string.pref_targetDistances_display),getString(R.string.defalut_target_distances));
-			
-			targetDistances = (!value.equals(""))?Float.valueOf(value):0;
-					
-			
+					getString(R.string.pref_targetDistances_display),
+					getString(R.string.defalut_target_distances));
+
+			targetDistances = (!value.equals("")) ? Float.valueOf(value) : 0;
 
 			if (m_activityTimeProgressBar != null)
 				m_activityTimeProgressBar.setTarget(targetActivity);
@@ -316,63 +319,71 @@ public class MainFragment extends Fragment implements
 			goalDistancesTv = ((TextView) mRootView
 					.findViewById(R.id.goal_distances_indicat_textview));
 			String format = "%.1f";
-			goalDistancesTv.setText(String.format(format,targetDistances));
-			
-			//new 
+			goalDistancesTv.setText(String.format(format, targetDistances));
+
+			// new
 			changeDistanceText(prefs);
-			
+
 		} else {
 			Calendar datetime = Calendar.getInstance();
 
 			int weekday = datetime.get(Calendar.WEEK_OF_MONTH);
 
-//			String startSleep, endSleep;
+			// String startSleep, endSleep;
 			int inbedTime = prefs.getInt(getString(R.string.pref_in_bed_time),
 					8);
 			if (mRootView.findViewById(R.id.sleep_duration_textfield) != null)
 				((TextView) mRootView
 						.findViewById(R.id.sleep_duration_textfield))
 						.setText(String.valueOf(inbedTime));
-//			String format = "%1$02d";
+			// String format = "%1$02d";
 
-			if (weekday ==Calendar.SUNDAY || weekday == Calendar.SATURDAY) {
-//				startSleep = prefs.getString(getString(R.string.pref_weekend),
-//						"00:00");
-//				startSleep = String.format(format,
-//						TimePreference.getHour(startSleep))
-//						+ ":"
-//						+ String.format(format,
-//								TimePreference.getMinute(startSleep))
-//						+ TimePreference.getAmPm(startSleep);
-//				endSleep = prefs.getString(
-//						getString(R.string.pref_weekend_wake), "08:00AM");
-				
-				String wakeup_end = prefs.getString(getString(R.string.pref_weekend), getString(R.string.default_weekend_wake));
-				((TextView)mRootView.findViewById(R.id.sleep_end_textfield)).setText(wakeup_end);
-			
-				
+			if (weekday == Calendar.SUNDAY || weekday == Calendar.SATURDAY) {
+				// startSleep =
+				// prefs.getString(getString(R.string.pref_weekend),
+				// "00:00");
+				// startSleep = String.format(format,
+				// TimePreference.getHour(startSleep))
+				// + ":"
+				// + String.format(format,
+				// TimePreference.getMinute(startSleep))
+				// + TimePreference.getAmPm(startSleep);
+				// endSleep = prefs.getString(
+				// getString(R.string.pref_weekend_wake), "08:00AM");
+
+				String wakeup_end = prefs.getString(
+						getString(R.string.pref_weekend),
+						getString(R.string.default_weekend_wake));
+				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
+						.setText(wakeup_end);
 
 			} else {
-				String wakeup_day = prefs.getString(getString(R.string.pref_weekday), getString(R.string.default_weekday_wake));
-				((TextView)mRootView.findViewById(R.id.sleep_end_textfield)).setText(wakeup_day);
-//				startSleep = prefs.getString(getString(R.string.pref_weekday),
-//						"00:00");
-//				startSleep = String.format(format,
-//						TimePreference.getHour(startSleep))
-//						+ ":"
-//						+ String.format(format,
-//								TimePreference.getMinute(startSleep))
-//						+ TimePreference.getAmPm(startSleep);
-//				endSleep = prefs.getString(
-//						getString(R.string.pref_weekend_wake), "08:00AM");
-			
-//			if (mRootView.findViewById(R.id.sleep_start_textfield) != null)
-//				((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
-//						.setText(startSleep);
-//			if (mRootView.findViewById(R.id.sleep_end_textfield) != null)
-//				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
-//						.setText(endSleep);
-			
+				String wakeup_day = prefs.getString(
+						getString(R.string.pref_weekday),
+						getString(R.string.default_weekday_wake));
+				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
+						.setText(wakeup_day);
+				// startSleep =
+				// prefs.getString(getString(R.string.pref_weekday),
+				// "00:00");
+				// startSleep = String.format(format,
+				// TimePreference.getHour(startSleep))
+				// + ":"
+				// + String.format(format,
+				// TimePreference.getMinute(startSleep))
+				// + TimePreference.getAmPm(startSleep);
+				// endSleep = prefs.getString(
+				// getString(R.string.pref_weekend_wake), "08:00AM");
+
+				// if (mRootView.findViewById(R.id.sleep_start_textfield) !=
+				// null)
+				// ((TextView)
+				// mRootView.findViewById(R.id.sleep_start_textfield))
+				// .setText(startSleep);
+				// if (mRootView.findViewById(R.id.sleep_end_textfield) != null)
+				// ((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
+				// .setText(endSleep);
+
 			}
 		}
 
@@ -380,23 +391,22 @@ public class MainFragment extends Fragment implements
 
 	private void changeDistanceText(SharedPreferences prefs) {
 		// TODO Auto-generated method stub
-		String unitString = prefs.getString(getString(R.string.prefUnit), "Metric");
-		isMetric = (unitString.equals("Metric"))?true:false;
-		
+		String unitString = prefs.getString(getString(R.string.prefUnit),
+				"Metric");
+		isMetric = (unitString.equals("Metric")) ? true : false;
+
 		Resources res = getResources();
 		String distance_unit[] = res.getStringArray(R.array.distance_unit);
-		
-		
-		TextView tv1 = ((TextView)mRootView.findViewById(R.id.distanceUnitTextView1)) ;
-		TextView tv2 = ((TextView)mRootView.findViewById(R.id.distanceUnitTextView2)) ;
-		if(isMetric)
-		{
+
+		TextView tv1 = ((TextView) mRootView
+				.findViewById(R.id.distanceUnitTextView1));
+		TextView tv2 = ((TextView) mRootView
+				.findViewById(R.id.distanceUnitTextView2));
+		if (isMetric) {
 			tv2.setText(distance_unit[0]);
 			tv1.setText(distance_unit[0]);
-		}
-		else
-		{
-			
+		} else {
+
 			tv1.setText(distance_unit[1]);
 			tv2.setText(distance_unit[1]);
 		}
@@ -411,13 +421,12 @@ public class MainFragment extends Fragment implements
 					TabFragmentSleepStatistic.TAB_DAY);
 		} else {
 			// TODO implement sleep patter graph view
-			Utilities.populateSleepPatternGraph(getActivity(), mRootView,((ViewGroup) mRootView
-					.findViewById(R.id.graph1)));
+			Utilities.populateSleepPatternGraph(getActivity(), mRootView,
+					((ViewGroup) mRootView.findViewById(R.id.graph1)));
 		}
 
 	}
 
-	
 	/**
 	 * Returns the page number represented by this fragment object.
 	 */
@@ -428,7 +437,7 @@ public class MainFragment extends Fragment implements
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		
+
 		if (mPageNumber == 0) {
 			if (key.equals(getString(R.string.pref_toggle_target))) {
 				boolean target = sharedPreferences.getBoolean(key, false);
@@ -446,98 +455,99 @@ public class MainFragment extends Fragment implements
 						getString(R.string.pref_targetCalories), "0"));
 				goalCaloriesTv.setText(Integer.toString(targetCalories));
 				mCaloriesProgressBar.setMax(targetCalories);
-			} else if (key.equals(getString(R.string.pref_targetDistances_display))) {
-//				float value = Float.valueOf(sharedPreferences.getFloat(
-//						getString(R.string.pref_targetDistances), 7));
-				
-//				targetDistances = (isMetric)?value:Utilities.KM2MI(value);
-				
+			} else if (key
+					.equals(getString(R.string.pref_targetDistances_display))) {
+				// float value = Float.valueOf(sharedPreferences.getFloat(
+				// getString(R.string.pref_targetDistances), 7));
+
+				// targetDistances = (isMetric)?value:Utilities.KM2MI(value);
+
 				String value = sharedPreferences.getString(
-						getString(R.string.pref_targetDistances_display),getString(R.string.defalut_target_distances));
+						getString(R.string.pref_targetDistances_display),
+						getString(R.string.defalut_target_distances));
 				targetDistances = Float.valueOf(value);
 
 				goalDistancesTv.setText(Float.toString(targetDistances));
-				
-				
-				
-				
+
 			} else if (key.equals(getString(R.string.pref_targetActivity))) {
 				int targetActivity = Integer.valueOf(sharedPreferences
 						.getString(getString(R.string.pref_targetActivity),
 								"30"));
 				try {
-					// Utilities.getLog(TAG, "targetActivity " + targetActivity);
+					// Utilities.getLog(TAG, "targetActivity " +
+					// targetActivity);
 					m_activityTimeProgressBar.setTarget(targetActivity);
 				} catch (NullPointerException errr) {
 					Log.e(TAG, "On error " + errr.getMessage());
 				}
 			} else if (key.equals(getString(R.string.pref_user_name))) {
-				
-			} else if (key.equals(getString(R.string.prefUnit)))
-			{
-				changeDistanceText(sharedPreferences);
-				
 
-			}
-			else {
-			
+			} else if (key.equals(getString(R.string.prefUnit))) {
+				changeDistanceText(sharedPreferences);
+
+			} else {
 
 			}
 		} else if (mPageNumber == 1) {
 
 			if (key.equals(getString(R.string.keySleepStart))) {
-				String wakeup_start = sharedPreferences.getString(key, "10:00 pm");
-				((TextView)mRootView.findViewById(R.id.sleep_start_textfield)).setText(wakeup_start);
-			}
-			else if (key.equals(getString(R.string.pref_weekend))) {
+				String wakeup_start = sharedPreferences.getString(key,
+						"10:00 pm");
+				((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
+						.setText(wakeup_start);
+			} else if (key.equals(getString(R.string.pref_weekend))) {
 				String wakeup_end = sharedPreferences.getString(key, "8:00 am");
-				((TextView)mRootView.findViewById(R.id.sleep_end_textfield)).setText(wakeup_end);
-				
-			}
-			else if (key.equals(getString(R.string.pref_weekday))) {
-				String wakeup_end = sharedPreferences.getString(key, "07:00 am");
-				((TextView)mRootView.findViewById(R.id.sleep_end_textfield)).setText(wakeup_end);
-				
-			}
-			else if(key.equals(getString(R.string.keyActualSleepTime)))
-			{
+				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
+						.setText(wakeup_end);
+
+			} else if (key.equals(getString(R.string.pref_weekday))) {
+				String wakeup_end = sharedPreferences
+						.getString(key, "07:00 am");
+				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
+						.setText(wakeup_end);
+
+			} else if (key.equals(getString(R.string.keyActualSleepTime))) {
 				int value = sharedPreferences.getInt(key, 0);
-				
-				 ((TextView)mRootView.findViewById(R.id.sleep_time_hour_textview)).setText(String.valueOf(value/60));
-				 
-				 ((TextView)mRootView.findViewById(R.id.sleep_time_mins_textview)).setText(String.valueOf(value%60));
+
+				((TextView) mRootView
+						.findViewById(R.id.sleep_time_hour_textview))
+						.setText(String.valueOf(value / 60));
+
+				((TextView) mRootView
+						.findViewById(R.id.sleep_time_mins_textview))
+						.setText(String.valueOf(value % 60));
+			} else if (key.equals(getString(R.string.keyTimeFallAsSleep))) {
+				((TextView) mRootView
+						.findViewById(R.id.fall_asleep_time_mins_textview))
+						.setText(String.valueOf(sharedPreferences
+								.getInt(key, 0)));
 			}
-			else if(key.equals(getString(R.string.keyTimeFallAsSleep)))
-			{
-				((TextView)mRootView.findViewById(R.id.fall_asleep_time_mins_textview)).setText(String.valueOf(sharedPreferences.getInt(key, 0)));
-			}
-				
 
 		}
 		if (key.equals(getString(R.string.pref_last_sync_time))) {
 			// moved to Main.java
 		}
-		
 
 	}
 
 	public void onStreamMessage(int steps, int calories, float distance,
 			int activityTime, int batteryLevel) {
 		// TODO Auto-generated method stub
-//		String s = "";
-//		s += "Wristband Stream :\n";
-//		s += "steps : " + steps + "\n";
-//		s += "calories : " + calories + "\n";
-//		s += "distance : " + distance + "\n";
-//		s += "activityTime : " + activityTime + "\n";
-//		s += "batteryLevel : " + batteryLevel + "\n";
-//		Utilities.getLog(TAG,s);
+		// String s = "";
+		// s += "Wristband Stream :\n";
+		// s += "steps : " + steps + "\n";
+		// s += "calories : " + calories + "\n";
+		// s += "distance : " + distance + "\n";
+		// s += "activityTime : " + activityTime + "\n";
+		// s += "batteryLevel : " + batteryLevel + "\n";
+		// Utilities.getLog(TAG,s);
 		currentSteps = steps;
 		currentCalories = calories;
 		currentActivityTime = activityTime;
-		currentDistanceProgress = (float) ((isMetric)?Utilities.KM2MI(distance):distance);
+		currentDistanceProgress = (float) ((isMetric) ? Utilities
+				.KM2MI(distance) : distance);
 		if (mPageNumber == 0) {
-			
+
 			if (mStepsProgressBar != null)
 				mStepsProgressBar.setProgress(currentSteps);
 			if (mCaloriesProgressBar != null)
@@ -554,21 +564,78 @@ public class MainFragment extends Fragment implements
 			if (mTargetCaloriesIndicatedTV != null)
 				mTargetCaloriesIndicatedTV.setText(String
 						.valueOf(currentCalories));
-			
+
 			String format = "%.1f";
 			if (mTargetDistancesIndicatedTV != null)
-				mTargetDistancesIndicatedTV.setText(String.format(format,currentDistanceProgress));
+				mTargetDistancesIndicatedTV.setText(String.format(format,
+						currentDistanceProgress));
 
 			if (mTargetDistancesIndicatedTV != null)
 				mStepIndicatedTV.setText(String.valueOf(currentSteps));
 			if (mCaloriesIndicatedTV != null)
 				mCaloriesIndicatedTV.setText(String.valueOf(currentCalories));
 			if (mDistancesIndicatedTV != null)
-				mDistancesIndicatedTV.setText(String.format(format,currentDistanceProgress));
+				mDistancesIndicatedTV.setText(String.format(format,
+						currentDistanceProgress));
 		}
 
 	}
 
-	
+	protected void prevPage() {
+		// TODO Auto-generated method stub
+		Log.v(TAG, "PrevPage");
+
+	}
+
+	protected void nextPage() {
+		// TODO Auto-generated method stub
+		Log.v(TAG, "NextPage");
+	}
+
+	@Override
+	public boolean onDown(MotionEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+			float velocityY) {
+		Log.v(TAG,"onFling");
+		// TODO Auto-generated method stub
+		if (e1.getRawY() < e2.getRawY()) {
+			
+			nextPage();
+		} else {
+			prevPage();
+		}
+		return false;
+	}
+
+	@Override
+	public void onLongPress(MotionEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+			float distanceY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void onShowPress(MotionEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean onSingleTapUp(MotionEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 }
