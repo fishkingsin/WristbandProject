@@ -4,27 +4,30 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="17" />
+    <uses-sdk
+        android:minSdkVersion="17"
+        android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.GET_TASKS" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+	<uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
     <application
         android:icon="@drawable/icon"
         android:label="@string/app_name" >
-         <uses-library
+        <uses-library
             android:name="com.samsung.android.sdk.bt"
             android:required="true" />
+
         <activity
             android:name=".Main"
-            android:screenOrientation="user"
-            android:label="@string/app_name"
             android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="user"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,61 +38,52 @@
         <activity
             android:name=".InstructionActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            />
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
             android:name=".PreferencesActivity"
             android:label="@string/settings"
-            android:theme="@style/DarkTheme"
-             >
+            android:theme="@style/DarkTheme" >
         </activity>
         <activity
             android:name=".UserPreferencesActivity"
             android:label="@string/pref_user_profile"
-            android:theme="@style/DarkTheme"
-             >
+            android:theme="@style/DarkTheme" >
         </activity>
         <activity
             android:name="com.idthk.wristband.ui.landscape.SleepLandscapeActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            />
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
             android:name="com.idthk.wristband.ui.landscape.ActivityLandscapeActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            >
-             <intent-filter>
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
-            </activity>
+        </activity>
         <activity
             android:name="com.idthk.wristband.ui.landscape.StatisticLandscapeActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            />
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
             android:name="com.idthk.wristband.ui.landscape.LandscapeActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            />
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
             android:name="com.idthk.wristband.socialnetwork.FacebookShareActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/facebook_activity_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            />
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
             android:name="com.idthk.wristband.socialnetwork.TwitterShareActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/twitter_activity_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            />
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
             android:name="com.idthk.wristband.ui.MyWebView"
             android:label="@string/app_name" >
         </activity>
-        
+
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/app_id" />
@@ -98,10 +92,10 @@
             android:name="com.facebook.LoginActivity"
             android:label="@string/app_name" >
         </activity>
-        
-        
-        <service android:enabled="true" android:name="com.idthk.wristband.api.WristbandBLEService"/>
+
+        <service
+            android:name="com.idthk.wristband.api.WristbandBLEService"
+            android:enabled="true" />
     </application>
-    
 
 </manifest>

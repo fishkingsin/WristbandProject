@@ -944,17 +944,35 @@ public class Main extends BLEBaseFragmentActivity implements
 		Utilities
 				.getLog(TAG,
 						"-----------------------------Sleep Record-----------------------------");
-		SleepRecord sleepRrecord = db.getLastSleepRecord();
-		if (sleepRrecord != null) {
+		SleepRecord sleepRecord = db.getLastSleepRecord();
+		if (sleepRecord != null) {
+			Utilities
+			.getLog(TAG,">>>>>>>Current Sleep Record "+sleepRecord.toString());
 			SharedPreferences sharedPreferences = PreferenceManager
 					.getDefaultSharedPreferences(this);
 			SharedPreferences.Editor editor = sharedPreferences.edit();
 
 			editor.putInt(getString(R.string.keyActualSleepTime),
-					sleepRrecord.getActualSleepTime());
+					sleepRecord.getActualSleepTime());
+			editor.putString(getString(R.string.pref_in_bed_time),
+					String.valueOf(sleepRecord.getInBedTime()));
+			
+			editor.putString(getString(R.string.pref_sleep_end),
+					Utilities.getSimpleTimeFormat().format(sleepRecord.getActualWakeupTime().getTime()));
+			
+			editor.putString(getString(R.string.pref_sleep_start),
+					Utilities.getSimpleTimeFormat().format(sleepRecord.getGoToBedTime().getTime()));
+			
 			editor.putInt(getString(R.string.keyTimeFallAsSleep),
-					sleepRrecord.getFallingAsleepDuration());
+					sleepRecord.getFallingAsleepDuration());
 			editor.commit();
+			
+			if (mFrag != null) {
+				// If article frag is available, we're in two-pane layout...
+
+				// Call a method in the ArticleFragment to update its content
+				mFrag.updateLastSlpeeRecord(sleepRecord);
+			}
 		}
 		mStartUpState = WristbandStartupConstant.GET_HISTORY_DATA;
 		checkState(mStartUpState);

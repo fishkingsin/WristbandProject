@@ -83,6 +83,20 @@ public class Utilities {
 	}
 
 	/**
+	 * @return the simpleTimeFormat
+	 */
+	public static SimpleDateFormat getSimpleTimeFormat() {
+		return simpleTimeFormat;
+	}
+
+	/**
+	 * @param simpleTimeFormat the simpleTimeFormat to set
+	 */
+	public static void setSimpleTimeFormat(SimpleDateFormat simpleTimeFormat) {
+		Utilities.simpleTimeFormat = simpleTimeFormat;
+	}
+
+	/**
 	 * @return the dateFormatYear
 	 */
 	public static SimpleDateFormat getDateFormatYear() {
