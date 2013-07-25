@@ -124,7 +124,6 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 	};
 
-	
 	private CountDownTimer mStreamModeTimeout = new CountDownTimer(1000 * 5,
 			1000) {
 
@@ -359,18 +358,18 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 	}
 
-	int leapyear(int yr) {
-		int leap = 0;
-		int notLeap = -1;
-
-		if ((yr % 4 == 0) && !(yr % 100 == 0) || (yr % 400 == 0))
-			leap = yr;
-		else
-			leap = notLeap;
-
-		return leap;
-
-	}
+//	int leapyear(int yr) {
+//		int leap = 0;
+//		int notLeap = -1;
+//
+//		if ((yr % 4 == 0) && !(yr % 100 == 0) || (yr % 400 == 0))
+//			leap = yr;
+//		else
+//			leap = notLeap;
+//
+//		return leap;
+//
+//	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {

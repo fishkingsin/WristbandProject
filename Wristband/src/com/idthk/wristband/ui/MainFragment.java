@@ -47,7 +47,9 @@ import android.widget.TextView;
  * </p>
  */
 public class MainFragment extends Fragment implements
-		SharedPreferences.OnSharedPreferenceChangeListener, OnGestureListener {
+		SharedPreferences.OnSharedPreferenceChangeListener
+//		, OnGestureListener 
+		{
 	public static final String FACEBOOK = "Facebook";
 	public static final String TWITTER = "Twitter";
 	/**
@@ -76,7 +78,7 @@ public class MainFragment extends Fragment implements
 	private TextView mStepIndicatedTV = null;
 	private TextView mCaloriesIndicatedTV = null;
 	private TextView mDistancesIndicatedTV = null;
-
+	private ScrollView scrollView = null;
 	public interface OnShareButtonClickedListener {
 		public void onShareButtonClicked(String s);
 
@@ -99,7 +101,7 @@ public class MainFragment extends Fragment implements
 	private Integer currentSteps = 0;
 	private boolean isMetric = true;
 
-	GestureDetector gestureDetector;
+//	GestureDetector gestureDetector;
 
 	/**
 	 * Factory method for this fragment class. Constructs a new fragment for the
@@ -162,7 +164,7 @@ public class MainFragment extends Fragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		gestureDetector = new GestureDetector(getActivity(), this);
+//		gestureDetector = new GestureDetector(getActivity(), this);
 		
 		// Utilities.getLog(TAG,"Tag : "+getTag());
 		SharedPreferences sharedPreferences = PreferenceManager
@@ -228,19 +230,36 @@ public class MainFragment extends Fragment implements
 						});
 			}
 
-			final ScrollView scrollView = (ScrollView) mRootView
+			scrollView = (ScrollView) mRootView
 					.findViewById(R.id.main_activity_scroll_view);
 
-			scrollView.post(new Runnable() {
-				public void run() {
-					scrollView.scrollTo(0, 0);
-				}
-			});
+//			scrollView.setOnTouchListener(new View.OnTouchListener() {
+//
+//			    public boolean onTouch(View v, MotionEvent event) {
+//			        // TODO Auto-generated method stub
+//			        Log.v(TAG,"PARENT TOUCH");
+//			        scrollView.fullScroll(View.FOCUS_DOWN);  
+//			        
+//			        return false;
+//			        }
+//			    });
 
 		} else {
 			mRootView = (ViewGroup) inflater.inflate(
 					R.layout.main_fragment_sleep, container, false);
 
+			scrollView = (ScrollView) mRootView
+					.findViewById(R.id.main_sleep_scroll_view);
+//			scrollView.setOnTouchListener(new View.OnTouchListener() {
+//
+//			    public boolean onTouch(View v, MotionEvent event) {
+//			        // TODO Auto-generated method stub
+//			        Log.v(TAG,"PARENT TOUCH");
+//			        scrollView.fullScroll(View.FOCUS_DOWN);  
+//			        return false;
+//			        }
+//			    });
+			
 			((Button) mRootView.findViewById(R.id.button_facebook_share))
 					.setOnClickListener(new OnClickListener() {
 						public void onClick(View m) {
@@ -592,50 +611,51 @@ public class MainFragment extends Fragment implements
 		Log.v(TAG, "NextPage");
 	}
 
-	@Override
-	public boolean onDown(MotionEvent e) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-			float velocityY) {
-		Log.v(TAG,"onFling");
-		// TODO Auto-generated method stub
-		if (e1.getRawY() < e2.getRawY()) {
-			
-			nextPage();
-		} else {
-			prevPage();
-		}
-		return false;
-	}
-
-	@Override
-	public void onLongPress(MotionEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-			float distanceY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void onShowPress(MotionEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean onSingleTapUp(MotionEvent e) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+//	@Override
+//	public boolean onDown(MotionEvent e) {
+//		// TODO Auto-generated method stub
+//		return false;
+//	}
+//
+//	@Override
+//	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+//			float velocityY) {
+//		Log.v(TAG,"onFling");
+//		// TODO Auto-generated method stub
+//		if (e1.getRawY() < e2.getRawY()) {
+//			
+//			nextPage();
+//		} else {
+//			prevPage();
+//		}
+//		return false;
+//	}
+//
+//	@Override
+//	public void onLongPress(MotionEvent e) {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+//			float distanceY) {
+//		// TODO Auto-generated method stub
+//		Log.v(TAG,"onScroll");
+//		return false;
+//	}
+//
+//	@Override
+//	public void onShowPress(MotionEvent e) {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	@Override
+//	public boolean onSingleTapUp(MotionEvent e) {
+//		// TODO Auto-generated method stub
+//		return false;
+//	}
 
 
 }
