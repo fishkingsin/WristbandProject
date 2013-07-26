@@ -39,7 +39,8 @@ import com.idthk.wristband.database.DatabaseHandler;
 import com.idthk.wristband.database.Record;
 import com.idthk.wristband.database.SleepPattern;
 import com.idthk.wristband.database.SleepRecord;
-import com.jjoe64.graphview.BarGraphView;
+import com.idthk.wristband.graphview.GaplessBarGraphView;
+import com.idthk.wristband.graphview.StrokelessBarGraphView;
 import com.jjoe64.graphview.GraphView.GraphViewData;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
@@ -417,7 +418,7 @@ public class Utilities {
 
 		} else if (message.equals(TabFragmentActivityStatistic.TAB_WEEK)) {
 
-			BarGraphView mGraphView = new BarGraphView(context, "");
+			GaplessBarGraphView mGraphView = new GaplessBarGraphView(context, "");
 
 
 			Calendar sunday = Calendar.getInstance();
@@ -472,7 +473,7 @@ public class Utilities {
 			graph.addView(mGraphView);
 
 		} else if (message.equals(TabFragmentActivityStatistic.TAB_MONTH)) {
-			BarGraphView mGraphView = new BarGraphView(context, "");
+			GaplessBarGraphView mGraphView = new GaplessBarGraphView(context, "");
 
 			List<Record> records = db.getSumOfRecordsByMonth(targetDate());
 			PER_MONTH = targetDate().getActualMaximum(Calendar.DAY_OF_MONTH);
@@ -527,7 +528,7 @@ public class Utilities {
 			graph.addView(mGraphView);
 
 		} else if (message.equals(TabFragmentActivityStatistic.TAB_YEAR)) {
-			BarGraphView mGraphView = new BarGraphView(context, "");
+			GaplessBarGraphView mGraphView = new GaplessBarGraphView(context, "");
 
 			List<Record> records = db.getSumOfRecordsByYear(targetDate().get(
 					Calendar.YEAR));
@@ -574,7 +575,7 @@ public class Utilities {
 			mGraphView.addSeries(series);
 			graph.addView(mGraphView);
 		} else if (message.equals(TabFragmentSleepStatistic.TAB_WEEK)) {
-			BarGraphView mGraphView = new BarGraphView(context, "");
+			GaplessBarGraphView mGraphView = new GaplessBarGraphView(context, "");
 
 			Calendar sunday = Calendar.getInstance();
 			sunday.setTime(targetDate().getTime());
@@ -652,7 +653,7 @@ public class Utilities {
 			mGraphView.addSeries(series);
 			graph.addView(mGraphView);
 		} else if (message.equals(TabFragmentSleepStatistic.TAB_MONTH)) {
-			BarGraphView mGraphView = new BarGraphView(context, "");
+			GaplessBarGraphView mGraphView = new GaplessBarGraphView(context, "");
 
 			List<SleepRecord> sleepRecords = db
 					.getSumOfSleepTimeByMonth(targetDate().getTime());
@@ -701,7 +702,7 @@ public class Utilities {
 			mGraphView.addSeries(series);
 			graph.addView(mGraphView);
 		} else if (message.equals(TabFragmentSleepStatistic.TAB_YEAR)) {
-			BarGraphView mGraphView = new BarGraphView(context, "");
+			GaplessBarGraphView mGraphView = new GaplessBarGraphView(context, "");
 
 			List<SleepRecord> sleepRecords = db
 					.getSumOfSleepTimeByYear(targetDate().get(Calendar.YEAR));
@@ -843,7 +844,7 @@ public class Utilities {
 		style.thickness = 5;
 		style.color = 0xFF73CBfD;
 
-		LineGraphView mGraphView = new LineGraphView(context, "");
+		StrokelessBarGraphView mGraphView = new StrokelessBarGraphView(context, "");
 		DatabaseHandler db = new DatabaseHandler(context, Main.TABLE_CONTENT,
 				null, 1);
 
@@ -896,6 +897,21 @@ public class Utilities {
 		List<GraphViewData> data = new ArrayList<GraphViewData>();
 		List<String> hStr = new ArrayList<String>();
 		if (sleeprecord != null) {
+			int fallingAsleepDuration = sleeprecord.getFallingAsleepDuration();
+			int startSleepInMins = sleeprecord.getGoToBedTime().get(Calendar.HOUR_OF_DAY)*60+sleeprecord.getGoToBedTime().get(Calendar.MINUTE);
+			
+			int endSleepInMins = sleeprecord.getActualWakeupTime().get(Calendar.HOUR_OF_DAY)*60+sleeprecord.getActualWakeupTime().get(Calendar.MINUTE);
+			
+			int duration = (endSleepInMins+(60*24))-endSleepInMins;
+			for(int j = 0 ; j < fallingAsleepDuration ;j++)
+			{
+				data.add(new GraphViewData(j, 3));
+			}
+			
+			for(int j = fallingAsleepDuration ; j < duration ;j++)
+			{
+				data.add(new GraphViewData(j, 0));
+			}
 			List<SleepPattern> patterns = sleeprecord.getPatterns();
 
 			int j = 0;
@@ -903,23 +919,24 @@ public class Utilities {
 			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 			for (SleepPattern pattern : patterns) {
 				for (int i = 0; i < pattern.getDuration(); i++) {
-					int a = 0;
-					switch (pattern.getAmplitude()) {
-					case 22:
-						a = 1;
-						break;
-					case 44:
-						a = 2;
-						break;
-					case 64:
-
-					case 66:
-						a = 3;
-						break;
-					}
-					data.add(new GraphViewData(xValue, a));
-					hStr.add("|");
-					xValue++;
+					
+//					int a = 0;
+//					switch (pattern.getAmplitude()) {
+//					case 22:
+//						a = 1;
+//						break;
+//					case 44:
+//						a = 2;
+//						break;
+//					case 64:
+//
+//					case 66:
+//						a = 3;
+//						break;
+//					}
+//					data.add(new GraphViewData(xValue, a));
+//					hStr.add("|");
+//					xValue++;
 				}
 
 			}

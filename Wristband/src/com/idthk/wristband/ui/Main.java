@@ -954,8 +954,11 @@ public class Main extends BLEBaseFragmentActivity implements
 
 			editor.putInt(getString(R.string.keyActualSleepTime),
 					sleepRecord.getActualSleepTime());
-			editor.putString(getString(R.string.pref_in_bed_time),
-					String.valueOf(sleepRecord.getInBedTime()));
+			
+			int hour = sleepRecord.getInBedTime()/60;
+			int mins = sleepRecord.getInBedTime()%60;
+			String inBedTime = String.valueOf(hour)+" hrs "+((mins>0)?(String.valueOf(mins)+" min "):" ");			
+			editor.putString(getString(R.string.pref_in_bed_time),inBedTime);
 			
 			editor.putString(getString(R.string.pref_sleep_end),
 					Utilities.getSimpleTimeFormat().format(sleepRecord.getActualWakeupTime().getTime()));

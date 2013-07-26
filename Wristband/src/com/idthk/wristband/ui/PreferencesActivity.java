@@ -189,7 +189,7 @@ public class PreferencesActivity extends Activity {
 								+ " "
 								+ String.valueOf(sharedPreferences
 										.getBoolean(
-												getString(R.string.pref_week_up_weekend),
+												getString(R.string.pref_unpair),
 												false)));
 			} else if (key.equals(getString(R.string.pref_week_up_weekday))
 					|| key.equals(getString(R.string.pref_week_up_weekend))) {
