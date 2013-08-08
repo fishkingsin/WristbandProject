@@ -26,3 +26,6 @@ cmlist.sh
 InteractiveChart/
 
 BluetoothLeGatt/
+ApiDemos/
+Support4Demos/
+*.apk

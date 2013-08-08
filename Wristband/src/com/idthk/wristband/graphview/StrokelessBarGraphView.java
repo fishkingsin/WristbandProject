@@ -5,16 +5,17 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 
 import com.jjoe64.graphview.BarGraphView;
+import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 
-public class StrokelessBarGraphView extends BarGraphView {
+public class StrokelessBarGraphView extends GraphView {
 	public StrokelessBarGraphView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// TODO Auto-generated constructor stub
 	}
 
 	public StrokelessBarGraphView(Context context, String string) {
-		super(context, string);
+		super(context, string,false);
 		// TODO Auto-generated constructor stub
 	}
 

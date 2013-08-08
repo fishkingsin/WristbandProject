@@ -991,22 +991,22 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	public void connect() {
 
 		if (mService != null) {
-
-			Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
-			if (pairedDevices.size() > 0) {
-				boolean result = false;
-				for (BluetoothDevice pairedDevice : pairedDevices) {
-					result = mService.isBLEDevice(pairedDevice);
-					if (result && pairedDevice.getName().startsWith("A")) {
-						mService.mDevice = BluetoothAdapter.getDefaultAdapter()
-								.getRemoteDevice(savedAddress);
-
-						mService.connect(false);
-					}
-				}
-			} else {
+//
+//			Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
+//			if (pairedDevices.size() > 0) {
+//				boolean result = false;
+//				for (BluetoothDevice pairedDevice : pairedDevices) {
+//					result = mService.isBLEDevice(pairedDevice);
+//					if (result && pairedDevice.getName().startsWith("A")) {
+//						mService.mDevice = BluetoothAdapter.getDefaultAdapter()
+//								.getRemoteDevice(savedAddress);
+//
+//						mService.connect(false);
+//					}
+//				}
+//			} else {
 				mService.scan(true);
-			}
+//			}
 		}
 	}
 

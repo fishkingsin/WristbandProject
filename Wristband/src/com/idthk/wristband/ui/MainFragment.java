@@ -365,11 +365,11 @@ public class MainFragment extends Fragment implements
 					.findViewById(R.id.sleep_duration_textfield))
 					.setText(inBedTime);
 			
-			((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
-					.setText(sleepStart);
-
-			((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
-					.setText(sleepEnd);
+//			((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
+//					.setText(sleepStart);
+//
+//			((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
+//					.setText(sleepEnd);
 
 			int value = actualSleepTime;
 			((TextView) mRootView.findViewById(R.id.sleep_time_hour_textview))
@@ -598,16 +598,16 @@ public class MainFragment extends Fragment implements
 							.findViewById(R.id.sleep_duration_textfield))
 							.setText(String.valueOf(sleepRecord.getInBedTime()));
 
-					((TextView) mRootView
-							.findViewById(R.id.sleep_start_textfield))
-							.setText(Utilities.getSimpleTimeFormat().format(
-									sleepRecord.getGoToBedTime().getTime()));
-
-					((TextView) mRootView
-							.findViewById(R.id.sleep_end_textfield))
-							.setText(Utilities.getSimpleTimeFormat()
-									.format(sleepRecord.getActualWakeupTime()
-											.getTime()));
+//					((TextView) mRootView
+//							.findViewById(R.id.sleep_start_textfield))
+//							.setText(Utilities.getSimpleTimeFormat().format(
+//									sleepRecord.getGoToBedTime().getTime()));
+//
+//					((TextView) mRootView
+//							.findViewById(R.id.sleep_end_textfield))
+//							.setText(Utilities.getSimpleTimeFormat()
+//									.format(sleepRecord.getActualWakeupTime()
+//											.getTime()));
 
 					int value = sleepRecord.getActualSleepTime();
 					((TextView) mRootView
