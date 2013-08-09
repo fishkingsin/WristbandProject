@@ -20,10 +20,8 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.drawable.AnimationDrawable;
 import android.hardware.SensorManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
@@ -272,8 +270,6 @@ public class Main extends BLEBaseFragmentActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		Resources res = getResources();
-		
 		mContext = this;
 
 		pd = new ProgressDialog(mContext);
@@ -462,11 +458,6 @@ public class Main extends BLEBaseFragmentActivity implements
 	private boolean isLandscapeLeft(int orientation) {
 		return orientation >= (270 - THRESHOLD)
 				&& orientation <= (270 + THRESHOLD);
-	}
-
-	private boolean isPortrait(int orientation) {
-		return (orientation >= (360 - THRESHOLD) && orientation <= 360)
-				|| (orientation >= 0 && orientation <= THRESHOLD);
 	}
 
 	public boolean canShow(int orientation) {

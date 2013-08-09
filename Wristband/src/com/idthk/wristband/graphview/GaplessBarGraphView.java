@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 
 import com.jjoe64.graphview.BarGraphView;
-import com.jjoe64.graphview.GraphView.GraphViewData;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 
 public class GaplessBarGraphView extends BarGraphView {
