@@ -41,7 +41,7 @@ public class WristbandBLEService extends Service {
 	// set true to print debug message;
 	static final boolean bDebug = false;
 
-	static final String TAG = "WristbandBLEService";
+	private final static String TAG = WristbandBLEService.class.getSimpleName();
 
 	
 
@@ -213,8 +213,9 @@ public class WristbandBLEService extends Service {
 	/**
 	 * GATT client callbacks
 	 */
-	/*private BluetoothGattCallback mGattCallbacks = new BluetoothGattCallback() {
-		public void onAppRegistered(int status) {
+	private BluetoothGattCallback mGattCallbacks = new BluetoothGattCallback() {
+		 
+	/*	public void onAppRegistered(int status) {
 			Log.v(TAG, "onAppRegistered ()");
 			checkGattStatus(status);
 		}
@@ -244,35 +245,34 @@ public class WristbandBLEService extends Service {
 				Log.i(TAG, "device =" + device
 						+ " is in Brodacast mode, hence not displaying");
 		}
-
+*/
 		@Override
-		public void onConnectionStateChange(BluetoothDevice device, int status,
-				int newState) {
-			if (bDebug)
-				Log.d(TAG,
-						" Client onConnectionStateChange ("
-								+ device.getAddress() + ")");
+	        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+//			if (bDebug)
+//				Log.d(TAG,
+//						" Client onConnectionStateChange ("
+//								+ device.getAddress() + ")");
 			// Device has been connected - start service discovery
 			if (newState == BluetoothProfile.STATE_CONNECTED
 					&& mBluetoothGatt != null) {
 				Log.v(TAG, "newState STATE_CONNECTED");
 				Bundle mBundle = new Bundle();
 				Message msg = Message.obtain(mActivityHandler, BLE_CONNECT_MSG);
-				mBundle.putString(BluetoothDevice.EXTRA_DEVICE,
-						device.getAddress());
+//				mBundle.putString(BluetoothDevice.EXTRA_DEVICE,
+//						device.getAddress());
 				msg.setData(mBundle);
 				msg.sendToTarget();
 				// ParcelUuid uuids[] = device.getUuids();
-				mDevice = device;
-				mBluetoothGatt.discoverServices(mDevice);
+//				mDevice = device;
+				mBluetoothGatt.discoverServices();
 
 			} else if (newState == BluetoothProfile.STATE_DISCONNECTED
 					&& mBluetoothGatt != null) {
 				Bundle mBundle = new Bundle();
 				Message msg = Message.obtain(mActivityHandler,
 						BLE_DISCONNECT_MSG);
-				mBundle.putString(BluetoothDevice.EXTRA_DEVICE,
-						device.getAddress());
+//				mBundle.putString(BluetoothDevice.EXTRA_DEVICE,
+//						device.getAddress());
 				msg.setData(mBundle);
 				msg.sendToTarget();
 				Log.v(TAG, "newState STATE_DISCONNECTED");
@@ -281,9 +281,12 @@ public class WristbandBLEService extends Service {
 			}
 		}
 
+//		@Override
+//		public void onCharacteristicChanged(
+//				BluetoothGattCharacteristic characteristic) {
 		@Override
-		public void onCharacteristicChanged(
-				BluetoothGattCharacteristic characteristic) {
+        public void onCharacteristicChanged(BluetoothGatt gatt,
+                                            BluetoothGattCharacteristic characteristic) {
 			if (bDebug) {
 				Log.d(TAG, "onCharacteristicChanged()");
 			}
@@ -315,9 +318,8 @@ public class WristbandBLEService extends Service {
 		}
 
 		@Override
-		public void onServicesDiscovered(BluetoothDevice device, int status) {
-			List<BluetoothGattService> services = mBluetoothGatt
-					.getServices(device);
+		public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+			List<BluetoothGattService> services = gatt.getServices();
 			
 			//  scan through the list to check the uuid if match the notification
 			//  uuid
@@ -352,7 +354,7 @@ public class WristbandBLEService extends Service {
 					} else if (characteristic.getUuid().equals(WristbandGattAttributes.PE128_CHAR_XFER)) {
 						WristbandGattAttributes.pe128Transfer = characteristic;
 					}
-					checkPropertieStyle(characteristic.getProperties());
+//					checkPropertieStyle(characteristic.getProperties());
 
 				}
 			}
@@ -361,30 +363,34 @@ public class WristbandBLEService extends Service {
 				Log.d(TAG, "onServicesDcovered()");
 			Message msg = Message.obtain(mActivityHandler,
 					BLE_SERVICE_DISCOVER_MSG);
-			checkGattStatus(status);
+//			checkGattStatus(status);
 			Bundle mBundle = new Bundle();
 
-			mBundle.putParcelable(BluetoothDevice.EXTRA_DEVICE, device);
+			mBundle.putParcelable(BluetoothDevice.EXTRA_DEVICE, mDevice);
 			msg.setData(mBundle);
 			msg.sendToTarget();
-			DummyReadForSecLevelCheck(device);
+//			DummyReadForSecLevelCheck(device);
 		}
 
-		@Override
-		public void onCharacteristicWrite(
-				BluetoothGattCharacteristic characteristic, int status) {
-			if (bDebug)
-				Log.d(TAG, "onCharacteristicWrite()");
-			checkGattStatus(status);
-		}
+//		@Override
+//		public void onCharacteristicWrite(
+//				BluetoothGattCharacteristic characteristic, int status) {
+//			if (bDebug)
+//				Log.d(TAG, "onCharacteristicWrite()");
+//			checkGattStatus(status);
+//		}
 
+//		@Override
+//		public void onCharacteristicRead(
+//				BluetoothGattCharacteristic characteristic, int status) {
 		@Override
-		public void onCharacteristicRead(
-				BluetoothGattCharacteristic characteristic, int status) {
+        public void onCharacteristicRead(BluetoothGatt gatt,
+                                         BluetoothGattCharacteristic characteristic,
+                                         int status) {
 			UUID charUuid = characteristic.getUuid();
 			if (bDebug)
 				Log.d(TAG, "onCharacteristicRead()");
-			checkGattStatus(status);
+//			checkGattStatus(status);
 			Bundle mBundle = new Bundle();
 			Message msg = Message.obtain(mActivityHandler, BLE_VALUE_MSG);
 
@@ -407,7 +413,7 @@ public class WristbandBLEService extends Service {
 			msg.sendToTarget();
 
 		}
-
+/*
 		public void onDescriptorWrite(BluetoothGattDescriptor descriptor,
 				int status) {
 			Log.i(TAG, "onDescriptorWrite status: " + status);
@@ -421,13 +427,13 @@ public class WristbandBLEService extends Service {
 
 			msg.setData(mBundle);
 			msg.sendToTarget();
-			checkGattStatus(status);
+//			checkGattStatus(status);
 		}
 
 		public void onDescriptorRead(BluetoothGattDescriptor descriptor,
 				int status) {
 			Log.i(TAG, "onDescriptorRead : " + status);
-			checkGattStatus(status);
+//			checkGattStatus(status);
 			BluetoothGattCharacteristic mCCC = descriptor.getCharacteristic();
 			Log.i(TAG, "Registering for notification UUID : " + mCCC.getUuid());
 
@@ -444,7 +450,7 @@ public class WristbandBLEService extends Service {
 			Log.i(TAG, "Notification status =" + isenabled);
 			// should fire enable success
 		}
-
+/*
 		public void onReadRemoteRssi(BluetoothDevice device, int rssi,
 				int status) {
 			Log.i(TAG, "onRssiRead rssi value is " + rssi);
@@ -457,8 +463,8 @@ public class WristbandBLEService extends Service {
 			msg.setData(mBundle);
 			msg.sendToTarget();
 		}
-
-	};*/
+*/
+	};
 
 	/*
 	 * Broadcast mode checker API
@@ -504,41 +510,40 @@ public class WristbandBLEService extends Service {
 	public void read_serial_number() {
 		Log.i(TAG, "read 0x2A25 uuid charachteristic");
 		if (mDevice != null) {
-//			BluetoothGattService mDI = mBluetoothGatt.getService(mDevice,
-//					WristbandGattAttributes.DEVICE_INFORMATION);
-//			if (mDI == null) {
-//				Log.e(TAG, "Device Information Service Not Found!!!");
-//				return;
-//			}
-//			BluetoothGattCharacteristic mSNS = mDI
-//					.getCharacteristic(WristbandGattAttributes.SERIAL_NUMBER_STRING);
-//			if (mSNS == null) {
-//				Log.e(TAG, "Serial Number String Characteristic Not Found!!!");
-//				return;
-//			}
-//			mBluetoothGatt.readCharacteristic(mSNS);
+			BluetoothGattService mDI = mBluetoothGatt.getService(
+					WristbandGattAttributes.DEVICE_INFORMATION);
+			if (mDI == null) {
+				Log.e(TAG, "Device Information Service Not Found!!!");
+				return;
+			}
+			BluetoothGattCharacteristic mSNS = mDI
+					.getCharacteristic(WristbandGattAttributes.SERIAL_NUMBER_STRING);
+			if (mSNS == null) {
+				Log.e(TAG, "Serial Number String Characteristic Not Found!!!");
+				return;
+			}
+			mBluetoothGatt.readCharacteristic(mSNS);
 		}
 	}
 
 	public void ReadDevice(UUID serviceUUID, UUID charUUID) {
 		if (mDevice != null) {
-//			Log.i(TAG, "ReadDevice charachteristic");
-//			BluetoothGattService mDI = mBluetoothGatt.getService(mDevice,
-//					serviceUUID);
-//			if (mDI == null) {
-//				Log.e(TAG, "ReadDevice Device Information Service Not Found!!!");
-//				return;
-//			}
-//			BluetoothGattCharacteristic mSNS = mDI.getCharacteristic(charUUID);
-//			if (mSNS == null) {
-//				Log.e(TAG, "ReadDevice Characteristic Not Found!!!");
-//				return;
-//			}
-//			if (!mBluetoothGatt.readCharacteristic(mSNS)) {
-//				Log.e(TAG, "ReadDevice Characteristic Fail to Read!!! UUID: "
-//						+ mSNS.getUuid());
-//				return;
-//			}
+			Log.i(TAG, "ReadDevice charachteristic");
+			BluetoothGattService mDI = mBluetoothGatt.getService(serviceUUID);
+			if (mDI == null) {
+				Log.e(TAG, "ReadDevice Device Information Service Not Found!!!");
+				return;
+			}
+			BluetoothGattCharacteristic mSNS = mDI.getCharacteristic(charUUID);
+			if (mSNS == null) {
+				Log.e(TAG, "ReadDevice Characteristic Not Found!!!");
+				return;
+			}
+			if (!mBluetoothGatt.readCharacteristic(mSNS)) {
+				Log.e(TAG, "ReadDevice Characteristic Fail to Read!!! UUID: "
+						+ mSNS.getUuid());
+				return;
+			}
 		}
 	}
 
@@ -584,8 +589,9 @@ public class WristbandBLEService extends Service {
 		Log.e(TAG, msg);
 	}
 
-	public void connect( boolean autoconnect) {
-		if (mBluetoothGatt != null && mDevice!=null) {
+	public void connect(boolean  autoconnect) {
+//		if (mBluetoothGatt != null && mDevice!=null) {
+			mBluetoothGatt = mDevice.connectGatt(this, autoconnect, mGattCallbacks);
 //			if (!mBluetoothGatt.connect(mDevice, autoconnect)) {
 //				Bundle mBundle = new Bundle();
 //				Message msg = Message.obtain(mActivityHandler, BLE_ERROR_MSG);
@@ -593,8 +599,44 @@ public class WristbandBLEService extends Service {
 //				msg.setData(mBundle);
 //				msg.sendToTarget();
 //			}
-		}
+
 	}
+//	public boolean connect(final String address) {
+//        if (mBtAdapter == null || address == null) {
+//            Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
+//            return false;
+//        }
+//
+//        // Previously connected device.  Try to reconnect.
+//        if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
+//                && mBluetoothGatt != null) {
+//            Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
+//            if (mBluetoothGatt.connect()) {
+//                mConnectionState = STATE_CONNECTING;
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        }
+//
+//        final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+//        if (device == null) {
+//            Log.w(TAG, "Device not found.  Unable to connect.");
+//            return false;
+//        }
+//        // We want to directly connect to the device, so we are setting the autoConnect
+//        // parameter to false.
+//        mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
+//
+//
+//		Bundle mBundle = new Bundle();
+//		Message msg = Message.obtain(mActivityHandler, BLE_ERROR_MSG);
+//		mBundle.putInt(EXTRA_VALUE, BLE_CONNECTTION_ERROR);
+//		msg.setData(mBundle);
+//		msg.sendToTarget();
+//		
+//        return true;
+//    }
 	
 
 	// public void disconnect(BluetoothDevice device) {
@@ -603,9 +645,14 @@ public class WristbandBLEService extends Service {
 	// }
 	// }
 	public void disconnect() {
-		if (mBluetoothGatt != null && mDevice != null) {
-//			mBluetoothGatt.cancelConnection(mDevice);
-		}
+//		if (mBluetoothGatt != null && mDevice != null) {
+////			mBluetoothGatt.cancelConnection(mDevice);
+//		}
+		if (mBtAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        mBluetoothGatt.disconnect();
 	}
 
 	// public void removeBond(BluetoothDevice device) {
@@ -638,14 +685,14 @@ public class WristbandBLEService extends Service {
 	public void scan(final boolean enable) {
 		if (enable) {
 			// Stops scanning after a pre-defined scan period.
-			mHandler.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					 mScanning = false;
-					mBtAdapter.stopLeScan(mLeScanCallback);
-					// invalidateOptionsMenu();
-				}
-			}, SCAN_PERIOD);
+//			mHandler.postDelayed(new Runnable() {
+//				@Override
+//				public void run() {
+//					 mScanning = false;
+//					mBtAdapter.stopLeScan(mLeScanCallback);
+//					// invalidateOptionsMenu();
+//				}
+//			}, SCAN_PERIOD);
 
 			mScanning = true;
 			mBtAdapter.startLeScan(mLeScanCallback);
@@ -662,8 +709,11 @@ public class WristbandBLEService extends Service {
 
         @Override
         public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+        	Log.d(TAG,"onLeScan "+device.getName());
         	if (device.getName().charAt(0) == 'A') {
-				connect( false);
+        		mDevice = mBtAdapter.getRemoteDevice(device.getAddress());
+
+        		connect(false);
 				Bundle mBundle = new Bundle();
 				Message msg = Message.obtain(mDeviceListHandler,
 						GATT_DEVICE_FOUND_MSG);

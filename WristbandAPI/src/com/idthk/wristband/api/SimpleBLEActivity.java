@@ -5,9 +5,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
-//import com.samsung.android.sdk.bt.gatt.BluetoothGattCharacteristic;
-//import com.samsung.android.sdk.bt.gatt.BluetoothGattService;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -37,7 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class SimpleBLEActivity extends Activity {
-	static final String TAG = "SimpleBLEActivity";
+	private final static String TAG = SimpleBLEActivity.class.getSimpleName();
 
 	protected WristbandBLEService mService = null;
 

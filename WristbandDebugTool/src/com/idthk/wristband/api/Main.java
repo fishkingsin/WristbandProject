@@ -4,17 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.List;
 
+
 import com.idthk.wristband.database.DatabaseHandler;
 import com.idthk.wristband.database.Record;
 import com.idthk.wristband.database.SleepRecord;
 
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -25,7 +21,7 @@ import android.widget.TextView;
 
 //Only UI handling
 public class Main extends BLEBaseFragmentActivity {
-	static final String TAG = "Main";
+	private final static String TAG = BLEBaseFragmentActivity.class.getSimpleName();
 	private String currentText = null;
 
 	TextView myTextView;
