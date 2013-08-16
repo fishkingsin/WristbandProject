@@ -24,3 +24,10 @@ ShootAndCropActivity/
 cmlist.sh
 
 InteractiveChart/
+
+ApiDemos/
+
+Support4Demos/
+
+BluetoothLeGatt/
+*.apk

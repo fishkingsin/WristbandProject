@@ -5,8 +5,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
-import com.samsung.android.sdk.bt.gatt.BluetoothGattCharacteristic;
-import com.samsung.android.sdk.bt.gatt.BluetoothGattService;
+//import com.samsung.android.sdk.bt.gatt.BluetoothGattCharacteristic;
+//import com.samsung.android.sdk.bt.gatt.BluetoothGattService;
 
 import android.os.Bundle;
 import android.os.Handler;

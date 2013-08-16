@@ -150,7 +150,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 						if (matchData(
 								rawDataBuffer,
 								p,
-								WristbandBLEService.ACTIVITY_HISTORY_RETURN_HEADER)) {
+								WristbandGattAttributes.ACTIVITY_HISTORY_RETURN_HEADER)) {
 
 							dataType = "PEDOMETER";
 							inData = new ArrayList<Byte>();
@@ -158,7 +158,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 							p += 6;
 							continue;
 						} else if (matchData(rawDataBuffer, p,
-								WristbandBLEService.SLEEP_HISTORY_RETURN_HEADER)) {
+								WristbandGattAttributes.SLEEP_HISTORY_RETURN_HEADER)) {
 							// Log(TAG, "SLEEP_HISTORY_RETURN_HEADER " + p);
 							// header of sleep
 							inData = new ArrayList<Byte>();
@@ -171,7 +171,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 					} else {
 						if (matchData(rawDataBuffer, p,
-								WristbandBLEService.HISTORY_RETURN_FOOTER)) {
+								WristbandGattAttributes.HISTORY_RETURN_FOOTER)) {
 							// end of data footer
 							// Log(TAG, "Match Fotter " + p);
 
@@ -862,30 +862,30 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	public void startStream() {
 
-		mService.EnableDeviceNoti(WristbandBLEService.PE128_NOTI_SERVICE,
-				WristbandBLEService.PE128_CHAR_STREAMING);
+		mService.EnableDeviceNoti(WristbandGattAttributes.PE128_NOTI_SERVICE,
+				WristbandGattAttributes.PE128_CHAR_STREAMING);
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		mService.WriteDevice(WristbandBLEService.PE128_SERVICE,
-				WristbandBLEService.PE128_CHAR_XFER,
-				WristbandBLEService.STREAM_MODE_START);
+		mService.WriteDevice(WristbandGattAttributes.PE128_SERVICE,
+				WristbandGattAttributes.PE128_CHAR_XFER,
+				WristbandGattAttributes.STREAM_MODE_START);
 
 	}
 
 	public void stopStream() {
-		mService.WriteDevice(WristbandBLEService.PE128_SERVICE,
-				WristbandBLEService.PE128_CHAR_XFER,
-				WristbandBLEService.STREAM_MODE_STOP);
+		mService.WriteDevice(WristbandGattAttributes.PE128_SERVICE,
+				WristbandGattAttributes.PE128_CHAR_XFER,
+				WristbandGattAttributes.STREAM_MODE_STOP);
 		// mState = BLE_STREAM_MODE_OFF;
 	}
 
 	public void setTime(int year, int month, int day, int hour, int minute,
 			int second, int week) {
-		byte data[] = WristbandBLEService.SET_TIME_PREFIX;
+		byte data[] = WristbandGattAttributes.SET_TIME_PREFIX;
 		int dataStart = 9;
 		data[dataStart] = (byte) year;
 		data[dataStart + 1] = (byte) month;
@@ -894,34 +894,34 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 		data[dataStart + 4] = (byte) minute;
 		data[dataStart + 5] = (byte) second;
 		data[dataStart + 6] = (byte) week;
-		mService.WriteDevice(WristbandBLEService.PE128_SERVICE,
-				WristbandBLEService.PE128_CHAR_XFER, data);
+		mService.WriteDevice(WristbandGattAttributes.PE128_SERVICE,
+				WristbandGattAttributes.PE128_CHAR_XFER, data);
 	}
 
 	public void setProfile(int gender, int birthyear, int birthmonth,
 			int weight, int height) {
-		byte data[] = WristbandBLEService.SET_PROFILE_PREFIX;
+		byte data[] = WristbandGattAttributes.SET_PROFILE_PREFIX;
 		int dataStart = 9;
 		data[dataStart] = (byte) gender;
 		data[dataStart + 1] = (byte) (birthyear - 1914);
 		data[dataStart + 2] = (byte) birthmonth;
 		data[dataStart + 3] = (byte) (weight - 20);
 		data[dataStart + 4] = (byte) (height - 69);
-		mService.WriteDevice(WristbandBLEService.PE128_SERVICE,
-				WristbandBLEService.PE128_CHAR_XFER, data);
+		mService.WriteDevice(WristbandGattAttributes.PE128_SERVICE,
+				WristbandGattAttributes.PE128_CHAR_XFER, data);
 	}
 
 	public void setSleep(int weekday_weak_hour, int weekday_weak_minute,
 			int weekend_weak_hour, int weekend_weak_minute, int toggle) {
-		byte data[] = WristbandBLEService.SET_SLEEP_PREFIX;
+		byte data[] = WristbandGattAttributes.SET_SLEEP_PREFIX;
 		int dataStart = 9;
 		data[dataStart] = (byte) weekday_weak_hour;
 		data[dataStart + 1] = (byte) weekday_weak_minute;
 		data[dataStart + 2] = (byte) weekend_weak_hour;
 		data[dataStart + 3] = (byte) weekend_weak_minute;
 		data[dataStart + 4] = (byte) toggle;
-		mService.WriteDevice(WristbandBLEService.PE128_SERVICE,
-				WristbandBLEService.PE128_CHAR_XFER, data);
+		mService.WriteDevice(WristbandGattAttributes.PE128_SERVICE,
+				WristbandGattAttributes.PE128_CHAR_XFER, data);
 	}
 
 	public void setTarget(int duration, int toggle, int step, int distance,
@@ -937,7 +937,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 		s += "Calories " + calories + "kcal \n";
 		Log(TAG, s);
 
-		byte data[] = WristbandBLEService.SET_TARGET_PREFIX;
+		byte data[] = WristbandGattAttributes.SET_TARGET_PREFIX;
 		int dataStart = 9;
 		data[dataStart] = (byte) duration;
 		data[dataStart + 1] = (byte) toggle;
@@ -958,31 +958,31 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 		data[dataStart + 7] = (byte) calories_medium;
 		data[dataStart + 8] = (byte) calories_low;
 
-		mService.WriteDevice(WristbandBLEService.PE128_SERVICE,
-				WristbandBLEService.PE128_CHAR_XFER, data);
+		mService.WriteDevice(WristbandGattAttributes.PE128_SERVICE,
+				WristbandGattAttributes.PE128_CHAR_XFER, data);
 	}
 
 	public void getVersion() {
 
-		mService.WriteDevice(WristbandBLEService.PE128_SERVICE,
-				WristbandBLEService.PE128_CHAR_XFER,
-				WristbandBLEService.TEST_VERSION_PREFIX);
+		mService.WriteDevice(WristbandGattAttributes.PE128_SERVICE,
+				WristbandGattAttributes.PE128_CHAR_XFER,
+				WristbandGattAttributes.TEST_VERSION_PREFIX);
 
 	}
 
 	public void getSerial() {
 
-		mService.WriteDevice(WristbandBLEService.PE128_SERVICE,
-				WristbandBLEService.PE128_CHAR_XFER,
-				WristbandBLEService.TEST_SERIAL_PREFIX);
+		mService.WriteDevice(WristbandGattAttributes.PE128_SERVICE,
+				WristbandGattAttributes.PE128_CHAR_XFER,
+				WristbandGattAttributes.TEST_SERIAL_PREFIX);
 
 	}
 
 	public void getHistory() {
 		rawDataBuffer = null;
-		mService.WriteDevice(WristbandBLEService.PE128_SERVICE,
-				WristbandBLEService.PE128_CHAR_XFER,
-				WristbandBLEService.HISTORY_PREFIX);
+		mService.WriteDevice(WristbandGattAttributes.PE128_SERVICE,
+				WristbandGattAttributes.PE128_CHAR_XFER,
+				WristbandGattAttributes.HISTORY_PREFIX);
 		mState = BLE_HISTORY_MODE;
 		mCountDownTimer.start();
 	}
@@ -1017,9 +1017,9 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	public void disconnect() {
 		Log(TAG, "disconnect()");
 		if (mState == BLE_PROFILE_CONNECTED) {
-			mService.WriteDevice(WristbandBLEService.PE128_SERVICE,
-					WristbandBLEService.PE128_CHAR_XFER,
-					WristbandBLEService.SET_DISCONNECT_PREFIX);
+			mService.WriteDevice(WristbandGattAttributes.PE128_SERVICE,
+					WristbandGattAttributes.PE128_CHAR_XFER,
+					WristbandGattAttributes.SET_DISCONNECT_PREFIX);
 		}
 		if (mService != null) {
 			mService.scan(false);
