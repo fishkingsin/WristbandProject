@@ -248,13 +248,13 @@ public class WristbandBLEService extends Service {
 */
 		@Override
 	        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-//			if (bDebug)
-//				Log.d(TAG,
-//						" Client onConnectionStateChange ("
-//								+ device.getAddress() + ")");
+			if (bDebug)
+				Log.d(TAG,
+						" Client onConnectionStateChange ("
+								+ status + ")");
 			// Device has been connected - start service discovery
 			if (newState == BluetoothProfile.STATE_CONNECTED
-					&& mBluetoothGatt != null) {
+					) {
 				Log.v(TAG, "newState STATE_CONNECTED");
 				Bundle mBundle = new Bundle();
 				Message msg = Message.obtain(mActivityHandler, BLE_CONNECT_MSG);
@@ -264,10 +264,10 @@ public class WristbandBLEService extends Service {
 				msg.sendToTarget();
 				// ParcelUuid uuids[] = device.getUuids();
 //				mDevice = device;
-				mBluetoothGatt.discoverServices();
+				gatt.discoverServices();
 
 			} else if (newState == BluetoothProfile.STATE_DISCONNECTED
-					&& mBluetoothGatt != null) {
+					) {
 				Bundle mBundle = new Bundle();
 				Message msg = Message.obtain(mActivityHandler,
 						BLE_DISCONNECT_MSG);
@@ -320,7 +320,10 @@ public class WristbandBLEService extends Service {
 		@Override
 		public void onServicesDiscovered(BluetoothGatt gatt, int status) {
 			List<BluetoothGattService> services = gatt.getServices();
-			
+			if (bDebug)
+				Log.d(TAG,
+						"onServicesDiscovered ("
+								+ status + ")");
 			//  scan through the list to check the uuid if match the notification
 			//  uuid
 			 
