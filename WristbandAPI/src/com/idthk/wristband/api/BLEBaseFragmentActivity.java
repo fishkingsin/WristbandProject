@@ -474,7 +474,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 			mService.setActivityHandler(mHandler);
 			// set call back method
 			mService.setDeviceListHandler(mHandler);
-			prepareToConnect();
+			//prepareToConnect();
 		}
 
 		public void onServiceDisconnected(ComponentName classname) {
