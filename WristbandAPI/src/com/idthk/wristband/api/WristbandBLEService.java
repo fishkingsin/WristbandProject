@@ -319,6 +319,7 @@ public class WristbandBLEService extends Service {
 	private BluetoothGattCallback mGattCallbacks = new BluetoothGattCallback() {
 		public void onAppRegistered(int status) {
 			Log.v(TAG, "onAppRegistered ()");
+			scan(true);
 			checkGattStatus(status);
 		}
 
