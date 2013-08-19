@@ -430,7 +430,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	@Override
 	protected void onStop() {
-
+		mService.close();
 		super.onStop();
 	}
 
@@ -680,12 +680,12 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 				mService.scan(false);
 
-				new Thread(new Runnable() {
-					public void run() {
+				//new Thread(new Runnable() {
+//					public void run() {
 						onServiceDiscovered();
 
-					}
-				}).start();
+//					}
+//				}).start();
 
 			}
 				break;
@@ -812,6 +812,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 			startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(startMain);
 			disconnect();
+			
 			finish();
 		} else {
 			new AlertDialog.Builder(this)
@@ -1024,6 +1025,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 		if (mService != null) {
 			mService.scan(false);
 			mService.disconnect();
+			
 		}
 
 	}

@@ -603,7 +603,7 @@ public class Main extends BLEBaseFragmentActivity implements
 		switch (getState()) {
 		case BLE_PROFILE_CONNECTED:
 			showMessage("STATE_CONNECTED::device name"
-					+ mService.mDevice.getName());
+					+ mService.deviceName);
 
 			break;
 		case BLE_PROFILE_DISCONNECTED:

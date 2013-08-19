@@ -43,14 +43,10 @@ public class WristbandBLEService extends Service {
 
 	private final static String TAG = WristbandBLEService.class.getSimpleName();
 
-	
-
 	// protocol
-//	final static byte[] SET_DEMAND_PREFIX = { (byte) 0xAA, (byte) 0x50,
-//			(byte) 0xF1, (byte) 0x00, (byte) 0x04, (byte) 0x02, (byte) 0x01,
-//			(byte) 0x06, (byte) 0x01, (byte) 0x55 };
-
-	
+	// final static byte[] SET_DEMAND_PREFIX = { (byte) 0xAA, (byte) 0x50,
+	// (byte) 0xF1, (byte) 0x00, (byte) 0x04, (byte) 0x02, (byte) 0x01,
+	// (byte) 0x06, (byte) 0x01, (byte) 0x55 };
 
 	public static final int BLE_STREAM_MSG = 20;
 	public static final int BLE_CONNECT_MSG = 21;
@@ -105,18 +101,18 @@ public class WristbandBLEService extends Service {
 
 	private static final long SCAN_PERIOD = 1000;
 
-	
-
 	private BluetoothAdapter mBtAdapter = null;
 	public BluetoothGatt mBluetoothGatt = null;
-	public BluetoothDevice mDevice = null;
+	// public BluetoothDevice mDevice = null;
 	private Handler mActivityHandler = null;
 	private Handler mDeviceListHandler = null;
 	public boolean isNoti = false;
-	
+
 	private boolean mScanning;
-	
-    private Handler mHandler;
+
+	// private Handler mHandler;
+	public String deviceName;
+
 	/**
 	 * Profile service connection listener
 	 */
@@ -144,14 +140,13 @@ public class WristbandBLEService extends Service {
 			if (mBtAdapter == null)
 				return;
 		}
-		mHandler = new Handler();
-		
-		final BluetoothManager bluetoothManager =
-                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+		// mHandler = new Handler();
+
+		final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 		mBtAdapter = bluetoothManager.getAdapter();
-		
-//		BluetoothGattAdapter.getProfileProxy(this, mProfileServiceListener,
-//				BluetoothGattAdapter.GATT);
+
+		// BluetoothGattAdapter.getProfileProxy(this, mProfileServiceListener,
+		// BluetoothGattAdapter.GATT);
 
 	}
 
@@ -171,108 +166,95 @@ public class WristbandBLEService extends Service {
 	public void onDestroy() {
 		if (bDebug)
 			Log.d(TAG, "onDestroy()");
-//		if (mBtAdapter != null && mBluetoothGatt != null) {
-//			BluetoothGattAdapter.closeProfileProxy(BluetoothGattAdapter.GATT,
-//					mBluetoothGatt);
-//		}
+		// if (mBtAdapter != null && mBluetoothGatt != null) {
+		// BluetoothGattAdapter.closeProfileProxy(BluetoothGattAdapter.GATT,
+		// mBluetoothGatt);
+		// }
 		super.onDestroy();
 	}
 
-//	private BluetoothProfile.ServiceListener mProfileServiceListener = new BluetoothProfile.ServiceListener() {
-//		@SuppressLint("NewApi")
-//		@Override
-//		public void onServiceConnected(int profile, BluetoothProfile proxy) {
-//			if (bDebug)
-//				Log.d(TAG, "onServiceConnected() - client. profile is"
-//						+ profile);
-//
-//			if (profile == BluetoothGattAdapter.GATT) {
-//				if (bDebug)
-//					Log.d(TAG,
-//							" Inside GATT onServiceConnected() - client. profile is"
-//									+ profile);
-//				mBluetoothGatt = (BluetoothGatt) proxy;
-//				mBluetoothGatt.registerApp(mGattCallbacks);
-//
-//			}
-//		}
-//
-//		@Override
-//		public void onServiceDisconnected(int profile) {
-//			if (profile == BluetoothGattAdapter.GATT) {
-//
-//				if (mBluetoothGatt != null) {
-//					mBluetoothGatt.unregisterApp();
-//					mBluetoothGatt = null;
-//				}
-//			}
-//
-//		}
-//	};
+	// private BluetoothProfile.ServiceListener mProfileServiceListener = new
+	// BluetoothProfile.ServiceListener() {
+	// @SuppressLint("NewApi")
+	// @Override
+	// public void onServiceConnected(int profile, BluetoothProfile proxy) {
+	// if (bDebug)
+	// Log.d(TAG, "onServiceConnected() - client. profile is"
+	// + profile);
+	//
+	// if (profile == BluetoothGattAdapter.GATT) {
+	// if (bDebug)
+	// Log.d(TAG,
+	// " Inside GATT onServiceConnected() - client. profile is"
+	// + profile);
+	// mBluetoothGatt = (BluetoothGatt) proxy;
+	// mBluetoothGatt.registerApp(mGattCallbacks);
+	//
+	// }
+	// }
+	//
+	// @Override
+	// public void onServiceDisconnected(int profile) {
+	// if (profile == BluetoothGattAdapter.GATT) {
+	//
+	// if (mBluetoothGatt != null) {
+	// mBluetoothGatt.unregisterApp();
+	// mBluetoothGatt = null;
+	// }
+	// }
+	//
+	// }
+	// };
 
 	/**
 	 * GATT client callbacks
 	 */
 	private BluetoothGattCallback mGattCallbacks = new BluetoothGattCallback() {
-		 
-	/*	public void onAppRegistered(int status) {
-			Log.v(TAG, "onAppRegistered ()");
-			checkGattStatus(status);
-		}
 
+		/*
+		 * public void onAppRegistered(int status) { Log.v(TAG,
+		 * "onAppRegistered ()"); checkGattStatus(status); }
+		 * 
+		 * @Override public void onScanResult(BluetoothDevice device, int rssi,
+		 * byte[] scanRecord) { if(bDebug)Log.d(TAG, "onScanResult() - device="
+		 * + device + ", rssi=" + rssi); if (!checkIfBroadcastMode(scanRecord))
+		 * { mDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(
+		 * device.getAddress());
+		 * 
+		 * if (device.getName().charAt(0) == 'A') { connect( false); Bundle
+		 * mBundle = new Bundle(); Message msg =
+		 * Message.obtain(mDeviceListHandler, GATT_DEVICE_FOUND_MSG);
+		 * mBundle.putParcelable(BluetoothDevice.EXTRA_DEVICE, device); //
+		 * mBundle.putInt(EXTRA_RSSI, rssi); // mBundle.putInt(EXTRA_SOURCE,
+		 * DEVICE_SOURCE_SCAN); msg.setData(mBundle); msg.sendToTarget(); }
+		 * 
+		 * } else Log.i(TAG, "device =" + device +
+		 * " is in Brodacast mode, hence not displaying"); }
+		 */
 		@Override
-		public void onScanResult(BluetoothDevice device, int rssi,
-				byte[] scanRecord) {
-			 if(bDebug)Log.d(TAG, "onScanResult() - device=" + device +
-			 ", rssi=" + rssi);
-			if (!checkIfBroadcastMode(scanRecord)) {
-				mDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(
-						device.getAddress());
-
-				if (device.getName().charAt(0) == 'A') {
-					connect( false);
-					Bundle mBundle = new Bundle();
-					Message msg = Message.obtain(mDeviceListHandler,
-							GATT_DEVICE_FOUND_MSG);
-					mBundle.putParcelable(BluetoothDevice.EXTRA_DEVICE, device);
-					// mBundle.putInt(EXTRA_RSSI, rssi);
-					// mBundle.putInt(EXTRA_SOURCE, DEVICE_SOURCE_SCAN);
-					msg.setData(mBundle);
-					msg.sendToTarget();
-				}
-				
-			} else
-				Log.i(TAG, "device =" + device
-						+ " is in Brodacast mode, hence not displaying");
-		}
-*/
-		@Override
-	        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+		public void onConnectionStateChange(BluetoothGatt gatt, int status,
+				int newState) {
 			if (bDebug)
-				Log.d(TAG,
-						" Client onConnectionStateChange ("
-								+ status + ")");
+				Log.d(TAG, " Client onConnectionStateChange (" + status + ")");
 			// Device has been connected - start service discovery
-			if (newState == BluetoothProfile.STATE_CONNECTED
-					) {
+			if (newState == BluetoothProfile.STATE_CONNECTED) {
 				Log.v(TAG, "newState STATE_CONNECTED");
 				Bundle mBundle = new Bundle();
 				Message msg = Message.obtain(mActivityHandler, BLE_CONNECT_MSG);
-//				mBundle.putString(BluetoothDevice.EXTRA_DEVICE,
-//						device.getAddress());
+				// mBundle.putString(BluetoothDevice.EXTRA_DEVICE,
+				// device.getAddress());
 				msg.setData(mBundle);
 				msg.sendToTarget();
 				// ParcelUuid uuids[] = device.getUuids();
-//				mDevice = device;
+				// mDevice = device;
 				gatt.discoverServices();
 
-			} else if (newState == BluetoothProfile.STATE_DISCONNECTED
-					) {
+			} else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
 				Bundle mBundle = new Bundle();
 				Message msg = Message.obtain(mActivityHandler,
 						BLE_DISCONNECT_MSG);
-//				mBundle.putString(BluetoothDevice.EXTRA_DEVICE,
-//						device.getAddress());
+				// mBundle.putString(BluetoothDevice.EXTRA_DEVICE,
+				// device.getAddress());
 				msg.setData(mBundle);
 				msg.sendToTarget();
 				Log.v(TAG, "newState STATE_DISCONNECTED");
@@ -281,12 +263,12 @@ public class WristbandBLEService extends Service {
 			}
 		}
 
-//		@Override
-//		public void onCharacteristicChanged(
-//				BluetoothGattCharacteristic characteristic) {
+		// @Override
+		// public void onCharacteristicChanged(
+		// BluetoothGattCharacteristic characteristic) {
 		@Override
-        public void onCharacteristicChanged(BluetoothGatt gatt,
-                                            BluetoothGattCharacteristic characteristic) {
+		public void onCharacteristicChanged(BluetoothGatt gatt,
+				BluetoothGattCharacteristic characteristic) {
 			if (bDebug) {
 				Log.d(TAG, "onCharacteristicChanged()");
 			}
@@ -301,7 +283,8 @@ public class WristbandBLEService extends Service {
 			if (bDebug) {
 				Log.v(TAG, "characteristic.getValue() = " + s);
 			}
-			if (characteristic.getUuid().equals(WristbandGattAttributes.INDICATOR_UUID)) {
+			if (characteristic.getUuid().equals(
+					WristbandGattAttributes.INDICATOR_UUID)) {
 				Bundle mBundle = new Bundle();
 				Message msg = Message.obtain(mActivityHandler, BLE_STREAM_MSG);
 				mBundle.putByteArray(EXTRA_VALUE, characteristic.getValue());
@@ -319,27 +302,33 @@ public class WristbandBLEService extends Service {
 
 		@Override
 		public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+			if (status == BluetoothGatt.GATT_SUCCESS) {
+				if (bDebug)
+					Log.d(TAG, "onServicesDiscovered (" + status + ")");
+			} else {
+				Log.w(TAG, "onServicesDiscovered received: " + status);
+			}
 			List<BluetoothGattService> services = gatt.getServices();
-			if (bDebug)
-				Log.d(TAG,
-						"onServicesDiscovered ("
-								+ status + ")");
-			//  scan through the list to check the uuid if match the notification
-			//  uuid
-			 
+
+			// scan through the list to check the uuid if match the notification
+			// uuid
+
 			for (BluetoothGattService service : services) {
 				if (bDebug)
 					Log.v(TAG, "Services : " + service.getUuid());
-				if (service.getUuid().equals(WristbandGattAttributes.PE128_SERVICE)) {
+				if (service.getUuid().equals(
+						WristbandGattAttributes.PE128_SERVICE)) {
 					Log.v(TAG, "Set pe128Service");
 					WristbandGattAttributes.pe128Service = service;
 				}
-				if (service.getUuid().equals(WristbandGattAttributes.PE128_NOTI_SERVICE)) {
+				if (service.getUuid().equals(
+						WristbandGattAttributes.PE128_NOTI_SERVICE)) {
 					Log.v(TAG, "Set pe128NotiService");
 					WristbandGattAttributes.pe128NotiService = service;
 				}
 
-				else if (service.getUuid().equals(WristbandGattAttributes.INDICATOR_SERVICE_UUID)) {
+				else if (service.getUuid().equals(
+						WristbandGattAttributes.INDICATOR_SERVICE_UUID)) {
 					Log.v(TAG, "Set indicateService");
 					WristbandGattAttributes.indicateService = service;
 				}
@@ -350,14 +339,17 @@ public class WristbandBLEService extends Service {
 					if (bDebug)
 						Log.v(TAG,
 								"Characteristic : " + characteristic.getUuid());
-					if (characteristic.getUuid().equals(WristbandGattAttributes.PE128_CHAR_STREAMING)) {
+					if (characteristic.getUuid().equals(
+							WristbandGattAttributes.PE128_CHAR_STREAMING)) {
 						WristbandGattAttributes.pe128Streaming = characteristic;
-					} else if (characteristic.getUuid().equals(WristbandGattAttributes.PE128_CHAR_RCVD)) {
+					} else if (characteristic.getUuid().equals(
+							WristbandGattAttributes.PE128_CHAR_RCVD)) {
 						WristbandGattAttributes.pe128Receiver = characteristic;
-					} else if (characteristic.getUuid().equals(WristbandGattAttributes.PE128_CHAR_XFER)) {
+					} else if (characteristic.getUuid().equals(
+							WristbandGattAttributes.PE128_CHAR_XFER)) {
 						WristbandGattAttributes.pe128Transfer = characteristic;
 					}
-//					checkPropertieStyle(characteristic.getProperties());
+					// checkPropertieStyle(characteristic.getProperties());
 
 				}
 			}
@@ -366,34 +358,33 @@ public class WristbandBLEService extends Service {
 				Log.d(TAG, "onServicesDcovered()");
 			Message msg = Message.obtain(mActivityHandler,
 					BLE_SERVICE_DISCOVER_MSG);
-//			checkGattStatus(status);
+			// checkGattStatus(status);
 			Bundle mBundle = new Bundle();
 
-			mBundle.putParcelable(BluetoothDevice.EXTRA_DEVICE, mDevice);
+			// mBundle.putParcelable(BluetoothDevice.EXTRA_DEVICE, mDevice);
 			msg.setData(mBundle);
 			msg.sendToTarget();
-//			DummyReadForSecLevelCheck(device);
+			// DummyReadForSecLevelCheck(device);
 		}
 
-//		@Override
-//		public void onCharacteristicWrite(
-//				BluetoothGattCharacteristic characteristic, int status) {
-//			if (bDebug)
-//				Log.d(TAG, "onCharacteristicWrite()");
-//			checkGattStatus(status);
-//		}
+		// @Override
+		// public void onCharacteristicWrite(
+		// BluetoothGattCharacteristic characteristic, int status) {
+		// if (bDebug)
+		// Log.d(TAG, "onCharacteristicWrite()");
+		// checkGattStatus(status);
+		// }
 
-//		@Override
-//		public void onCharacteristicRead(
-//				BluetoothGattCharacteristic characteristic, int status) {
+		// @Override
+		// public void onCharacteristicRead(
+		// BluetoothGattCharacteristic characteristic, int status) {
 		@Override
-        public void onCharacteristicRead(BluetoothGatt gatt,
-                                         BluetoothGattCharacteristic characteristic,
-                                         int status) {
+		public void onCharacteristicRead(BluetoothGatt gatt,
+				BluetoothGattCharacteristic characteristic, int status) {
 			UUID charUuid = characteristic.getUuid();
 			if (bDebug)
 				Log.d(TAG, "onCharacteristicRead()");
-//			checkGattStatus(status);
+			// checkGattStatus(status);
 			Bundle mBundle = new Bundle();
 			Message msg = Message.obtain(mActivityHandler, BLE_VALUE_MSG);
 
@@ -416,58 +407,45 @@ public class WristbandBLEService extends Service {
 			msg.sendToTarget();
 
 		}
-/*
-		public void onDescriptorWrite(BluetoothGattDescriptor descriptor,
-				int status) {
-			Log.i(TAG, "onDescriptorWrite status: " + status);
-			Bundle mBundle = new Bundle();
-			Message msg = Message.obtain(mActivityHandler, BLE_VALUE_MSG);
-			String s = "";
-			s = String.format("%02X", descriptor.getValue());
-
-			Log.v(TAG, "descriptor.getValue() = " + s);
-			mBundle.putByteArray(EXTRA_VALUE, descriptor.getValue());
-
-			msg.setData(mBundle);
-			msg.sendToTarget();
-//			checkGattStatus(status);
-		}
-
-		public void onDescriptorRead(BluetoothGattDescriptor descriptor,
-				int status) {
-			Log.i(TAG, "onDescriptorRead : " + status);
-//			checkGattStatus(status);
-			BluetoothGattCharacteristic mCCC = descriptor.getCharacteristic();
-			Log.i(TAG, "Registering for notification UUID : " + mCCC.getUuid());
-
-			String s = "";
-			try {
-				s = new String(descriptor.getValue(), "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			Log.v(TAG, "descriptor.getValue() = " + s);
-
-			boolean isenabled = enableNotification(true, mCCC);
-			Log.i(TAG, "Notification status =" + isenabled);
-			// should fire enable success
-		}
-/*
-		public void onReadRemoteRssi(BluetoothDevice device, int rssi,
-				int status) {
-			Log.i(TAG, "onRssiRead rssi value is " + rssi);
-			Bundle mBundle = new Bundle();
-			Message msg = Message.obtain(mActivityHandler,
-					GATT_CHARACTERISTIC_RSSI_MSG);
-			mBundle.putParcelable(EXTRA_DEVICE, device);
-			mBundle.putInt(EXTRA_RSSI, rssi);
-			mBundle.putInt(EXTRA_STATUS, status);
-			msg.setData(mBundle);
-			msg.sendToTarget();
-		}
-*/
+		/*
+		 * public void onDescriptorWrite(BluetoothGattDescriptor descriptor, int
+		 * status) { Log.i(TAG, "onDescriptorWrite status: " + status); Bundle
+		 * mBundle = new Bundle(); Message msg =
+		 * Message.obtain(mActivityHandler, BLE_VALUE_MSG); String s = ""; s =
+		 * String.format("%02X", descriptor.getValue());
+		 * 
+		 * Log.v(TAG, "descriptor.getValue() = " + s);
+		 * mBundle.putByteArray(EXTRA_VALUE, descriptor.getValue());
+		 * 
+		 * msg.setData(mBundle); msg.sendToTarget(); // checkGattStatus(status);
+		 * }
+		 * 
+		 * public void onDescriptorRead(BluetoothGattDescriptor descriptor, int
+		 * status) { Log.i(TAG, "onDescriptorRead : " + status); //
+		 * checkGattStatus(status); BluetoothGattCharacteristic mCCC =
+		 * descriptor.getCharacteristic(); Log.i(TAG,
+		 * "Registering for notification UUID : " + mCCC.getUuid());
+		 * 
+		 * String s = ""; try { s = new String(descriptor.getValue(), "UTF-8");
+		 * } catch (UnsupportedEncodingException e) { // TODO Auto-generated
+		 * catch block e.printStackTrace(); } Log.v(TAG,
+		 * "descriptor.getValue() = " + s);
+		 * 
+		 * boolean isenabled = enableNotification(true, mCCC); Log.i(TAG,
+		 * "Notification status =" + isenabled); // should fire enable success }
+		 * /* public void onReadRemoteRssi(BluetoothDevice device, int rssi, int
+		 * status) { Log.i(TAG, "onRssiRead rssi value is " + rssi); Bundle
+		 * mBundle = new Bundle(); Message msg =
+		 * Message.obtain(mActivityHandler, GATT_CHARACTERISTIC_RSSI_MSG);
+		 * mBundle.putParcelable(EXTRA_DEVICE, device);
+		 * mBundle.putInt(EXTRA_RSSI, rssi); mBundle.putInt(EXTRA_STATUS,
+		 * status); msg.setData(mBundle); msg.sendToTarget(); }
+		 */
 	};
+
+	private Object mBluetoothDeviceAddress;
+
+	private String address;
 
 	/*
 	 * Broadcast mode checker API
@@ -512,9 +490,9 @@ public class WristbandBLEService extends Service {
 
 	public void read_serial_number() {
 		Log.i(TAG, "read 0x2A25 uuid charachteristic");
-		if (mDevice != null) {
-			BluetoothGattService mDI = mBluetoothGatt.getService(
-					WristbandGattAttributes.DEVICE_INFORMATION);
+		if (mBluetoothGatt != null) {
+			BluetoothGattService mDI = mBluetoothGatt
+					.getService(WristbandGattAttributes.DEVICE_INFORMATION);
 			if (mDI == null) {
 				Log.e(TAG, "Device Information Service Not Found!!!");
 				return;
@@ -530,7 +508,7 @@ public class WristbandBLEService extends Service {
 	}
 
 	public void ReadDevice(UUID serviceUUID, UUID charUUID) {
-		if (mDevice != null) {
+		if (mBluetoothGatt != null) {
 			Log.i(TAG, "ReadDevice charachteristic");
 			BluetoothGattService mDI = mBluetoothGatt.getService(serviceUUID);
 			if (mDI == null) {
@@ -592,55 +570,65 @@ public class WristbandBLEService extends Service {
 		Log.e(TAG, msg);
 	}
 
-	public void connect(boolean  autoconnect) {
-//		if (mBluetoothGatt != null && mDevice!=null) {
-			mBluetoothGatt = mDevice.connectGatt(this, autoconnect, mGattCallbacks);
-//			if (!mBluetoothGatt.connect(mDevice, autoconnect)) {
-//				Bundle mBundle = new Bundle();
-//				Message msg = Message.obtain(mActivityHandler, BLE_ERROR_MSG);
-//				mBundle.putInt(EXTRA_VALUE, BLE_CONNECTTION_ERROR);
-//				msg.setData(mBundle);
-//				msg.sendToTarget();
-//			}
+	public void connect(boolean autoconnect) {
+		// if (mBluetoothGatt != null && mDevice!=null) {
 
+		// mBluetoothGatt = mDevice.connectGatt(this, autoconnect,
+		// mGattCallbacks);
+		// mBluetoothGatt.connect();
+		// if (!mBluetoothGatt.connect(mDevice, autoconnect)) {
+		// Bundle mBundle = new Bundle();
+		// Message msg = Message.obtain(mActivityHandler, BLE_ERROR_MSG);
+		// mBundle.putInt(EXTRA_VALUE, BLE_CONNECTTION_ERROR);
+		// msg.setData(mBundle);
+		// msg.sendToTarget();
+		// }
+		connect(false, address);
 	}
-//	public boolean connect(final String address) {
-//        if (mBtAdapter == null || address == null) {
-//            Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
-//            return false;
-//        }
-//
-//        // Previously connected device.  Try to reconnect.
-//        if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
-//                && mBluetoothGatt != null) {
-//            Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
-//            if (mBluetoothGatt.connect()) {
-//                mConnectionState = STATE_CONNECTING;
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        }
-//
-//        final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-//        if (device == null) {
-//            Log.w(TAG, "Device not found.  Unable to connect.");
-//            return false;
-//        }
-//        // We want to directly connect to the device, so we are setting the autoConnect
-//        // parameter to false.
-//        mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
-//
-//
-//		Bundle mBundle = new Bundle();
-//		Message msg = Message.obtain(mActivityHandler, BLE_ERROR_MSG);
-//		mBundle.putInt(EXTRA_VALUE, BLE_CONNECTTION_ERROR);
-//		msg.setData(mBundle);
-//		msg.sendToTarget();
-//		
-//        return true;
-//    }
-	
+
+	public boolean connect(boolean autoconnect, final String address) {
+		if (mBtAdapter == null || address == null) {
+			Log.w(TAG,
+					"BluetoothAdapter not initialized or unspecified address.");
+			return false;
+		}
+
+		// Previously connected device. Try to reconnect.
+		if (mBluetoothDeviceAddress != null
+				&& address.equals(mBluetoothDeviceAddress)
+				&& mBluetoothGatt != null) {
+			Log.d(TAG,
+					"Trying to use an existing mBluetoothGatt for connection.");
+			if (mBluetoothGatt.connect()) {
+				Bundle mBundle = new Bundle();
+				Message msg = Message.obtain(mActivityHandler, BLE_ERROR_MSG);
+				mBundle.putInt(EXTRA_VALUE, BLE_CONNECT_MSG);
+				msg.setData(mBundle);
+				msg.sendToTarget();
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		final BluetoothDevice device = mBtAdapter.getRemoteDevice(address);
+		if (device == null) {
+			Log.w(TAG, "Device not found.  Unable to connect.");
+			return false;
+		}
+		// We want to directly connect to the device, so we are setting the
+		// autoConnect
+		// parameter to false.
+		mBluetoothGatt = device.connectGatt(this, false, mGattCallbacks);
+
+		Bundle mBundle = new Bundle();
+		Message msg = Message.obtain(mActivityHandler, BLE_ERROR_MSG);
+		mBundle.putInt(EXTRA_VALUE, BLE_CONNECT_MSG);
+		msg.setData(mBundle);
+		msg.sendToTarget();
+
+		return true;
+	}
 
 	// public void disconnect(BluetoothDevice device) {
 	// if (mBluetoothGatt != null) {
@@ -648,16 +636,22 @@ public class WristbandBLEService extends Service {
 	// }
 	// }
 	public void disconnect() {
-//		if (mBluetoothGatt != null && mDevice != null) {
-////			mBluetoothGatt.cancelConnection(mDevice);
-//		}
+		// if (mBluetoothGatt != null && mDevice != null) {
+		// // mBluetoothGatt.cancelConnection(mDevice);
+		// }
 		if (mBtAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
+			Log.w(TAG, "BluetoothAdapter not initialized");
+			return;
+		}
+		mBluetoothGatt.disconnect();
+	}
+	public void close() {
+        if (mBluetoothGatt == null) {
             return;
         }
-        mBluetoothGatt.disconnect();
-	}
-
+        mBluetoothGatt.close();
+        mBluetoothGatt = null;
+    }
 	// public void removeBond(BluetoothDevice device) {
 	// if (mBluetoothGatt != null) {
 	// mBluetoothGatt.removeBond(device);
@@ -665,37 +659,37 @@ public class WristbandBLEService extends Service {
 	//
 	// }
 	public void removeBond() {
-		if (mBluetoothGatt != null && mDevice != null) {
-//			mBluetoothGatt.removeBond(mDevice);
+		if (mBluetoothGatt != null) {
+			// mBluetoothGatt.removeBond(mDevice);
 		}
 
 	}
 
-//	public void scan(final boolean enable) {
-//		if (mBluetoothGatt == null)
-//			return;
-//
-//		if (start) {
-//			mBluetoothGatt.startScan();
-//			Bundle mBundle = new Bundle();
-//			Message msg = Message.obtain(mActivityHandler, BLE_READY_MSG);
-//			msg.setData(mBundle);
-//			msg.sendToTarget();
-//		} else {
-//			mBluetoothGatt.stopScan();
-//		}
-//	}
+	// public void scan(final boolean enable) {
+	// if (mBluetoothGatt == null)
+	// return;
+	//
+	// if (start) {
+	// mBluetoothGatt.startScan();
+	// Bundle mBundle = new Bundle();
+	// Message msg = Message.obtain(mActivityHandler, BLE_READY_MSG);
+	// msg.setData(mBundle);
+	// msg.sendToTarget();
+	// } else {
+	// mBluetoothGatt.stopScan();
+	// }
+	// }
 	public void scan(final boolean enable) {
 		if (enable) {
 			// Stops scanning after a pre-defined scan period.
-//			mHandler.postDelayed(new Runnable() {
-//				@Override
-//				public void run() {
-//					 mScanning = false;
-//					mBtAdapter.stopLeScan(mLeScanCallback);
-//					// invalidateOptionsMenu();
-//				}
-//			}, SCAN_PERIOD);
+			// mHandler.postDelayed(new Runnable() {
+			// @Override
+			// public void run() {
+			// mScanning = false;
+			// mBtAdapter.stopLeScan(mLeScanCallback);
+			// // invalidateOptionsMenu();
+			// }
+			// }, SCAN_PERIOD);
 
 			mScanning = true;
 			mBtAdapter.startLeScan(mLeScanCallback);
@@ -707,35 +701,37 @@ public class WristbandBLEService extends Service {
 	}
 
 	// Device scan callback.
-    private BluetoothAdapter.LeScanCallback mLeScanCallback =
-            new BluetoothAdapter.LeScanCallback() {
+	private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
 
-        @Override
-        public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
-        	Log.d(TAG,"onLeScan "+device.getName());
-        	if (device.getName().charAt(0) == 'A') {
-        		mDevice = mBtAdapter.getRemoteDevice(device.getAddress());
-
-        		connect(false);
+		@Override
+		public void onLeScan(final BluetoothDevice device, int rssi,
+				byte[] scanRecord) {
+			Log.d(TAG, "onLeScan " + device.getName());
+			if (device.getName().charAt(0) == 'A') {
+				deviceName = device.getName();
+				address = device.getAddress();
+				// mDevice = mBtAdapter.getRemoteDevice(device.getAddress());
+				scan(false);
+				connect(false, address);
 				Bundle mBundle = new Bundle();
 				Message msg = Message.obtain(mDeviceListHandler,
 						GATT_DEVICE_FOUND_MSG);
 				mBundle.putParcelable(BluetoothDevice.EXTRA_DEVICE, device);
-				
+
 				msg.setData(mBundle);
 				msg.sendToTarget();
 			}
-        }
-    };
+		}
+	};
 
 	public BluetoothGattService getService(UUID ServiceUUID) {
-		if (mDevice != null) {
-			if (mBluetoothGatt != null) {
-				if (bDebug)
-					Log.d(TAG, "getService() - ServiceUUID=" + ServiceUUID);
-//				return mBluetoothGatt.getService(mDevice, ServiceUUID);
-			}
+
+		if (mBluetoothGatt != null) {
+			if (bDebug)
+				Log.d(TAG, "getService() - ServiceUUID=" + ServiceUUID);
+			return mBluetoothGatt.getService(ServiceUUID);
 		}
+
 		return null;
 	}
 
@@ -763,118 +759,144 @@ public class WristbandBLEService extends Service {
 	public void DummyReadForSecLevelCheck(BluetoothDevice device) {
 		boolean result = false;
 		if (mBluetoothGatt != null && device != null) {
-//			BluetoothGattService disService = mBluetoothGatt.getService(device,
-//					WristbandGattAttributes.DIS_UUID);
-//			Log.v(TAG, "disService : " + disService.getUuid());
-//
-//			if (disService == null) {
-//				showMessage("Dis service not found!");
-//				return;
-//			}
-//
-//			BluetoothGattCharacteristic firmwareIdcharc = disService
-//					.getCharacteristic(WristbandGattAttributes.FIRMWARE_REVISON_UUID);
-//			if (firmwareIdcharc == null) {
-//				showMessage("firmware revision charateristic not found!");
-//				return;
-//			}
-//			result = mBluetoothGatt.readCharacteristic(firmwareIdcharc);
-//
-//			if (result == false) {
-//				showMessage("firmware revision reading is failed!");
-//			} else {
-//				Log.v(TAG, "firmwareIdcharc : " + firmwareIdcharc);
-//			}
+			// BluetoothGattService disService =
+			// mBluetoothGatt.getService(device,
+			// WristbandGattAttributes.DIS_UUID);
+			// Log.v(TAG, "disService : " + disService.getUuid());
+			//
+			// if (disService == null) {
+			// showMessage("Dis service not found!");
+			// return;
+			// }
+			//
+			// BluetoothGattCharacteristic firmwareIdcharc = disService
+			// .getCharacteristic(WristbandGattAttributes.FIRMWARE_REVISON_UUID);
+			// if (firmwareIdcharc == null) {
+			// showMessage("firmware revision charateristic not found!");
+			// return;
+			// }
+			// result = mBluetoothGatt.readCharacteristic(firmwareIdcharc);
+			//
+			// if (result == false) {
+			// showMessage("firmware revision reading is failed!");
+			// } else {
+			// Log.v(TAG, "firmwareIdcharc : " + firmwareIdcharc);
+			// }
 		}
 
 	}
 
 	public void WriteDevice(UUID serviceUUID, UUID charUUID, byte[] data) {
 
-//		BluetoothGattService service = findService(serviceUUID);
-//
-//		if (service == null) {
-//
-//			// for (BluetoothGattService service : services) {
-//			// Log.v(TAG,"service "+service.getUuid().toString());
-//			// List<BluetoothGattCharacteristic> characteristics = service
-//			// .getCharacteristics();
-//			// for (BluetoothGattCharacteristic characteristic :
-//			// characteristics) {
-//			// Log.v(TAG,"characteristic "+characteristic.getUuid().toString());
-//			// }
-//			// }
-//
-//			showMessage("Device service not found! " + serviceUUID.toString());
-//			return;
-//		}
-//		BluetoothGattCharacteristic characteristic = findCharacteristic(
-//				charUUID, service);
-//
-//		if (characteristic == null) {
-//			showMessage("Device charateristic not found!");
-//			return;
-//		}
-//		boolean status = false;
-//		int storedLevel = characteristic.getWriteType();
-//		if (bDebug) {
-//			Log.d(TAG, "WriteDevice storedLevel=" + storedLevel);
-//			Log.d(TAG, "WriteDevice data=" + data.toString());
-//		}
-//		characteristic.setValue(data);
-//
-//		characteristic
-//				.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
-//		status = mBluetoothGatt.writeCharacteristic(characteristic);
-//		if (bDebug)
-//			Log.d(TAG, "WriteDevice - status = " + status);
+		BluetoothGattService service = mBluetoothGatt.getService(serviceUUID);
 
+		if (service == null) {
+
+			// for (BluetoothGattService service : services) {
+			// Log.v(TAG,"service "+service.getUuid().toString());
+			// List<BluetoothGattCharacteristic> characteristics = service
+			// .getCharacteristics();
+			// for (BluetoothGattCharacteristic characteristic :
+			// characteristics) {
+			// Log.v(TAG,"characteristic "+characteristic.getUuid().toString());
+			// }
+			// }
+
+			showMessage("Device service not found! " + serviceUUID.toString());
+			return;
+		}
+		BluetoothGattCharacteristic characteristic = service
+				.getCharacteristic(charUUID);
+
+		if (characteristic == null) {
+			showMessage("Device charateristic not found!");
+			return;
+		}
+		boolean status = false;
+		int storedLevel = characteristic.getWriteType();
+		if (bDebug) {
+			Log.d(TAG, "WriteDevice storedLevel=" + storedLevel);
+			Log.d(TAG, "WriteDevice data=" + data.toString());
+		}
+		characteristic.setValue(data);
+
+		characteristic
+				.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
+		status = mBluetoothGatt.writeCharacteristic(characteristic);
+		if (bDebug)
+			Log.d(TAG, "WriteDevice - status = " + status);
+
+	}
+
+	/**
+	 * Enables or disables notification on a give characteristic.
+	 * 
+	 * @param characteristic
+	 *            Characteristic to act on.
+	 * @param enabled
+	 *            If true, enable notification. False otherwise.
+	 */
+	public void setCharacteristicNotification(
+			BluetoothGattCharacteristic characteristic, boolean enabled) {
+		if (mBtAdapter == null || mBluetoothGatt == null) {
+			Log.w(TAG, "BluetoothAdapter not initialized");
+			return;
+		}
+		mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+
+		// This is specific to Heart Rate Measurement.
+		// if (UUID_HEART_RATE_MEASUREMENT.equals(characteristic.getUuid())) {
+		BluetoothGattDescriptor descriptor = characteristic
+				.getDescriptor(WristbandGattAttributes.CCC);
+		descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+		mBluetoothGatt.writeDescriptor(descriptor);
+		// }
 	}
 
 	public void EnableDeviceNoti(UUID serviceUUID, UUID charUUID) {
-//		if (mDevice != null) {
-//			boolean result = false;
-//
-//			BluetoothGattService service = findService(serviceUUID);
-//			if (service == null) {
-//				showMessage("service not found! " + serviceUUID.toString());
-//				return;
-//			}
-//
-//			BluetoothGattCharacteristic characteristic = findCharacteristic(
-//					charUUID, service);
-//
-//			if (characteristic == null) {
-//				showMessage("charateristic not found!");
-//				return;
-//			}
-//			List<BluetoothGattDescriptor> descriptors = characteristic
-//					.getDescriptors();
-//			for (BluetoothGattDescriptor descriptor : descriptors) {
-//				Log.i(TAG, "descriptors " + descriptor.getUuid());
-//			}
-//			BluetoothGattDescriptor descriptor = (BluetoothGattDescriptor) characteristic
-//					.getDescriptor(CCC);
-//			if (descriptor == null) {
-//				Log.e(TAG, "CCC for charateristic not found!");
-//				return;
-//			}
-//
-//			result = mBluetoothGatt.readDescriptor(descriptor);
-//
-//			if (result == false) {
-//				Log.e(TAG, "readDescriptor() is failed");
-//				return;
-//			} else {
-//				if (bDebug)
-//					Log.d(TAG, "EnableDeviceNoti()");
-//			}
-//		}
+		if (mBluetoothGatt != null) {
+			boolean result = false;
+
+			BluetoothGattService service = mBluetoothGatt
+					.getService(serviceUUID);
+			if (service == null) {
+				showMessage("service not found! " + serviceUUID.toString());
+				return;
+			}
+
+			BluetoothGattCharacteristic characteristic = service
+					.getCharacteristic(charUUID);
+
+			if (characteristic == null) {
+				showMessage("charateristic not found!");
+				return;
+			}
+			List<BluetoothGattDescriptor> descriptors = characteristic
+					.getDescriptors();
+			for (BluetoothGattDescriptor descriptor : descriptors) {
+				Log.i(TAG, "descriptors " + descriptor.getUuid());
+			}
+			BluetoothGattDescriptor descriptor = (BluetoothGattDescriptor) characteristic
+					.getDescriptor(WristbandGattAttributes.CCC);
+			if (descriptor == null) {
+				Log.e(TAG, "CCC for charateristic not found!");
+				return;
+			}
+			// result = mBluetoothGatt.readDescriptor(descriptor);
+			setCharacteristicNotification(characteristic, true);
+			if (result == false) {
+				Log.e(TAG, "readDescriptor() is failed");
+				return;
+			} else {
+				if (bDebug)
+					Log.d(TAG, "EnableDeviceNoti()");
+			}
+		}
 	}
 
 	public boolean readRssi() {
-		if (mDevice != null) {
-//			mBluetoothGatt.readRemoteRssi(mDevice);
+		if (mBluetoothGatt != null) {
+			mBluetoothGatt.readRemoteRssi();
 			return true;
 		}
 
@@ -883,97 +905,105 @@ public class WristbandBLEService extends Service {
 
 	public boolean isBLEDevice(BluetoothDevice iDevice) {
 		boolean result = false;
-		
-//			result = mBluetoothGatt.isBLEDevice(iDevice);
-		
+
+		// result = mBluetoothGatt.isBLEDevice(iDevice);
+
 		if (bDebug)
 			Log.d(TAG, "isBLEDevice after" + result);
 		return result;
 	}
 
-//	void checkPropertieStyle(int properties) {
-//		switch (properties) {
-//
-//		case BluetoothGattCharacteristic.PROPERTY_BROADCAST:
-//			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_BROADCAST");
-//			break;
-//		case BluetoothGattCharacteristic.PROPERTY_EXTENDED_PROPS:
-//			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_EXTENDED_PROPS");
-//			break;
-//		case BluetoothGattCharacteristic.PROPERTY_INDICATE:
-//			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_INDICATE");
-//			break;
-//		case BluetoothGattCharacteristic.PROPERTY_NOTIFY:
-//			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_NOTIFY");
-//			break;
-//		case BluetoothGattCharacteristic.PROPERTY_READ:
-//			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_NOTIFY");
-//			break;
-//		case BluetoothGattCharacteristic.PROPERTY_SIGNED_WRITE:
-//			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_SIGNED_WRITE");
-//			break;
-//		case BluetoothGattCharacteristic.PROPERTY_WRITE:
-//			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_WRITE");
-//			break;
-//		case BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE:
-//			Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE");
-//			break;
-//		}
-//	}
-//
-//	void checkGattStatus(int status) {
-//		switch (status) {
-//		case BluetoothGatt.GATT_ALREADY_OPEN:
-//			Log.v(TAG, "BluetoothGatt.GATT_ALREADY_OPEN");
-//			break;
-//		case BluetoothGatt.GATT_ERROR:
-//			Log.v(TAG, "BluetoothGatt.GATT_ERROR");
-//			break;
-//		case BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION:
-//			Log.v(TAG, "BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION");
-//			break;
-//		case BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION:
-//			Log.v(TAG, "BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION");
-//			break;
-//		case BluetoothGatt.GATT_INTERNAL_ERROR:
-//			Log.v(TAG, "BluetoothGatt.GATT_INTERNAL_ERROR");
-//			break;
-//		case BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH:
-//			Log.v(TAG, "BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH");
-//			break;
-//		case BluetoothGatt.GATT_INVALID_OFFSET:
-//			Log.v(TAG, "BluetoothGatt.GATT_INVALID_OFFSET");
-//			break;
-//		case BluetoothGatt.GATT_NO_RESOURCES:
-//			Log.v(TAG, "BluetoothGatt.GATT_NO_RESOURCES");
-//			break;
-//		case BluetoothGatt.GATT_READ_NOT_PERMITTED:
-//			Log.v(TAG, "BluetoothGatt.GATT_READ_NOT_PERMITTED");
-//			break;
-//		case BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED:
-//			Log.v(TAG, "BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED");
-//			break;
-//		case BluetoothGatt.GATT_SUCCESS:
-//			Log.v(TAG, "BluetoothGatt.GATT_SUCCESS");
-//			break;
-//		case BluetoothGatt.GATT_WRITE_NOT_PERMITTED:
-//			Log.v(TAG, "BluetoothGatt.GATT_WRITE_NOT_PERMITTED");
-//			break;
-//		default:
-//			Log.v(TAG, "BluetoothGatt status unkonwn :" + status);
-//			break;
-//
-//		}
-//	}
+	// void checkPropertieStyle(int properties) {
+	// switch (properties) {
+	//
+	// case BluetoothGattCharacteristic.PROPERTY_BROADCAST:
+	// Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_BROADCAST");
+	// break;
+	// case BluetoothGattCharacteristic.PROPERTY_EXTENDED_PROPS:
+	// Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_EXTENDED_PROPS");
+	// break;
+	// case BluetoothGattCharacteristic.PROPERTY_INDICATE:
+	// Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_INDICATE");
+	// break;
+	// case BluetoothGattCharacteristic.PROPERTY_NOTIFY:
+	// Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_NOTIFY");
+	// break;
+	// case BluetoothGattCharacteristic.PROPERTY_READ:
+	// Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_NOTIFY");
+	// break;
+	// case BluetoothGattCharacteristic.PROPERTY_SIGNED_WRITE:
+	// Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_SIGNED_WRITE");
+	// break;
+	// case BluetoothGattCharacteristic.PROPERTY_WRITE:
+	// Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_WRITE");
+	// break;
+	// case BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE:
+	// Log.v(TAG, "BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE");
+	// break;
+	// }
+	// }
+	//
+	// void checkGattStatus(int status) {
+	// switch (status) {
+	// case BluetoothGatt.GATT_ALREADY_OPEN:
+	// Log.v(TAG, "BluetoothGatt.GATT_ALREADY_OPEN");
+	// break;
+	// case BluetoothGatt.GATT_ERROR:
+	// Log.v(TAG, "BluetoothGatt.GATT_ERROR");
+	// break;
+	// case BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION:
+	// Log.v(TAG, "BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION");
+	// break;
+	// case BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION:
+	// Log.v(TAG, "BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION");
+	// break;
+	// case BluetoothGatt.GATT_INTERNAL_ERROR:
+	// Log.v(TAG, "BluetoothGatt.GATT_INTERNAL_ERROR");
+	// break;
+	// case BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH:
+	// Log.v(TAG, "BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH");
+	// break;
+	// case BluetoothGatt.GATT_INVALID_OFFSET:
+	// Log.v(TAG, "BluetoothGatt.GATT_INVALID_OFFSET");
+	// break;
+	// case BluetoothGatt.GATT_NO_RESOURCES:
+	// Log.v(TAG, "BluetoothGatt.GATT_NO_RESOURCES");
+	// break;
+	// case BluetoothGatt.GATT_READ_NOT_PERMITTED:
+	// Log.v(TAG, "BluetoothGatt.GATT_READ_NOT_PERMITTED");
+	// break;
+	// case BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED:
+	// Log.v(TAG, "BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED");
+	// break;
+	// case BluetoothGatt.GATT_SUCCESS:
+	// Log.v(TAG, "BluetoothGatt.GATT_SUCCESS");
+	// break;
+	// case BluetoothGatt.GATT_WRITE_NOT_PERMITTED:
+	// Log.v(TAG, "BluetoothGatt.GATT_WRITE_NOT_PERMITTED");
+	// break;
+	// default:
+	// Log.v(TAG, "BluetoothGatt status unkonwn :" + status);
+	// break;
+	//
+	// }
+	// }
+	public List<BluetoothGattService> getSupportedGattServices() {
+        if (mBluetoothGatt == null) return null;
 
+        return mBluetoothGatt.getServices();
+    }
 	public void enableWristbandNotification() {
 		Log.v(TAG, "Enable Notification PE128_CHAR_RCVD");
-		this.EnableDeviceNoti(WristbandGattAttributes.PE128_SERVICE, WristbandGattAttributes.PE128_CHAR_RCVD);
+		this.EnableDeviceNoti(WristbandGattAttributes.PE128_SERVICE,
+				WristbandGattAttributes.PE128_CHAR_RCVD);
 		// try {
 		// Thread.sleep(1000);
-		Log.v(TAG, "Enable Notification PE128_CHAR_STREAMING Service : "
-				+ WristbandGattAttributes.PE128_NOTI_SERVICE.toString() + " Char : "
-				+ WristbandGattAttributes.PE128_CHAR_STREAMING.toString());
+		Log.v(TAG,
+				"Enable Notification PE128_CHAR_STREAMING Service : "
+						+ WristbandGattAttributes.PE128_NOTI_SERVICE.toString()
+						+ " Char : "
+						+ WristbandGattAttributes.PE128_CHAR_STREAMING
+								.toString());
 		// this.EnableDeviceNoti(iDevice, PE128_NOTI_SERVICE,
 		// PE128_CHAR_STREAMING);
 		// } catch (InterruptedException e) {
@@ -1094,7 +1124,5 @@ public class WristbandBLEService extends Service {
 			break;
 		}
 	}
-
-	
 
 }
