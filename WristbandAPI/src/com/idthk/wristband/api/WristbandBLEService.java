@@ -745,35 +745,35 @@ public class WristbandBLEService extends Service {
 		mBluetoothGatt.readCharacteristic(characteristic);
 	}
 
-	public void DummyReadForSecLevelCheck(BluetoothDevice device) {
+/*	public void DummyReadForSecLevelCheck(BluetoothDevice device) {
 		boolean result = false;
 		if (mBluetoothGatt != null && device != null) {
-			// BluetoothGattService disService =
-			// mBluetoothGatt.getService(device,
-			// WristbandGattAttributes.DIS_UUID);
-			// Log.v(TAG, "disService : " + disService.getUuid());
-			//
-			// if (disService == null) {
-			// showMessage("Dis service not found!");
-			// return;
-			// }
-			//
-			// BluetoothGattCharacteristic firmwareIdcharc = disService
-			// .getCharacteristic(WristbandGattAttributes.FIRMWARE_REVISON_UUID);
-			// if (firmwareIdcharc == null) {
-			// showMessage("firmware revision charateristic not found!");
-			// return;
-			// }
-			// result = mBluetoothGatt.readCharacteristic(firmwareIdcharc);
-			//
-			// if (result == false) {
-			// showMessage("firmware revision reading is failed!");
-			// } else {
-			// Log.v(TAG, "firmwareIdcharc : " + firmwareIdcharc);
-			// }
+			 BluetoothGattService disService =
+			 mBluetoothGatt.getService(device,
+			 WristbandGattAttributes.DIS_UUID);
+			 Log.v(TAG, "disService : " + disService.getUuid());
+			
+			 if (disService == null) {
+			 showMessage("Dis service not found!");
+			 return;
+			 }
+			
+			 BluetoothGattCharacteristic firmwareIdcharc = disService
+			 .getCharacteristic(WristbandGattAttributes.FIRMWARE_REVISON_UUID);
+			 if (firmwareIdcharc == null) {
+			 showMessage("firmware revision charateristic not found!");
+			 return;
+			 }
+			 result = mBluetoothGatt.readCharacteristic(firmwareIdcharc);
+			
+			 if (result == false) {
+			 showMessage("firmware revision reading is failed!");
+			 } else {
+			 Log.v(TAG, "firmwareIdcharc : " + firmwareIdcharc);
+			 }
 		}
 
-	}
+	}*/
 
 	public void WriteDevice(UUID serviceUUID, UUID charUUID, byte[] data) {
 		if (mBluetoothGatt != null) {
