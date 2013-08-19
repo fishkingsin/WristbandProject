@@ -18,6 +18,8 @@ package com.idthk.wristband.ui;
 
 import java.util.Calendar;
 
+import com.idthk.wristband.database.SleepRecord;
+
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -48,8 +50,8 @@ import android.widget.TextView;
  */
 public class MainFragment extends Fragment implements
 		SharedPreferences.OnSharedPreferenceChangeListener
-//		, OnGestureListener 
-		{
+// , OnGestureListener
+{
 	public static final String FACEBOOK = "Facebook";
 	public static final String TWITTER = "Twitter";
 	/**
@@ -79,6 +81,7 @@ public class MainFragment extends Fragment implements
 	private TextView mCaloriesIndicatedTV = null;
 	private TextView mDistancesIndicatedTV = null;
 	private ScrollView scrollView = null;
+
 	public interface OnShareButtonClickedListener {
 		public void onShareButtonClicked(String s);
 
@@ -101,7 +104,7 @@ public class MainFragment extends Fragment implements
 	private Integer currentSteps = 0;
 	private boolean isMetric = true;
 
-//	GestureDetector gestureDetector;
+	// GestureDetector gestureDetector;
 
 	/**
 	 * Factory method for this fragment class. Constructs a new fragment for the
@@ -148,7 +151,6 @@ public class MainFragment extends Fragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mPageNumber = getArguments().getInt(ARG_PAGE);
-		
 
 	}
 
@@ -164,8 +166,8 @@ public class MainFragment extends Fragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-//		gestureDetector = new GestureDetector(getActivity(), this);
-		
+		// gestureDetector = new GestureDetector(getActivity(), this);
+
 		// Utilities.getLog(TAG,"Tag : "+getTag());
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this.getActivity());
@@ -233,16 +235,16 @@ public class MainFragment extends Fragment implements
 			scrollView = (ScrollView) mRootView
 					.findViewById(R.id.main_activity_scroll_view);
 
-//			scrollView.setOnTouchListener(new View.OnTouchListener() {
-//
-//			    public boolean onTouch(View v, MotionEvent event) {
-//			        // TODO Auto-generated method stub
-//			        Log.v(TAG,"PARENT TOUCH");
-//			        scrollView.fullScroll(View.FOCUS_DOWN);  
-//			        
-//			        return false;
-//			        }
-//			    });
+			// scrollView.setOnTouchListener(new View.OnTouchListener() {
+			//
+			// public boolean onTouch(View v, MotionEvent event) {
+			// // TODO Auto-generated method stub
+			// Log.v(TAG,"PARENT TOUCH");
+			// scrollView.fullScroll(View.FOCUS_DOWN);
+			//
+			// return false;
+			// }
+			// });
 
 		} else {
 			mRootView = (ViewGroup) inflater.inflate(
@@ -250,16 +252,16 @@ public class MainFragment extends Fragment implements
 
 			scrollView = (ScrollView) mRootView
 					.findViewById(R.id.main_sleep_scroll_view);
-//			scrollView.setOnTouchListener(new View.OnTouchListener() {
-//
-//			    public boolean onTouch(View v, MotionEvent event) {
-//			        // TODO Auto-generated method stub
-//			        Log.v(TAG,"PARENT TOUCH");
-//			        scrollView.fullScroll(View.FOCUS_DOWN);  
-//			        return false;
-//			        }
-//			    });
-			
+			// scrollView.setOnTouchListener(new View.OnTouchListener() {
+			//
+			// public boolean onTouch(View v, MotionEvent event) {
+			// // TODO Auto-generated method stub
+			// Log.v(TAG,"PARENT TOUCH");
+			// scrollView.fullScroll(View.FOCUS_DOWN);
+			// return false;
+			// }
+			// });
+
 			((Button) mRootView.findViewById(R.id.button_facebook_share))
 					.setOnClickListener(new OnClickListener() {
 						public void onClick(View m) {
@@ -344,66 +346,41 @@ public class MainFragment extends Fragment implements
 			changeDistanceText(prefs);
 
 		} else {
-			Calendar datetime = Calendar.getInstance();
 
-			int weekday = datetime.get(Calendar.WEEK_OF_MONTH);
+			int actualSleepTime = prefs.getInt(
+					getString(R.string.keyActualSleepTime), 0);
+			String inBedTime = prefs.getString(
+					getString(R.string.pref_in_bed_time), "0");
 
-			// String startSleep, endSleep;
-			int inbedTime = prefs.getInt(getString(R.string.pref_in_bed_time),
-					8);
-			if (mRootView.findViewById(R.id.sleep_duration_textfield) != null)
-				((TextView) mRootView
-						.findViewById(R.id.sleep_duration_textfield))
-						.setText(String.valueOf(inbedTime));
-			// String format = "%1$02d";
+			String sleepEnd = prefs.getString(
+					getString(R.string.pref_sleep_end), "00:00");
 
-			if (weekday == Calendar.SUNDAY || weekday == Calendar.SATURDAY) {
-				// startSleep =
-				// prefs.getString(getString(R.string.pref_weekend),
-				// "00:00");
-				// startSleep = String.format(format,
-				// TimePreference.getHour(startSleep))
-				// + ":"
-				// + String.format(format,
-				// TimePreference.getMinute(startSleep))
-				// + TimePreference.getAmPm(startSleep);
-				// endSleep = prefs.getString(
-				// getString(R.string.pref_weekend_wake), "08:00AM");
+			String sleepStart = prefs.getString(
+					getString(R.string.pref_sleep_start), "00:00");
 
-				String wakeup_end = prefs.getString(
-						getString(R.string.pref_weekend),
-						getString(R.string.default_weekend_wake));
-				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
-						.setText(wakeup_end);
+			int timeFallAsSleep = prefs.getInt(
+					getString(R.string.keyTimeFallAsSleep), 0);
 
-			} else {
-				String wakeup_day = prefs.getString(
-						getString(R.string.pref_weekday),
-						getString(R.string.default_weekday_wake));
-				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
-						.setText(wakeup_day);
-				// startSleep =
-				// prefs.getString(getString(R.string.pref_weekday),
-				// "00:00");
-				// startSleep = String.format(format,
-				// TimePreference.getHour(startSleep))
-				// + ":"
-				// + String.format(format,
-				// TimePreference.getMinute(startSleep))
-				// + TimePreference.getAmPm(startSleep);
-				// endSleep = prefs.getString(
-				// getString(R.string.pref_weekend_wake), "08:00AM");
+			((TextView) mRootView
+					.findViewById(R.id.sleep_duration_textfield))
+					.setText(inBedTime);
+			
+//			((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
+//					.setText(sleepStart);
+//
+//			((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
+//					.setText(sleepEnd);
 
-				// if (mRootView.findViewById(R.id.sleep_start_textfield) !=
-				// null)
-				// ((TextView)
-				// mRootView.findViewById(R.id.sleep_start_textfield))
-				// .setText(startSleep);
-				// if (mRootView.findViewById(R.id.sleep_end_textfield) != null)
-				// ((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
-				// .setText(endSleep);
+			int value = actualSleepTime;
+			((TextView) mRootView.findViewById(R.id.sleep_time_hour_textview))
+					.setText(String.valueOf(value / 60));
 
-			}
+			((TextView) mRootView.findViewById(R.id.sleep_time_mins_textview))
+					.setText(String.valueOf(value % 60));
+			((TextView) mRootView
+					.findViewById(R.id.fall_asleep_time_mins_textview))
+					.setText(String.valueOf(timeFallAsSleep));
+
 		}
 
 	}
@@ -509,38 +486,38 @@ public class MainFragment extends Fragment implements
 			}
 		} else if (mPageNumber == 1) {
 
-			if (key.equals(getString(R.string.keySleepStart))) {
-				String wakeup_start = sharedPreferences.getString(key,
-						"10:00 pm");
-				((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
-						.setText(wakeup_start);
-			} else if (key.equals(getString(R.string.pref_weekend))) {
-				String wakeup_end = sharedPreferences.getString(key, "8:00 am");
-				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
-						.setText(wakeup_end);
-
-			} else if (key.equals(getString(R.string.pref_weekday))) {
-				String wakeup_end = sharedPreferences
-						.getString(key, "07:00 am");
-				((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
-						.setText(wakeup_end);
-
-			} else if (key.equals(getString(R.string.keyActualSleepTime))) {
-				int value = sharedPreferences.getInt(key, 0);
-
-				((TextView) mRootView
-						.findViewById(R.id.sleep_time_hour_textview))
-						.setText(String.valueOf(value / 60));
-
-				((TextView) mRootView
-						.findViewById(R.id.sleep_time_mins_textview))
-						.setText(String.valueOf(value % 60));
-			} else if (key.equals(getString(R.string.keyTimeFallAsSleep))) {
-				((TextView) mRootView
-						.findViewById(R.id.fall_asleep_time_mins_textview))
-						.setText(String.valueOf(sharedPreferences
-								.getInt(key, 0)));
-			}
+			// if (key.equals(getString(R.string.keySleepStart))) {
+			// String wakeup_start = sharedPreferences.getString(key,
+			// "10:00 pm");
+			// ((TextView) mRootView.findViewById(R.id.sleep_start_textfield))
+			// .setText(wakeup_start);
+			// } else if (key.equals(getString(R.string.pref_weekend))) {
+			// String wakeup_end = sharedPreferences.getString(key, "8:00 am");
+			// ((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
+			// .setText(wakeup_end);
+			//
+			// } else if (key.equals(getString(R.string.pref_weekday))) {
+			// String wakeup_end = sharedPreferences
+			// .getString(key, "07:00 am");
+			// ((TextView) mRootView.findViewById(R.id.sleep_end_textfield))
+			// .setText(wakeup_end);
+			//
+			// } else if (key.equals(getString(R.string.keyActualSleepTime))) {
+			// int value = sharedPreferences.getInt(key, 0);
+			//
+			// ((TextView) mRootView
+			// .findViewById(R.id.sleep_time_hour_textview))
+			// .setText(String.valueOf(value / 60));
+			//
+			// ((TextView) mRootView
+			// .findViewById(R.id.sleep_time_mins_textview))
+			// .setText(String.valueOf(value % 60));
+			// } else if (key.equals(getString(R.string.keyTimeFallAsSleep))) {
+			// ((TextView) mRootView
+			// .findViewById(R.id.fall_asleep_time_mins_textview))
+			// .setText(String.valueOf(sharedPreferences
+			// .getInt(key, 0)));
+			// }
 
 		}
 		if (key.equals(getString(R.string.pref_last_sync_time))) {
@@ -611,51 +588,43 @@ public class MainFragment extends Fragment implements
 		Log.v(TAG, "NextPage");
 	}
 
-//	@Override
-//	public boolean onDown(MotionEvent e) {
-//		// TODO Auto-generated method stub
-//		return false;
-//	}
-//
-//	@Override
-//	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-//			float velocityY) {
-//		Log.v(TAG,"onFling");
-//		// TODO Auto-generated method stub
-//		if (e1.getRawY() < e2.getRawY()) {
-//			
-//			nextPage();
-//		} else {
-//			prevPage();
-//		}
-//		return false;
-//	}
-//
-//	@Override
-//	public void onLongPress(MotionEvent e) {
-//		// TODO Auto-generated method stub
-//
-//	}
-//
-//	@Override
-//	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-//			float distanceY) {
-//		// TODO Auto-generated method stub
-//		Log.v(TAG,"onScroll");
-//		return false;
-//	}
-//
-//	@Override
-//	public void onShowPress(MotionEvent e) {
-//		// TODO Auto-generated method stub
-//
-//	}
-//
-//	@Override
-//	public boolean onSingleTapUp(MotionEvent e) {
-//		// TODO Auto-generated method stub
-//		return false;
-//	}
+	public void updateLastSlpeeRecord(final SleepRecord sleepRecord) {
+		// TODO Auto-generated method stub
+		if (mPageNumber == 1) {
+			getActivity().runOnUiThread(new Runnable() {
+				public void run() {
 
+					((TextView) mRootView
+							.findViewById(R.id.sleep_duration_textfield))
+							.setText(String.valueOf(sleepRecord.getInBedTime()));
+
+//					((TextView) mRootView
+//							.findViewById(R.id.sleep_start_textfield))
+//							.setText(Utilities.getSimpleTimeFormat().format(
+//									sleepRecord.getGoToBedTime().getTime()));
+//
+//					((TextView) mRootView
+//							.findViewById(R.id.sleep_end_textfield))
+//							.setText(Utilities.getSimpleTimeFormat()
+//									.format(sleepRecord.getActualWakeupTime()
+//											.getTime()));
+
+					int value = sleepRecord.getActualSleepTime();
+					((TextView) mRootView
+							.findViewById(R.id.sleep_time_hour_textview))
+							.setText(String.valueOf(value / 60));
+
+					((TextView) mRootView
+							.findViewById(R.id.sleep_time_mins_textview))
+							.setText(String.valueOf(value % 60));
+					((TextView) mRootView
+							.findViewById(R.id.fall_asleep_time_mins_textview))
+							.setText(String.valueOf(sleepRecord
+									.getFallingAsleepDuration()));
+				}
+			});
+
+		}
+	}
 
 }

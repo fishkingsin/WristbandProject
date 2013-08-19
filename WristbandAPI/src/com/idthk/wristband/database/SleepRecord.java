@@ -102,6 +102,7 @@ public class SleepRecord {
 	 * @param fallingAsleepDuration the fallingAsleepDuration to set
 	 */
 	public void setFallingAsleepDuration(int fallingAsleepDuration) {
+		Log.v("SleepRecord","setFallingAsleepDuration = "+fallingAsleepDuration);
 		this.fallingAsleepDuration = fallingAsleepDuration;
 	}
 

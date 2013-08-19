@@ -25,9 +25,15 @@ cmlist.sh
 
 InteractiveChart/
 
+<<<<<<< HEAD
 ApiDemos/
 
 Support4Demos/
 
 BluetoothLeGatt/
+=======
+BluetoothLeGatt/
+ApiDemos/
+Support4Demos/
+>>>>>>> master
 *.apk

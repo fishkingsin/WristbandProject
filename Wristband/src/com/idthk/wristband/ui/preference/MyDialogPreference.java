@@ -1,5 +1,6 @@
 package com.idthk.wristband.ui.preference;
 
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.preference.DialogPreference;
@@ -35,6 +36,7 @@ public class MyDialogPreference extends DialogPreference {
 
 		 if(positiveResult) {
 		        persistBoolean(!getPersistedBoolean(true));
+		        setSummary("");
 		    }
 		Log.v("MyDialogPreference","positiveResult :"+positiveResult);
 //		notifyChanged();

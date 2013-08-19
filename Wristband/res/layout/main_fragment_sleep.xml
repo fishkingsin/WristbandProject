@@ -47,11 +47,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="9" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="hrs" />
+                        
                     </LinearLayout>
 
                     <include
@@ -71,7 +67,7 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentBottom="true"
                             android:layout_alignParentLeft="true"
-                            android:text="00:00 pm" />
+                             />
 
                         <TextView
                             android:id="@+id/sleep_end_textfield"
@@ -79,7 +75,7 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentBottom="true"
                             android:layout_alignParentRight="true"
-                            android:text="00:00 am" />
+                            />
                     </RelativeLayout>
                 </LinearLayout>
 

@@ -81,7 +81,6 @@ public class PreferencesActivity extends Activity {
 			pref.setSummary(sharedPreferences.getString(
 					getString(R.string.pref_targetActivity), "0"));
 
-			
 			EditTextPreference editTextPref = (EditTextPreference) findPreference(getString(R.string.pref_targetSteps));
 			editTextPref.setSummary(sharedPreferences.getString(
 					getString(R.string.pref_targetSteps), "0"));
@@ -93,32 +92,32 @@ public class PreferencesActivity extends Activity {
 			editTextPref = (EditTextPreference) findPreference(getString(R.string.pref_targetDistances_display));
 			editTextPref.setSummary(sharedPreferences.getString(
 					getString(R.string.pref_targetDistances_display), "0"));
-			
 
 			pref = findPreference(getString(R.string.pref_user_manual));
 			pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
-//					Intent intents = new Intent(getActivity(),MyWebView.class);
-//					getActivity().startActivity(intents);
-					
-					/*Intent intent = new Intent(Intent.ACTION_VIEW,
-					        Uri.parse("file:///android_assets/manual.pdf"));
-					intent.setType("application/pdf");
-					PackageManager pm = getActivity().getPackageManager();
-					List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
-					if (activities.size() > 0) {
-					    startActivity(intent);
-					} else {
-					    // Do something else here. Maybe pop up a Dialog or Toast
-					}*/
+					// Intent intents = new
+					// Intent(getActivity(),MyWebView.class);
+					// getActivity().startActivity(intents);
+
+					/*
+					 * Intent intent = new Intent(Intent.ACTION_VIEW,
+					 * Uri.parse("file:///android_assets/manual.pdf"));
+					 * intent.setType("application/pdf"); PackageManager pm =
+					 * getActivity().getPackageManager(); List<ResolveInfo>
+					 * activities = pm.queryIntentActivities(intent, 0); if
+					 * (activities.size() > 0) { startActivity(intent); } else {
+					 * // Do something else here. Maybe pop up a Dialog or Toast
+					 * }
+					 */
 					Uri path = Uri.parse("file:///android:asset/manual.pdf");
-					Log.v(TAG,path.toString());
-					   Intent intent  = new Intent(Intent.ACTION_VIEW);
-					   intent.setDataAndType(path, "application/pdf");
-					   intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					   startActivity(intent);
-					
+					Log.v(TAG, path.toString());
+					Intent intent = new Intent(Intent.ACTION_VIEW);
+					intent.setDataAndType(path, "application/pdf");
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(intent);
+
 					return false;
 				}
 			});
@@ -135,7 +134,7 @@ public class PreferencesActivity extends Activity {
 
 			});
 			covertUnit(sharedPreferences);
-			
+
 			pref = findPreference(getString(R.string.pref_unpair));
 			pref.setSummary(getString(R.string.serial)
 					+ "#:"
@@ -182,15 +181,20 @@ public class PreferencesActivity extends Activity {
 						getString(R.string.pref_targetActivity), "0"));
 
 			}
-						
+
 			else if (key.equals(getString(R.string.pref_unpair))) {
-				Utilities.getLog(TAG,
-						key
-								+ " "
-								+ String.valueOf(sharedPreferences
-										.getBoolean(
-												getString(R.string.pref_week_up_weekend),
-												false)));
+				Utilities
+						.getLog(TAG,
+								key
+										+ " "
+										+ String.valueOf(sharedPreferences
+												.getBoolean(
+														getString(R.string.pref_unpair),
+														false)));
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				editor.putString(getString(R.string.pref_serial), "");
+				editor.commit();
+
 			} else if (key.equals(getString(R.string.pref_week_up_weekday))
 					|| key.equals(getString(R.string.pref_week_up_weekend))) {
 				boolean isWeekday = sharedPreferences.getBoolean(
@@ -204,9 +208,10 @@ public class PreferencesActivity extends Activity {
 				pref = findPreference(key);
 				String value = sharedPreferences.getString(key, "0");
 				pref.setSummary(value);
-				//set distance and convert to km unit
+				// set distance and convert to km unit
 				SharedPreferences.Editor editor = sharedPreferences.edit();
-				String unitString = sharedPreferences.getString(getString(R.string.prefUnit), "Metric");
+				String unitString = sharedPreferences.getString(
+						getString(R.string.prefUnit), "Metric");
 				boolean isMetric = (unitString.equals("Metric")) ? true : false;
 				if (isMetric) {
 					editor.putFloat(getString(R.string.pref_targetDistances),
@@ -241,34 +246,33 @@ public class PreferencesActivity extends Activity {
 			}
 
 		}
-		private void covertUnit(SharedPreferences sharedPreferences)
-		{
-			 
-			String unitString = sharedPreferences.getString(getString(R.string.prefUnit),
-					"Metric");
+
+		private void covertUnit(SharedPreferences sharedPreferences) {
+
+			String unitString = sharedPreferences.getString(
+					getString(R.string.prefUnit), "Metric");
 			boolean isMetric = (unitString.equals("Metric")) ? true : false;
-			
+
 			Preference pref = findPreference(getString(R.string.pref_targetDistances_display));
-			float fV = sharedPreferences.getFloat(getString(R.string.pref_targetDistances), 7);
+			float fV = sharedPreferences.getFloat(
+					getString(R.string.pref_targetDistances), 7);
 			String fformat = "%.1f";
-			EditTextPreference editPref = (EditTextPreference)pref;
+			EditTextPreference editPref = (EditTextPreference) pref;
 			Resources res = getResources();
 			String distance_unit[] = res.getStringArray(R.array.distance_unit);
 			if (isMetric) {
-				String st = String.format(fformat , fV);
+				String st = String.format(fformat, fV);
 				editPref.setTitle(distance_unit[0]);
 				editPref.setSummary(st);
 				editPref.setText(st);
 			} else {
-				String st = String.format(fformat , Utilities.KM2MI(fV));
+				String st = String.format(fformat, Utilities.KM2MI(fV));
 				editPref.setTitle(distance_unit[1]);
 				editPref.setSummary(st);
 				editPref.setText(st);
 			}
-			
-			
-			
+
 		}
-		
+
 	}
 }
