@@ -724,12 +724,10 @@ public class Main extends BLEBaseFragmentActivity implements
 		incomingSteps = steps;
 		incomingCalories = calories;
 		try {
-			runOnUiThread(new Runnable() {
-					public void run() {
-						mFrag.onStreamMessage(steps, calories, distance, activityTime,
-								batteryLevel);
-					}
-			});
+			
+			mFrag.onStreamMessage(steps, calories, distance, activityTime,
+					batteryLevel);
+			
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -1231,7 +1229,7 @@ public class Main extends BLEBaseFragmentActivity implements
 				mStartUpState = WristbandStartupConstant.START_STREAM;
 				checkState(mStartUpState);
 
-				setConnectionAnimation(false, 4);
+				setConnectionAnimation(true, 4);
 
 			} catch (Exception e) {
 

@@ -4,9 +4,6 @@
     android:oneshot="false" >
 
     <item
-        android:drawable="@drawable/wireless_connection_icon_1"
-        android:duration="500"/>
-    <item
         android:drawable="@drawable/wireless_connection_icon_2"
         android:duration="500"/>
     <item

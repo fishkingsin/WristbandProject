@@ -540,7 +540,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 						.getByteArray(WristbandBLEService.EXTRA_VALUE);
 
 				// in this case on runOnUiThread can touch ui element
-				new Thread(new Runnable() {
+				runOnUiThread(new Runnable() {
 					public void run() {
 						try {
 							if (value_.length == 19) {
@@ -556,7 +556,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 								// int activityLevel = value_[15];
 
 								int batteryLevel = value_[16];
-
+								
 								onStreamMessage(steps, calories, distance,
 										activityTime, batteryLevel);
 							}
@@ -565,7 +565,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 						}
 					}
 
-				}).start();
+				});
 				break;
 			case WristbandBLEService.BLE_VALUE_MSG:
 
