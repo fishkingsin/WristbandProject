@@ -66,8 +66,8 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	/*
 	 * here we use both runOnUiThread and Thread be aware each call function may
-	 * use difference thread method thread is oly user for delay, BLE communication
-	 * 
+	 * use difference thread method thread is oly user for delay, BLE
+	 * communication
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -474,7 +474,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 			mService.setActivityHandler(mHandler);
 			// set call back method
 			mService.setDeviceListHandler(mHandler);
-			//prepareToConnect();
+			// prepareToConnect();
 		}
 
 		public void onServiceDisconnected(ComponentName classname) {
@@ -491,26 +491,36 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 			// Gatt device found message.
 			case WristbandBLEService.BLE_CONNECT_MSG:
+				new Thread(new Runnable() {
+					public void run() {
+						mState = BLE_PROFILE_CONNECTED;
 
-				mState = BLE_PROFILE_CONNECTED;
-
-				savedAddress = data.getString(BluetoothDevice.EXTRA_DEVICE);
-				Log(TAG, "ConnectTo Device address " + savedAddress);
-				onConnected();
+						savedAddress = data
+								.getString(BluetoothDevice.EXTRA_DEVICE);
+						Log(TAG, "ConnectTo Device address " + savedAddress);
+						onConnected();
+					}
+				}).start();
 				break;
 			case WristbandBLEService.GATT_DEVICE_FOUND_MSG:
+				new Thread(new Runnable() {
+					public void run() {
+						// final BluetoothDevice device = data
+						// .getParcelable(BluetoothDevice.EXTRA_DEVICE);
 
-				// final BluetoothDevice device = data
-				// .getParcelable(BluetoothDevice.EXTRA_DEVICE);
-
-				onDeviceFound();
+						onDeviceFound();
+					}
+				}).start();
 				break;
 
 			case WristbandBLEService.BLE_DISCONNECT_MSG:
-
-				mService.disconnect();
-				mState = BLE_PROFILE_DISCONNECTED;
-				onDisconnected();
+				new Thread(new Runnable() {
+					public void run() {
+						mService.disconnect();
+						mState = BLE_PROFILE_DISCONNECTED;
+						onDisconnected();
+					}
+				}).start();
 				break;
 
 			case WristbandBLEService.BLE_READY_MSG:
@@ -530,7 +540,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 						.getByteArray(WristbandBLEService.EXTRA_VALUE);
 
 				// in this case on runOnUiThread can touch ui element
-				runOnUiThread(new Runnable() {
+				new Thread(new Runnable() {
 					public void run() {
 						try {
 							if (value_.length == 19) {
@@ -555,7 +565,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 						}
 					}
 
-				});
+				}).start();
 				break;
 			case WristbandBLEService.BLE_VALUE_MSG:
 
@@ -651,8 +661,13 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 				}).start();
 				break;
 			case WristbandBLEService.BLE_ERROR_MSG:
-				int errorType = data.getInt(WristbandBLEService.EXTRA_VALUE);
-				onError(errorType);
+				
+				new Thread(new Runnable() {
+					public void run() {
+						int errorType = data.getInt(WristbandBLEService.EXTRA_VALUE);
+						onError(errorType);
+					}
+				}).start();
 				break;
 			case WristbandBLEService.GATT_CHARACTERISTIC_RSSI_MSG:
 
@@ -991,22 +1006,23 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 	public void connect() {
 
 		if (mService != null) {
-//
-//			Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
-//			if (pairedDevices.size() > 0) {
-//				boolean result = false;
-//				for (BluetoothDevice pairedDevice : pairedDevices) {
-//					result = mService.isBLEDevice(pairedDevice);
-//					if (result && pairedDevice.getName().startsWith("A")) {
-//						mService.mDevice = BluetoothAdapter.getDefaultAdapter()
-//								.getRemoteDevice(savedAddress);
-//
-//						mService.connect(false);
-//					}
-//				}
-//			} else {
-				mService.scan(true);
-//			}
+			//
+			// Set<BluetoothDevice> pairedDevices =
+			// mBtAdapter.getBondedDevices();
+			// if (pairedDevices.size() > 0) {
+			// boolean result = false;
+			// for (BluetoothDevice pairedDevice : pairedDevices) {
+			// result = mService.isBLEDevice(pairedDevice);
+			// if (result && pairedDevice.getName().startsWith("A")) {
+			// mService.mDevice = BluetoothAdapter.getDefaultAdapter()
+			// .getRemoteDevice(savedAddress);
+			//
+			// mService.connect(false);
+			// }
+			// }
+			// } else {
+			mService.scan(true);
+			// }
 		}
 	}
 
@@ -1081,8 +1097,8 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	}
 
-	public void onStreamMessage(int steps, int calories, float distance,
-			int activityTime, int batteryLevel) {
+	public void onStreamMessage(final int steps, final int calories, final float distance,
+			final int activityTime, final int batteryLevel) {
 		// TODO Auto-generated method stub
 
 	}

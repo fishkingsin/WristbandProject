@@ -699,8 +699,8 @@ public class Main extends BLEBaseFragmentActivity implements
 	}
 
 	@Override
-	public void onStreamMessage(int steps, int calories, float distance,
-			int activityTime, int batteryLevel) {
+	public void onStreamMessage(final int steps, final int calories, final float distance,
+			final int activityTime, final int batteryLevel) {
 
 		Intent broadcast = new Intent();
 		broadcast.setAction("android.intent.action.MAIN");
@@ -724,12 +724,17 @@ public class Main extends BLEBaseFragmentActivity implements
 		incomingSteps = steps;
 		incomingCalories = calories;
 		try {
-			mFrag.onStreamMessage(steps, calories, distance, activityTime,
-					batteryLevel);
+			runOnUiThread(new Runnable() {
+					public void run() {
+						mFrag.onStreamMessage(steps, calories, distance, activityTime,
+								batteryLevel);
+					}
+			});
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			Log.e(TAG, "mFrag is null");
-			// e.printStackTrace();
+			 e.printStackTrace();
 		}
 		super.onStreamMessage(steps, calories, distance, activityTime,
 				batteryLevel);
