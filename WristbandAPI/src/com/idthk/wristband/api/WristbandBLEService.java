@@ -175,26 +175,7 @@ public class WristbandBLEService extends Service {
 	 */
 	private BluetoothGattCallback mGattCallbacks = new BluetoothGattCallback() {
 
-		/*
-		 * public void onAppRegistered(int status) { Log.v(TAG,
-		 * "onAppRegistered ()"); checkGattStatus(status); }
-		 * 
-		 * @Override public void onScanResult(BluetoothDevice device, int rssi,
-		 * byte[] scanRecord) { if(bDebug)Log.d(TAG, "onScanResult() - device="
-		 * + device + ", rssi=" + rssi); if (!checkIfBroadcastMode(scanRecord))
-		 * { mDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(
-		 * device.getAddress());
-		 * 
-		 * if (device.getName().charAt(0) == 'A') { connect( false); Bundle
-		 * mBundle = new Bundle(); Message msg =
-		 * Message.obtain(mDeviceListHandler, GATT_DEVICE_FOUND_MSG);
-		 * mBundle.putParcelable(BluetoothDevice.EXTRA_DEVICE, device); //
-		 * mBundle.putInt(EXTRA_RSSI, rssi); // mBundle.putInt(EXTRA_SOURCE,
-		 * DEVICE_SOURCE_SCAN); msg.setData(mBundle); msg.sendToTarget(); }
-		 * 
-		 * } else Log.i(TAG, "device =" + device +
-		 * " is in Brodacast mode, hence not displaying"); }
-		 */
+		
 		@Override
 		public void onConnectionStateChange(BluetoothGatt gatt, int status,
 				int newState) {
