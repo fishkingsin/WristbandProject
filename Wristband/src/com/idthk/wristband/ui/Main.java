@@ -200,7 +200,8 @@ public class Main extends BLEBaseFragmentActivity implements
 					// incomingDistance
 					// - lastrecord.getDistance();
 				} else {
-					Utilities.getLog(TAG, "mDBStoringTimer : lastRecord NOT FOUND !!! ");
+					Utilities.getLog(TAG,
+							"mDBStoringTimer : lastRecord NOT FOUND !!! ");
 					currentActivityTime = incomingActivityTime;
 					currentSteps = incomingSteps;
 					currentCalories = incomingCalories;
@@ -337,15 +338,14 @@ public class Main extends BLEBaseFragmentActivity implements
 								+ Utilities.getSimpleDateForamt().parse(
 										cal.get(1)));
 				Calendar _cal = Calendar.getInstance();
-				
+
 				_cal.setTime(Utilities.getSimpleDateForamt().parse(cal.get(0)));
 				Utilities.setFirstdate(_cal);
-				
-//				_cal.setTime(Utilities.getSimpleDateForamt().parse(cal.get(1)));
-//				Utilities.setLastdate(_cal);
-				
+
+				// _cal.setTime(Utilities.getSimpleDateForamt().parse(cal.get(1)));
+				// Utilities.setLastdate(_cal);
+
 				Utilities.setTargetdate(Utilities.lastDate());
-				
 
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
@@ -354,18 +354,18 @@ public class Main extends BLEBaseFragmentActivity implements
 		}
 	}
 
-//	int leapyear(int yr) {
-//		int leap = 0;
-//		int notLeap = -1;
-//
-//		if ((yr % 4 == 0) && !(yr % 100 == 0) || (yr % 400 == 0))
-//			leap = yr;
-//		else
-//			leap = notLeap;
-//
-//		return leap;
-//
-//	}
+	// int leapyear(int yr) {
+	// int leap = 0;
+	// int notLeap = -1;
+	//
+	// if ((yr % 4 == 0) && !(yr % 100 == 0) || (yr % 400 == 0))
+	// leap = yr;
+	// else
+	// leap = notLeap;
+	//
+	// return leap;
+	//
+	// }
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -637,18 +637,22 @@ public class Main extends BLEBaseFragmentActivity implements
 			syncHistoryDialog.dismiss();
 		}
 		super.onDisconnected();
-		MainFragmentPager mainfragmentPager = (MainFragmentPager) getSupportFragmentManager()
-				.findFragmentByTag(TabsFragment.TAB_MAIN);
-		if(mainfragmentPager!=null)mainfragmentPager.updateBatteryLevel(-1);
-		if (inBackground) {
-			finish();
-			return;
-		}
+		runOnUiThread(new Runnable() {
+			public void run() {
+				MainFragmentPager mainfragmentPager = (MainFragmentPager) getSupportFragmentManager()
+						.findFragmentByTag(TabsFragment.TAB_MAIN);
+				if (mainfragmentPager != null)
+					mainfragmentPager.updateBatteryLevel(-1);
+				if (inBackground) {
+					finish();
+					return;
+				}
 
-		showMessage("Disconnected");
-		setUiState();
-		setConnectionAnimation(false, 0);
-
+				showMessage("Disconnected");
+				setUiState();
+				setConnectionAnimation(false, 0);
+			}
+		});
 		if (!isInLandscapeActivity && !isInPreferenceActivity) {
 			connect();
 		}
@@ -699,8 +703,8 @@ public class Main extends BLEBaseFragmentActivity implements
 	}
 
 	@Override
-	public void onStreamMessage(final int steps, final int calories, final float distance,
-			final int activityTime, final int batteryLevel) {
+	public void onStreamMessage(final int steps, final int calories,
+			final float distance, final int activityTime, final int batteryLevel) {
 
 		Intent broadcast = new Intent();
 		broadcast.setAction("android.intent.action.MAIN");
@@ -724,15 +728,14 @@ public class Main extends BLEBaseFragmentActivity implements
 		incomingSteps = steps;
 		incomingCalories = calories;
 		try {
-			
+
 			mFrag.onStreamMessage(steps, calories, distance, activityTime,
 					batteryLevel);
-			
-			
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			Log.e(TAG, "mFrag is null");
-			 e.printStackTrace();
+			e.printStackTrace();
 		}
 		super.onStreamMessage(steps, calories, distance, activityTime,
 				batteryLevel);
@@ -940,30 +943,35 @@ public class Main extends BLEBaseFragmentActivity implements
 						"-----------------------------Sleep Record-----------------------------");
 		SleepRecord sleepRecord = db.getLastSleepRecord();
 		if (sleepRecord != null) {
-			Utilities
-			.getLog(TAG,">>>>>>>Current Sleep Record "+sleepRecord.toString());
+			Utilities.getLog(TAG,
+					">>>>>>>Current Sleep Record " + sleepRecord.toString());
 			SharedPreferences sharedPreferences = PreferenceManager
 					.getDefaultSharedPreferences(this);
 			SharedPreferences.Editor editor = sharedPreferences.edit();
 
 			editor.putInt(getString(R.string.keyActualSleepTime),
 					sleepRecord.getActualSleepTime());
-			
-			int hour = sleepRecord.getInBedTime()/60;
-			int mins = sleepRecord.getInBedTime()%60;
-			String inBedTime = String.valueOf(hour)+" hrs "+((mins>0)?(String.valueOf(mins)+" min "):" ");			
-			editor.putString(getString(R.string.pref_in_bed_time),inBedTime);
-			
-			editor.putString(getString(R.string.pref_sleep_end),
-					Utilities.getSimpleTimeFormat().format(sleepRecord.getActualWakeupTime().getTime()));
-			
-			editor.putString(getString(R.string.pref_sleep_start),
-					Utilities.getSimpleTimeFormat().format(sleepRecord.getGoToBedTime().getTime()));
-			
+
+			int hour = sleepRecord.getInBedTime() / 60;
+			int mins = sleepRecord.getInBedTime() % 60;
+			String inBedTime = String.valueOf(hour) + " hrs "
+					+ ((mins > 0) ? (String.valueOf(mins) + " min ") : " ");
+			editor.putString(getString(R.string.pref_in_bed_time), inBedTime);
+
+			editor.putString(
+					getString(R.string.pref_sleep_end),
+					Utilities.getSimpleTimeFormat().format(
+							sleepRecord.getActualWakeupTime().getTime()));
+
+			editor.putString(
+					getString(R.string.pref_sleep_start),
+					Utilities.getSimpleTimeFormat().format(
+							sleepRecord.getGoToBedTime().getTime()));
+
 			editor.putInt(getString(R.string.keyTimeFallAsSleep),
 					sleepRecord.getFallingAsleepDuration());
 			editor.commit();
-			
+
 			if (mFrag != null) {
 				// If article frag is available, we're in two-pane layout...
 
@@ -981,7 +989,7 @@ public class Main extends BLEBaseFragmentActivity implements
 	@Override
 	protected void onReadActivityHistoryData(List<Record> pedometerData) {
 
-		Utilities.getLog(TAG,"onReadActivityHistoryData - cancel timer");
+		Utilities.getLog(TAG, "onReadActivityHistoryData - cancel timer");
 		this.mSyncingTimeout.cancel();
 		super.onReadActivityHistoryData(pedometerData);
 
@@ -1225,7 +1233,6 @@ public class Main extends BLEBaseFragmentActivity implements
 				}
 				startStream();
 
-				
 				mStartUpState = WristbandStartupConstant.START_STREAM;
 				checkState(mStartUpState);
 
@@ -1248,7 +1255,6 @@ public class Main extends BLEBaseFragmentActivity implements
 			break;
 		}
 	}
-
 
 	@Override
 	public void onBackPressed() {
@@ -1375,11 +1381,10 @@ public class Main extends BLEBaseFragmentActivity implements
 		});
 
 	}
-	
+
 	@Override
-	public void disconnect()
-	{
-		setConnectionAnimation(false,0);
+	public void disconnect() {
+		setConnectionAnimation(false, 0);
 		super.disconnect();
 	}
 }
