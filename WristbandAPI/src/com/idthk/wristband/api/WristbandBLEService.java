@@ -109,7 +109,7 @@ public class WristbandBLEService extends Service {
 
 	// private Handler mHandler;
 	public String deviceName;
-
+	private String mBluetoothDeviceAddress;
 	/**
 	 * Profile service connection listener
 	 */
@@ -430,9 +430,9 @@ public class WristbandBLEService extends Service {
 
 	};
 
-	private Object mBluetoothDeviceAddress;
+	
 
-	private String address;
+	
 
 	/*
 	 * Broadcast mode checker API
@@ -578,21 +578,6 @@ public class WristbandBLEService extends Service {
 		Log.e(TAG, msg);
 	}
 
-	public void connect(boolean autoconnect) {
-		// if (mBluetoothGatt != null && mDevice!=null) {
-
-		// mBluetoothGatt = mDevice.connectGatt(this, autoconnect,
-		// mGattCallbacks);
-		// mBluetoothGatt.connect();
-		// if (!mBluetoothGatt.connect(mDevice, autoconnect)) {
-		// Bundle mBundle = new Bundle();
-		// Message msg = Message.obtain(mActivityHandler, BLE_ERROR_MSG);
-		// mBundle.putInt(EXTRA_VALUE, BLE_CONNECTTION_ERROR);
-		// msg.setData(mBundle);
-		// msg.sendToTarget();
-		// }
-		connect(false, address);
-	}
 
 	public boolean connect(boolean autoconnect, final String address) {
 		if (mBtAdapter == null || address == null) {
@@ -692,7 +677,7 @@ public class WristbandBLEService extends Service {
 			Log.d(TAG, "onLeScan " + device.getName());
 			if (device.getName().charAt(0) == 'A') {
 				deviceName = device.getName();
-				address = device.getAddress();
+				String address = device.getAddress();
 				// mDevice = mBtAdapter.getRemoteDevice(device.getAddress());
 				scan(false);
 				connect(false, address);
