@@ -2,8 +2,7 @@
      xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/connectivity_icon"
     android:oneshot="false" >
-
-    <item
+	<item
         android:drawable="@drawable/wireless_connection_icon_1"
         android:duration="500"/>
     <item

@@ -8,8 +8,6 @@ import java.util.List;
 import com.idthk.wristband.database.DatabaseHandler;
 import com.idthk.wristband.database.Record;
 import com.idthk.wristband.database.SleepRecord;
-
-
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -25,12 +23,12 @@ public class Main extends BLEBaseFragmentActivity {
 	private String currentText = null;
 
 	TextView myTextView;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main); 
+		setContentView(R.layout.main);
 		myTextView = (TextView) findViewById(R.id.textView);
 		myTextView.addTextChangedListener(new TextWatcher() {
 
@@ -58,7 +56,6 @@ public class Main extends BLEBaseFragmentActivity {
 
 			}
 		});
-		
 
 		((Button) findViewById(R.id.btn_connect))
 				.setOnClickListener(new View.OnClickListener() {
@@ -160,22 +157,27 @@ public class Main extends BLEBaseFragmentActivity {
 				.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						
-							mService.enableWristbandNotification();
+
+						mService.enableWristbandNotification();
 					}
 				});
 
 	}
-	
+
 	protected void onError(BLEErrorType type) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	private void showMessage(String msg) {
-		this.currentText += "\n" + msg;
+	private void showMessage(final String msg) {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				currentText += "\n" + msg;
 
-		myTextView.setText(currentText);
+				myTextView.setText(currentText);
+				
+			}
+		});
 
 	}
 
@@ -193,8 +195,8 @@ public class Main extends BLEBaseFragmentActivity {
 
 		switch (getState()) {
 		case BLE_PROFILE_CONNECTED:
-			showMessage("STATE_CONNECTED::device name" + mService.deviceName);
 
+			showMessage("STATE_CONNECTED::device name" + mService.deviceName);
 			break;
 		case BLE_PROFILE_DISCONNECTED:
 			showMessage("disconnected");
@@ -232,10 +234,10 @@ public class Main extends BLEBaseFragmentActivity {
 		setUiState();
 		showMessage("Service Discovered");
 	}
+
 	@Override
-	public void onStreamMessage(int steps, int calories,
-			float	 distance, int activityTime,
-			int batteryLevel) {
+	public void onStreamMessage(int steps, int calories, float distance,
+			int activityTime, int batteryLevel) {
 		// TODO Auto-generated method stub
 		String s = "";
 		s += "Wristband Stream :\n";
@@ -244,9 +246,10 @@ public class Main extends BLEBaseFragmentActivity {
 		s += "distance : " + distance + "\n";
 		s += "activityTime : " + activityTime + "\n";
 		s += "batteryLevel : " + batteryLevel + "\n";
-		
+
 		showMessage(s);
 	}
+
 	@Override
 	public void onReadTime(int year, int month, int day, int hour, int minute,
 			int second, int weekday) {
@@ -335,51 +338,52 @@ public class Main extends BLEBaseFragmentActivity {
 		}
 		String _msg = "";
 		for (int i = 0; i < value.length; i++) {
-			_msg +=  Integer.toHexString( value[i]) + " , ";
+			_msg += Integer.toHexString(value[i]) + " , ";
 		}
 		showMessage("Unknown Message");
 		showMessage(s);
 		showMessage(_msg);
 
 	}
+
 	@Override
 	protected void onReadHistoryDataFinished() {
-		DatabaseHandler db = new DatabaseHandler(this,
-				TABLE_CONTENT, null, 1);
-		List<Record>records = db.getAllRecords();
-		for(Record record:records)
-		{
-			Log.v("onReadHistoryDataFinished",record.toString());
+		DatabaseHandler db = new DatabaseHandler(this, TABLE_CONTENT, null, 1);
+		List<Record> records = db.getAllRecords();
+		for (Record record : records) {
+			Log.v("onReadHistoryDataFinished", record.toString());
 		}
-		
-		List<SleepRecord>sleepRecords = db.getAllSleepRecords();
-		for(SleepRecord record:sleepRecords)
-		{
-			Log.v("onReadHistoryDataFinished",record.toString());
+
+		List<SleepRecord> sleepRecords = db.getAllSleepRecords();
+		for (SleepRecord record : sleepRecords) {
+			Log.v("onReadHistoryDataFinished", record.toString());
 		}
 	}
-//	@Override
-//	public void onReadActivityHistoryData(List<Record> pedometerData) {
-//
-//		super.onReadActivityHistoryData(pedometerData);
-//	}
-//	@Override
-//	public void onReadSleepHistoryData(SleepRecord sleepRecord) {
-//
-//		Log.v(TAG, "onReadSleepHistoryData");
-//		
-//		Log.v(TAG, sleepRecord.toString());
-//		super.onReadSleepHistoryData(sleepRecord);
-//	}
+
+	// @Override
+	// public void onReadActivityHistoryData(List<Record> pedometerData) {
+	//
+	// super.onReadActivityHistoryData(pedometerData);
+	// }
+	// @Override
+	// public void onReadSleepHistoryData(SleepRecord sleepRecord) {
+	//
+	// Log.v(TAG, "onReadSleepHistoryData");
+	//
+	// Log.v(TAG, sleepRecord.toString());
+	// super.onReadSleepHistoryData(sleepRecord);
+	// }
 
 	@Override
 	public void onReadVersion(int xx, int yy) {
-//		String s = "ReadVersion " + Integer.valueOf(xx-30) + "-" + Integer.valueOf(yy-30);
-//		showMessage(s);
+		// String s = "ReadVersion " + Integer.valueOf(xx-30) + "-" +
+		// Integer.valueOf(yy-30);
+		// showMessage(s);
 	}
+
 	@Override
-    public void onBackPressed() {
+	public void onBackPressed() {
 		super.onBackPressed();
-	
+
 	}
 }

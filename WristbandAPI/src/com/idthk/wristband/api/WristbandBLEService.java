@@ -174,7 +174,6 @@ public class WristbandBLEService extends Service {
 	 * GATT client callbacks
 	 */
 	private BluetoothGattCallback mGattCallbacks = new BluetoothGattCallback() {
-
 		
 		@Override
 		public void onConnectionStateChange(BluetoothGatt gatt, int status,

@@ -1,7 +1,7 @@
 *.class
 *bin
 *.meta*
-
+wristbandapi.jar
 
 Wristband/gen/com/idthk/wristband/ui/R.java
 R.java

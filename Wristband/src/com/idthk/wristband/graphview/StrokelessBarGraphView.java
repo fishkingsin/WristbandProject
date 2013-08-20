@@ -11,11 +11,15 @@ public class StrokelessBarGraphView extends GraphView {
 	public StrokelessBarGraphView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// TODO Auto-generated constructor stub
+		drawVLine = false;
+		drawHLine = false;
 	}
 
 	public StrokelessBarGraphView(Context context, String string) {
 		super(context, string,false);
 		// TODO Auto-generated constructor stub
+		drawVLine = false;
+		drawHLine = false;
 	}
 
 	@Override
