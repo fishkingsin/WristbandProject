@@ -430,7 +430,7 @@ public class BLEBaseFragmentActivity extends FragmentActivity {
 
 	@Override
 	protected void onStop() {
-		mService.close();
+		if(mService!=null)mService.close();
 		super.onStop();
 	}
 
