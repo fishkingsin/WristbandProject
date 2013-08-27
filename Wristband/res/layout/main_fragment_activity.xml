@@ -5,91 +5,85 @@
     android:background="@color/default_bg_color"
     android:orientation="vertical" >
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="377dp" >
+    <ScrollView
+        android:id="@+id/main_activity_scroll_view"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
 
-        <ScrollView
-            android:id="@+id/main_activity_scroll_view"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <GridLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:layout_marginTop="5dp"
+                android:paddingLeft="10dp" >
 
-                <GridLayout
+                <TextView
+                    android:id="@+id/textView4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:paddingLeft="10dp" >
+                    android:layout_above="@+id/textView"
+                    android:layout_alignParentLeft="true"
+                    android:layout_gravity="left"
+                    android:text="Activity Level"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+            </GridLayout>
 
-                    <TextView
-                        android:id="@+id/textView4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_above="@+id/textView"
-                        android:layout_alignParentLeft="true"
-                        android:layout_gravity="left"
-                        android:text="Activity Level"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
-                </GridLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:columnCount="1"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp" >
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:columnCount="1"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp" >
-
-                    <com.idthk.wristband.ui.CustomProgressBar
-                        android:id="@+id/target_progress_bar_large"
-                        style="@style/Widget.ProgressBar.RegularProgressBar"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:max="130"
-                        android:progress="100"
-                        saund:textSize="7sp" />
-                </RelativeLayout>
-
-                <GridLayout
+                <com.idthk.wristband.ui.CustomProgressBar
+                    android:id="@+id/target_progress_bar_large"
+                    style="@style/Widget.ProgressBar.RegularProgressBar"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:columnCount="1"
-                    android:paddingBottom="15dp"
-                    android:paddingTop="15dp" >
+                    android:max="130"
+                    android:progress="100"
+                    saund:textSize="7sp" />
+            </RelativeLayout>
 
-                    <FrameLayout
-                        android:layout_width="fill_parent"
-                        android:layout_column="0"
-                        android:layout_gravity="center"
-                        android:layout_row="0" >
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="1"
+                android:paddingBottom="15dp"
+                android:paddingTop="15dp" >
 
-                        <include
-                            android:id="@+id/target_layout_off"
-                            android:layout_width="match_parent"
-                            android:layout_height="fill_parent"
-                            layout="@layout/main_fragment_activity_target_off"
-                            android:visibility="invisible" />
+                <FrameLayout
+                    android:layout_width="fill_parent"
+                    android:layout_column="0"
+                    android:layout_gravity="center"
+                    android:layout_row="0" >
 
-                        <include
-                            android:id="@+id/target_layout_on"
-                            android:layout_width="match_parent"
-                            android:layout_height="fill_parent"
-                            layout="@layout/main_fragment_activity_target_on" />
-                    </FrameLayout>
-                </GridLayout>
+                    <include
+                        android:id="@+id/target_layout_off"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        layout="@layout/main_fragment_activity_target_off"
+                        android:visibility="invisible" />
 
-                <include
-                    android:layout_width="match_parent"
-                    android:layout_height="fill_parent"
-                    layout="@layout/socialnetwork_layout"
-                    android:paddingTop="10dp" />
-            </LinearLayout>
-        </ScrollView>
+                    <include
+                        android:id="@+id/target_layout_on"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        layout="@layout/main_fragment_activity_target_on" />
+                </FrameLayout>
+            </GridLayout>
 
-    </FrameLayout>
+            <include
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                layout="@layout/socialnetwork_layout"
+                android:paddingTop="10dp" />
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
