@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2011 Jag Saund
+<!--
+Copyright (C) 2011 Jag Saund
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,48 +15,51 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<resources
->
-  <style name="Widget">
-  </style>
+<resources>
 
-  <style name="Widget.ProgressBar">
-    <item name="android:indeterminateOnly">true</item>
-    <item name="android:indeterminateBehavior">repeat</item>
-    <item name="android:indeterminateDuration">3500</item>
-    <item name="android:minWidth">48dip</item>
-    <item name="android:maxWidth">48dip</item>
-    <item name="android:minHeight">48dip</item>
-    <item name="android:maxHeight">48dip</item>
-  </style>
-    
-  <style name="Widget.ProgressBar.MiniProgressBar">
-    <item name="android:indeterminateOnly">false</item>
-    <item name="android:progressDrawable">@drawable/miniprogressbar</item>
-    <item name="android:indeterminateDrawable">@android:drawable/progress_indeterminate_horizontal</item>
-    <item name="android:minHeight">1dip</item>
-    <item name="android:maxHeight">10dip</item>
-  </style>
-  
-  <style name="Widget.ProgressBar.RegularProgressBar">
-    <item name="android:indeterminateOnly">false</item>
-    <item name="android:progressDrawable">@drawable/progressbar</item>
-    <item name="android:indeterminateDrawable">@android:drawable/progress_indeterminate_horizontal</item>
-    <item name="android:minHeight">50dip</item>
-    <item name="android:maxHeight">50dip</item>
-  </style>
-      <style name="DarkTheme" parent="android:Theme.Holo">
+    <style name="Widget"></style>
+
+    <style name="Widget.ProgressBar">
+        <item name="android:indeterminateOnly">true</item>
+        <item name="android:indeterminateBehavior">repeat</item>
+        <item name="android:indeterminateDuration">3500</item>
+        <item name="android:minWidth">48dip</item>
+        <item name="android:maxWidth">48dip</item>
+        <item name="android:minHeight">48dip</item>
+        <item name="android:maxHeight">48dip</item>
+    </style>
+
+    <style name="Widget.ProgressBar.MiniProgressBar">
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:progressDrawable">@drawable/miniprogressbar</item>
+        <item name="android:indeterminateDrawable">@android:drawable/progress_indeterminate_horizontal</item>
+        <item name="android:minHeight">1dip</item>
+        <item name="android:maxHeight">10dip</item>
+    </style>
+
+    <style name="Widget.ProgressBar.RegularProgressBar">
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:progressDrawable">@drawable/progressbar</item>
+        <item name="android:indeterminateDrawable">@android:drawable/progress_indeterminate_horizontal</item>
+        <item name="android:minHeight">50dip</item>
+        <item name="android:maxHeight">50dip</item>
+    </style>
+
+    <style name="DarkTheme" parent="android:Theme.Holo">
         <item name="android:actionBarStyle">@style/DarkActionBar</item>
     </style>
+
     <style name="DarkActionBar" parent="android:Widget.Holo.ActionBar">
         <item name="android:background">@android:color/transparent</item>
     </style>
-  
+
     <style name="CodeFont" parent="@android:style/TextAppearance.Medium">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">#00FF00</item>
         <item name="android:typeface">monospace</item>
     </style>
+
+
 
 </resources>

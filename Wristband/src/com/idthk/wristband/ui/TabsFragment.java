@@ -2,6 +2,7 @@ package com.idthk.wristband.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,12 +10,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
-
 
 public class TabsFragment extends Fragment implements OnTabChangeListener {
 
@@ -28,24 +29,27 @@ public class TabsFragment extends Fragment implements OnTabChangeListener {
 	private View mRoot;
 	private TabHost mTabHost;
 	private int mCurrentTab;
-//	private int mPreviousTab;
+	// private int mPreviousTab;
 	OnFragmentTabbedListener mCallback;
 	private Context mContext;
-    public interface OnFragmentTabbedListener {
-        public void onTabbed(String s);
-        public void dispatchTabhost(TabHost tabHost);
-    }
+
+	public interface OnFragmentTabbedListener {
+		public void onTabbed(String s);
+
+		public void dispatchTabhost(TabHost tabHost);
+	}
+
 	@Override
 	public void onAttach(Activity activity) {
 		try {
-            mCallback = (OnFragmentTabbedListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnHeadlineSelectedListener");
-        }
+			mCallback = (OnFragmentTabbedListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnHeadlineSelectedListener");
+		}
 		mContext = activity;
 		super.onAttach(activity);
-		 
+
 	}
 
 	@Override
@@ -76,39 +80,51 @@ public class TabsFragment extends Fragment implements OnTabChangeListener {
 		mTabHost.addTab(newTab(TAB_MAIN, R.string.tab_scroll, R.id.tab_1));
 		mTabHost.addTab(newTab(TAB_FRAGMENT_TAB, R.string.tab_tabfragementtab,
 				R.id.tab_2));
-		mTabHost.addTab(newTab(TAB_SETTINGS, R.string.tab_settings,
-				R.id.tab_3));
+		mTabHost.addTab(newTab(TAB_SETTINGS, R.string.tab_settings, R.id.tab_3));
 		mCallback.dispatchTabhost(mTabHost);
 	}
 
 	private TabSpec newTab(String tag, int labelId, int tabContentId) {
 		Log.d(TAG, "buildTab(): tag=" + tag);
-
-		View indicator = LayoutInflater.from(getActivity()).inflate(
-				R.layout.tab,
-				(ViewGroup) mRoot.findViewById(android.R.id.tabs), false);
-
-		LinearLayout ll = ((LinearLayout) indicator
-				.findViewById(R.id.tab_layout));
-		ImageView iv = (ImageView) ll.findViewById(R.id.tab_image);
-		if (tabContentId == R.id.tab_1) {
-			iv.setImageResource(R.drawable.tab_selector_home);
-		} else if (tabContentId == R.id.tab_2) {
-			iv.setImageResource(R.drawable.tab_selector_graph);
-		} else {
-			iv.setImageResource(R.drawable.tab_selector_settings);
-		}
+		Resources ressources = getResources();
+		// View indicator =
+		// LayoutInflater.from(getActivity()).inflate(R.layout.tab,(ViewGroup)
+		// mRoot.findViewById(android.R.id.tabs), false);
+		//
+		// LinearLayout ll = ((LinearLayout) indicator
+		// .findViewById(R.id.tab_layout));
+		// //ll.setLayoutParams(new
+		// LayoutParams((int)(mTabHost.getWidth()*0.3),LayoutParams.MATCH_PARENT));
+		// ImageView iv = (ImageView) ll.findViewById(R.id.tab_image);
+		// if (tabContentId == R.id.tab_1) {
+		// iv.setImageResource(R.drawable.tab_selector_home);
+		// } else if (tabContentId == R.id.tab_2) {
+		// iv.setImageResource(R.drawable.tab_selector_graph);
+		// } else {
+		// iv.setImageResource(R.drawable.tab_selector_settings);
+		// }
 
 		TabSpec tabSpec = mTabHost.newTabSpec(tag);
-		tabSpec.setIndicator(indicator);
+		// tabSpec.setIndicator("",
+		// ressources.getDrawable(R.drawable.tab_selector_settings));
+		if (tabContentId == R.id.tab_1) {
+			tabSpec.setIndicator("",
+					ressources.getDrawable(R.drawable.tab_selector_home));
+		} else if (tabContentId == R.id.tab_2) {
+			tabSpec.setIndicator("",
+					ressources.getDrawable(R.drawable.tab_selector_graph));
+		} else {
+			tabSpec.setIndicator("",
+					ressources.getDrawable(R.drawable.tab_selector_settings));
+		}
 		tabSpec.setContent(tabContentId);
 		return tabSpec;
 	}
 
 	@Override
 	public void onTabChanged(String tabId) {
-		
-//		Log.d(TAG, "onTabChanged(): tabId=" + tabId);
+
+		// Log.d(TAG, "onTabChanged(): tabId=" + tabId);
 
 		if (TAB_MAIN.equals(tabId)) {
 
@@ -128,23 +144,20 @@ public class TabsFragment extends Fragment implements OnTabChangeListener {
 			mCurrentTab = 2;
 			return;
 		}
-		
-		
+
 	}
 
 	private void updateTabSetting(String tabId, int placeholder) {
-		
-		
-//		FragmentManager fm = getFragmentManager();
-//		if (fm.findFragmentByTag(tabId) == null) {
-//			// gonna to manage actvitiy here
-//			fm.beginTransaction()
-//					.replace(placeholder, SettingsFragment.newInstance("Settings"),
-//							tabId).commit();
-//
-//		}
-	}
 
+		// FragmentManager fm = getFragmentManager();
+		// if (fm.findFragmentByTag(tabId) == null) {
+		// // gonna to manage actvitiy here
+		// fm.beginTransaction()
+		// .replace(placeholder, SettingsFragment.newInstance("Settings"),
+		// tabId).commit();
+		//
+		// }
+	}
 
 	private void updateTabFragTab(String tabId, int placeholder) {
 		FragmentManager fm = getFragmentManager();
@@ -152,34 +165,35 @@ public class TabsFragment extends Fragment implements OnTabChangeListener {
 			// gonna to manage actvitiy here
 
 			fm.beginTransaction()
-					.replace(placeholder, new StatisticFragmentPager(), tabId).commit();
+					.replace(placeholder, new StatisticFragmentPager(), tabId)
+					.commit();
 			mCallback.onTabbed("Activity Level");
-		}
-		else
-		{
-			StatisticFragmentPager fragment = (StatisticFragmentPager)fm.findFragmentByTag(tabId);
-			mCallback.onTabbed((fragment.getCurrentPage()==0)?"Activity Level":"Sleep Level");
+		} else {
+			StatisticFragmentPager fragment = (StatisticFragmentPager) fm
+					.findFragmentByTag(tabId);
+			mCallback
+					.onTabbed((fragment.getCurrentPage() == 0) ? "Activity Level"
+							: "Sleep Level");
 		}
 	}
 
 	private void updateTabMain(String tabId, int placeholder) {
 		FragmentManager fm = getFragmentManager();
-		
+
 		if (fm.findFragmentByTag(tabId) == null) {
 			// gonna to manage actvitiy here
 			fm.beginTransaction()
-			.replace(placeholder, new MainFragmentPager(), tabId)
-			.addToBackStack(tabId)
-			.commit();
-//			fm.beginTransaction()
-//					.replace(placeholder, new ScrollPagerMain(), tabId)
-//					.commit();
+					.replace(placeholder, new MainFragmentPager(), tabId)
+					.addToBackStack(tabId).commit();
+			// fm.beginTransaction()
+			// .replace(placeholder, new ScrollPagerMain(), tabId)
+			// .commit();
 			mCallback.onTabbed("Activity");
-		}
-		else
-		{
-			MainFragmentPager fragment = (MainFragmentPager)fm.findFragmentByTag(tabId);
-			mCallback.onTabbed((fragment.getCurrentPage()==0)?"Activity":"Sleep");
+		} else {
+			MainFragmentPager fragment = (MainFragmentPager) fm
+					.findFragmentByTag(tabId);
+			mCallback.onTabbed((fragment.getCurrentPage() == 0) ? "Activity"
+					: "Sleep");
 		}
 	}
 
