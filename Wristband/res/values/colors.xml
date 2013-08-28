@@ -6,4 +6,9 @@
     <color name="default_light_text_color">#FFFFFF</color>
     <color name="default_dark_text_color">#000000</color>
     <color name="default_graey_text_color">#666666</color>
+    <drawable name="white">#ffffff</drawable>
+    <drawable name="black">#000000</drawable>
+    <drawable name="gray">#7F808080</drawable>
+    <drawable name="lightsteelblue">#dfb0c4de</drawable>
+    <drawable name="lightgrey">#d3d3d3</drawable>
 </resources>

@@ -74,50 +74,28 @@ public class TabsFragment extends Fragment implements OnTabChangeListener {
 
 	private void setupTabs() {
 		mTabHost.setup(); // important!
-		// mTabHost.addTab(newTab(TAB_WORDS, R.string.tab_words, R.id.tab_1));
-		// mTabHost.addTab(newTab(TAB_NUMBERS, R.string.tab_numbers,
-		// R.id.tab_2));
-		mTabHost.addTab(newTab(TAB_MAIN, R.string.tab_scroll, R.id.tab_1));
+
+		mTabHost.addTab(newTab(TAB_MAIN, R.string.tab_scroll, R.id.tab_1,
+				R.drawable.tab_selector_home));
 		mTabHost.addTab(newTab(TAB_FRAGMENT_TAB, R.string.tab_tabfragementtab,
-				R.id.tab_2));
-		mTabHost.addTab(newTab(TAB_SETTINGS, R.string.tab_settings, R.id.tab_3));
+				R.id.tab_2, R.drawable.tab_selector_graph));
+		mTabHost.addTab(newTab(TAB_SETTINGS, R.string.tab_settings, R.id.tab_3,
+				R.drawable.tab_selector_settings));
 		mCallback.dispatchTabhost(mTabHost);
 	}
 
-	private TabSpec newTab(String tag, int labelId, int tabContentId) {
-		Log.d(TAG, "buildTab(): tag=" + tag);
-		Resources ressources = getResources();
-		// View indicator =
-		// LayoutInflater.from(getActivity()).inflate(R.layout.tab,(ViewGroup)
-		// mRoot.findViewById(android.R.id.tabs), false);
-		//
-		// LinearLayout ll = ((LinearLayout) indicator
-		// .findViewById(R.id.tab_layout));
-		// //ll.setLayoutParams(new
-		// LayoutParams((int)(mTabHost.getWidth()*0.3),LayoutParams.MATCH_PARENT));
-		// ImageView iv = (ImageView) ll.findViewById(R.id.tab_image);
-		// if (tabContentId == R.id.tab_1) {
-		// iv.setImageResource(R.drawable.tab_selector_home);
-		// } else if (tabContentId == R.id.tab_2) {
-		// iv.setImageResource(R.drawable.tab_selector_graph);
-		// } else {
-		// iv.setImageResource(R.drawable.tab_selector_settings);
-		// }
+	private TabSpec newTab(String tag, int labelId, int tabContentId,
+			Integer imageId) {
 
-		TabSpec tabSpec = mTabHost.newTabSpec(tag);
-		// tabSpec.setIndicator("",
-		// ressources.getDrawable(R.drawable.tab_selector_settings));
-		if (tabContentId == R.id.tab_1) {
-			tabSpec.setIndicator("",
-					ressources.getDrawable(R.drawable.tab_selector_home));
-		} else if (tabContentId == R.id.tab_2) {
-			tabSpec.setIndicator("",
-					ressources.getDrawable(R.drawable.tab_selector_graph));
-		} else {
-			tabSpec.setIndicator("",
-					ressources.getDrawable(R.drawable.tab_selector_settings));
+		View tab = LayoutInflater.from(mContext).inflate(R.layout.tab, null);
+		ImageView image = (ImageView) tab.findViewById(R.id.icon);
+
+		if (imageId != null) {
+			image.setImageResource(imageId);
 		}
-		tabSpec.setContent(tabContentId);
+
+		TabSpec tabSpec = mTabHost.newTabSpec(tag).setIndicator(tab)
+				.setContent(tabContentId);
 		return tabSpec;
 	}
 
