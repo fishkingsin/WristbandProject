@@ -70,38 +70,28 @@ public class TabsFragment extends Fragment implements OnTabChangeListener {
 
 	private void setupTabs() {
 		mTabHost.setup(); // important!
-		// mTabHost.addTab(newTab(TAB_WORDS, R.string.tab_words, R.id.tab_1));
-		// mTabHost.addTab(newTab(TAB_NUMBERS, R.string.tab_numbers,
-		// R.id.tab_2));
-		mTabHost.addTab(newTab(TAB_MAIN, R.string.tab_scroll, R.id.tab_1));
+
+		mTabHost.addTab(newTab(TAB_MAIN, R.string.tab_scroll, R.id.tab_1,
+				R.drawable.tab_selector_home));
 		mTabHost.addTab(newTab(TAB_FRAGMENT_TAB, R.string.tab_tabfragementtab,
-				R.id.tab_2));
-		mTabHost.addTab(newTab(TAB_SETTINGS, R.string.tab_settings,
-				R.id.tab_3));
+				R.id.tab_2, R.drawable.tab_selector_graph));
+		mTabHost.addTab(newTab(TAB_SETTINGS, R.string.tab_settings, R.id.tab_3,
+				R.drawable.tab_selector_settings));
 		mCallback.dispatchTabhost(mTabHost);
 	}
 
-	private TabSpec newTab(String tag, int labelId, int tabContentId) {
-		Log.d(TAG, "buildTab(): tag=" + tag);
+	private TabSpec newTab(String tag, int labelId, int tabContentId,
+			Integer imageId) {
 
-		View indicator = LayoutInflater.from(getActivity()).inflate(
-				R.layout.tab,
-				(ViewGroup) mRoot.findViewById(android.R.id.tabs), false);
+		View tab = LayoutInflater.from(mContext).inflate(R.layout.tab, null);
+		ImageView image = (ImageView) tab.findViewById(R.id.icon);
 
-		LinearLayout ll = ((LinearLayout) indicator
-				.findViewById(R.id.tab_layout));
-		ImageView iv = (ImageView) ll.findViewById(R.id.tab_image);
-		if (tabContentId == R.id.tab_1) {
-			iv.setImageResource(R.drawable.tab_selector_home);
-		} else if (tabContentId == R.id.tab_2) {
-			iv.setImageResource(R.drawable.tab_selector_graph);
-		} else {
-			iv.setImageResource(R.drawable.tab_selector_settings);
+		if (imageId != null) {
+			image.setImageResource(imageId);
 		}
 
-		TabSpec tabSpec = mTabHost.newTabSpec(tag);
-		tabSpec.setIndicator(indicator);
-		tabSpec.setContent(tabContentId);
+		TabSpec tabSpec = mTabHost.newTabSpec(tag).setIndicator(tab)
+				.setContent(tabContentId);
 		return tabSpec;
 	}
 

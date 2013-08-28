@@ -6,7 +6,7 @@
     android:gravity="center"
     android:padding="@dimen/tab_padding"
     android:background="@drawable/tab_selector" 
-    android:id="@+id/tab_layout">
+    android:id="@+id/icon">
  
 	<FrameLayout
 	    android:layout_width="fill_parent"
